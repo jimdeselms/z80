@@ -1,4 +1,4 @@
-const { RegisterArgument, IntegerArgument } = require("./argument")
+const { RegisterArgument, ImmediateArgument } = require("./argument")
 
 const REGISTERS = ["A", "B", "C", "D", "E", "H", "L"]
 
@@ -36,7 +36,7 @@ function assembleLine(line) {
 function parseArg(arg) {
     const asInt = parseInt(arg)
     if (!isNaN(asInt)) {
-        return new IntegerArgument(asInt)
+        return new ImmediateArgument(asInt)
     } else if (REGISTERS.includes(arg.toUpperCase())) {
         return new RegisterArgument(arg.toUpperCase())
     } else {
@@ -54,14 +54,26 @@ const REGISTER_TO_3BIT = {
     L: 0b101,
 }
 
+function addReg(register, atBit) {
+    return REGISTER_TO_3BIT[register] << (5 - atBit)
+}
+
 class AssemblerOpcodes {
     static ld(to, from) {
-        if (to.isRegister()) {
-            if (from.isInteger()) {
-                const byte1 = 0b00000110 | (REGISTER_TO_3BIT[to.register] << 3)
-                const value = from.integer
-
-                return [byte1, value];
+        switch (to.kind) {
+            case "register": {
+                switch (from.kind) {
+                    case "immediate": {
+                        const byte1 = 0b00000110 | addReg(to.register, 2)
+                        const value = from.integer
+        
+                        return [byte1, value]
+                    }
+                    case "register": {
+                        const byte = 0b01000000 | addReg(to.register, 2) | addReg(from.register, 5)
+                        return [byte]
+                    }
+                }
             }
         }
 
