@@ -5,21 +5,34 @@ describe('vm', () => {
     describe('instructions', () => {
         it('halts', () => {
             const state  = runProgram("halt")
-            expect(state.isHalted).toBe(true)
+            expect(state).toMatchObject({
+                isHalted: true,
+                IP: 1
+            })
         })
 
         it('ld a, 50', () => {
             const state = runProgram("ld a, 50")
-            expect(state.A).toBe(50)
+            expect(state).toMatchObject({ 
+                A: 50,
+                IP: 3 // add 1 for final HALT
+            })
         })
 
         it('LD A, 50', () => {
             const state = runProgram("LD A, 25")
-            expect(state.A).toBe(25)
+            expect(state).toMatchObject({ 
+                A: 25,
+                IP: 3 // add 1 for final HALT
+            })
         })
 
         it('NOP', () => {
             const state = runProgram("NOP")
+            // Add one for the final HALT
+            expect(state).toMatchObject({ 
+                IP: 2 // add 1 for final HALT
+            })
         })
     })
 

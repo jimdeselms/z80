@@ -4,7 +4,7 @@ class Instructions {
     }
 
     static ldIntegerToRegister(state, register) {
-        const value = state.memory[state.ip++]
+        const value = state.memory[state.IP++]
         state[register] = value
     }
 

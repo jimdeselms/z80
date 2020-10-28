@@ -8,8 +8,8 @@ class Vm {
 
         this.state = {
             A: 0,
-            ip: 0,
-            sp: 0,
+            IP: 0,
+            SP: 0,
             isHalted: false,
         }
 
@@ -31,21 +31,21 @@ class Vm {
             this.cyclesToWait--
         }
 
-        const opcode = this.state.memory[this.state.ip]
+        const opcode = this.state.memory[this.state.IP]
         const inst = OPCODES[opcode]
         if (!inst) {
             throw new Error(`Unknown opcode ${opcode}`)
         }
 
         if (this.cyclesToWait === 0) {
-            this.state.ip++
+            this.state.IP++
             inst.code(this.state)
             this.cyclesToWait = undefined
         } else {
             if (inst.cycles > 1) {
                 this.cyclesToWait = inst.cycles-2
             } else {
-                this.state.ip++
+                this.state.IP++
                 inst.code(this.state)
             }
         }
