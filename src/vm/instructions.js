@@ -1,4 +1,4 @@
-const { getRegisterFromOpcode } = require('../helpers')
+const { getRegisterFromOpcode, bytesToBit16 } = require('../helpers')
 
 class Instructions {
     static halt(state) {
@@ -65,6 +65,12 @@ class Instructions {
             const value = state[otherReg]
             state.memory[state[indexReg] + offset] = value
         }
+    }
+
+    static ldRegisterToMemory16BitMemoryLocation(state, from) {
+        const idx = bytesToBit16(state.memory[state.IP++], state.memory[state.IP++])
+        const value = state[from]
+        state.memory[idx] = value
     }
 
     static ldRegisterToRegisterIndirect(state, to, from) {
@@ -186,6 +192,9 @@ const OPCODES = {
 
     // LD A, (DE)
     0b00011010: { code: state => Instructions.ldRegisterIndirectToRegister(state, "A", "DE"), cycles: 2},
+
+    // LD (nn), A
+    0b00110010: { code: state => Instructions.ldRegisterToMemory16BitMemoryLocation(state, "A"), cycles: 4},
 }
 
 module.exports = {

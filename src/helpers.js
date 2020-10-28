@@ -27,7 +27,17 @@ function getRegisterFromOpcode(opcode, atBit) {
     return THREEBIT_TO_REGISTER[code]
 }
 
+function bit16ToBytes(number) {
+    return [ number & 0x00FF, number >> 8 & 0xFF ]
+}
+
+function bytesToBit16(low, high) {
+    return (high << 8 | low & 0x00FF) & 0x0000FFFF
+}
+
 module.exports = {
+    bit16ToBytes,
+    bytesTo16Bit: bytesToBit16,
     get3BitRegisterCode,
     getRegisterFromOpcode,
     REGISTER_TO_THREEBIT

@@ -1,5 +1,5 @@
-const { get3BitRegisterCode } = require('../helpers')
-const { RegisterArgument, RegisterIndirectArgument, ImmediateArgument } = require("./argument")
+const { get3BitRegisterCode, bit16ToBytes } = require('../helpers')
+const { RegisterArgument, RegisterIndirectArgument, ImmediateArgument, ImmediateIndirectArgument } = require("./argument")
 
 const REGISTERS = ["A", "B", "C", "D", "E", "H", "L"]
 
@@ -42,7 +42,9 @@ function parseArg(arg) {
         return new RegisterArgument(arg.toUpperCase())
     } else if (arg.startsWith("(") && arg.endsWith(")")) {
         const inside = arg.slice(1, -1).toUpperCase()
-        if (inside.indexOf('+') > -1) {
+        if (!isNaN(parseInt(inside))) {
+            return new ImmediateIndirectArgument(asInt)
+        } else if (inside.indexOf('+') > -1) {
             const [register, offset] = inside.split('+').map(part => part.trim())
             // TODO: Fail if the offset isn't a number, or is out of range.
             return new RegisterIndirectArgument(register, parseInt(offset))
@@ -135,6 +137,18 @@ class AssemblerOpcodes {
                             : undefined;
 
                         return [opcode, 0b00110110, to.offset, from.integer]
+                    }
+                }
+            }
+            case "immediateIndirect": {
+                switch (from.kind) {
+                    case "register": {
+                        if (from.register !== "A") throw new Error("Expected register A, not " + from.register)
+
+                        return [
+                            0b00110010,
+                            ...bit16ToBytes(to.integer)
+                        ]
                     }
                 }
             }

@@ -24,7 +24,15 @@ class RegisterIndirectArgument extends Argument {
         this.offset = offset
     }
 
-    toString() { return this.register }
+    toString() { 
+        if (this.offset > 0) {
+            return `(${this.register}+${this.offset})`
+        } else if (this.offset < 0) {
+            return `(${this.register}${this.offset})`
+        } else {
+            return `(${this.register})`
+        }
+    }
 }
 
 class ImmediateArgument extends Argument {
@@ -37,8 +45,19 @@ class ImmediateArgument extends Argument {
     toString() { return this.integer.toString() }
 }
 
+class ImmediateIndirectArgument extends Argument {
+    constructor(integer) {
+        super("immediateIndirect")
+
+        this.integer = integer
+    }
+
+    toString() { return `(${this.integer.toString()})` }
+}
+
 module.exports = {
     RegisterArgument,
     RegisterIndirectArgument,
-    ImmediateArgument
+    ImmediateArgument,
+    ImmediateIndirectArgument
 }
