@@ -11,6 +11,11 @@ describe('vm', () => {
         const state = runProgram("ld a, 50")
         expect(state.A).toBe(50)
     })
+
+    it('LD A, 50', () => {
+        const state = runProgram("LD A, 25")
+        expect(state.A).toBe(25)
+    })
 })
 
 function runProgram(...lines) {

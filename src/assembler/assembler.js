@@ -30,7 +30,7 @@ function assembleLine(line) {
 
     const args = parts.slice(1).map(parseArg)
 
-    return AssemblerOpcodes[parts[0]](...args)    
+    return AssemblerOpcodes[parts[0].toLowerCase()](...args)    
 }
 
 function parseArg(arg) {
