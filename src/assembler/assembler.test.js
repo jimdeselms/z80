@@ -1,8 +1,17 @@
 const Assembler = require('./assembler')
 
 describe('assembler', () => {
-    it('is a thing!', () => {
-        const code = Assembler.assembleLine('ld A 200')
-        expect(code).toBe("LD A 200")
+    describe('ld', () => {
+        it('ld A, 200', () => {
+            const code = Assembler.assemble('ld A, 200')
+            expect(code).toEqual([0b00111110, 200])
+        })
+    })
+
+    describe('halt', () => {
+        it('halt', () => {
+            const code = Assembler.assemble('halt')
+            expect(code).toEqual([0b01110110])
+        })
     })
 })
