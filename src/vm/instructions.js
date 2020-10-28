@@ -20,12 +20,30 @@ class Instructions {
         state[to] = state[from]
     }
 
-    static ldRegisterIndirectWithOffsetToRegister(state, from) {
-        const to = getRegisterFromOpcode(state.memory[state.IP++], 2)
+    static ldRegisterToRegisterWithOffset(state, indexReg) {
+        const next = state.memory[state.IP++]
+        let otherReg = getRegisterFromOpcode(next, 2)
+        let fromIndexed = true
+        if (!otherReg) {
+            fromIndexed = false
+            otherReg = getRegisterFromOpcode(next, 5)
+        }
+        
         const offset = state.memory[state.IP++]
-        const idx = state[from] + offset
 
-        state[to] = state.memory[idx]
+        if (fromIndexed) {
+            const value = state.memory[state[indexReg] + offset]
+            state[otherReg] = value
+        } else {
+            const value = state[otherReg]
+            state.memory[state[indexReg] + offset] = value
+        }
+    }
+
+    static ldRegisterToRegisterIndirect(state, to, from) {
+        const value = state[from]
+        const toAddress = state[to]
+        state.memory[toAddress] = value
     }
 
     static nop() {
@@ -114,11 +132,23 @@ const OPCODES = {
     0b01101100: { code: state => Instructions.ldRegisterToRegister(state, "L", "H"), cycles: 1 },
     0b01101101: { code: state => Instructions.ldRegisterToRegister(state, "L", "L"), cycles: 1 },
 
-    // LD r, (IX+d)
-    0b11011101: { code: state => Instructions.ldRegisterIndirectWithOffsetToRegister(state, "IX"), cycles: 5 },
+    // LD r, (IX+d) AND
+    // LD (IX+d), r
+    0b11011101: { code: state => Instructions.ldRegisterToRegisterWithOffset(state, "IX"), cycles: 5 },
 
-    // LD r, (IY+d)
-    0b11111101: { code: state => Instructions.ldRegisterIndirectWithOffsetToRegister(state, "IY"), cycles: 5 },
+    // LD r, (IY+d) AND
+    // LD (IY+d), r
+    0b11111101: { code: state => Instructions.ldRegisterToRegisterWithOffset(state, "IY"), cycles: 5 },
+
+    // LD (HL), r
+    0b01110111: { code: state => Instructions.ldRegisterToRegisterIndirect(state, "HL", "A"), cycles: 2},
+    0b01110000: { code: state => Instructions.ldRegisterToRegisterIndirect(state, "HL", "B"), cycles: 2},
+    0b01110001: { code: state => Instructions.ldRegisterToRegisterIndirect(state, "HL", "C"), cycles: 2},
+    0b01110010: { code: state => Instructions.ldRegisterToRegisterIndirect(state, "HL", "D"), cycles: 2},
+    0b01110011: { code: state => Instructions.ldRegisterToRegisterIndirect(state, "HL", "E"), cycles: 2},
+    0b01110100: { code: state => Instructions.ldRegisterToRegisterIndirect(state, "HL", "H"), cycles: 2},
+    0b01110101: { code: state => Instructions.ldRegisterToRegisterIndirect(state, "HL", "L"), cycles: 2},
+
 }
 
 module.exports = {

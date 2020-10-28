@@ -78,6 +78,10 @@ class AssemblerOpcodes {
                                 const opcode = 0b01000110 | get3BitRegisterCode(to.register, 2)
                                 return [opcode]
                             }
+                        }
+                    }
+                    case "registerIndirectWithOffset": {
+                        switch (from.register) {
                             case "IX": {
                                 const opcode = 0b11011101
                                 const register = 0b01000110 | get3BitRegisterCode(to.register, 2)
@@ -92,6 +96,28 @@ class AssemblerOpcodes {
                     }
                 }
             }
+            case "registerIndirect": {
+                switch (from.kind) {
+                    case "register": {
+                        const byte = 0b01110000 | get3BitRegisterCode(from.register, 5)
+                        return [byte]
+                    }
+                }
+            }
+            case "registerIndirectWithOffset": {
+                switch (from.kind) {
+                    case "register": {
+                        const opcode = to.register === "IX" ? 0b11011101
+                            : to.register === "IY" ? 0b11111101
+                            : undefined;
+                        
+                        const register = 0b01110000 | get3BitRegisterCode(from.register, 5)
+
+                        return [opcode, register, to.offset]
+                    }
+                }
+            }
+
         }
 
         throw new Error("Unkonwn case for ld");

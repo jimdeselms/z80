@@ -18,7 +18,7 @@ class RegisterArgument extends Argument {
 
 class RegisterIndirectArgument extends Argument {
     constructor(register, offset) {
-        super("registerIndirect")
+        super(isNaN(offset) ? "registerIndirect" : "registerIndirectWithOffset")
 
         this.register = register.toUpperCase()
         this.offset = offset

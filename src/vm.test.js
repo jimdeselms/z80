@@ -89,6 +89,33 @@ describe('vm', () => {
             })
         })
 
+        it('LD (IX+2), r', () => {
+            const vm = createVm("LD (IX+2), B")
+            vm.state.B = 22
+            vm.state.IX = 15
+
+            vm.run();
+            expect(vm.state.memory[17]).toBe(22)
+        })
+
+        it('LD (IY+5), r', () => {
+            const vm = createVm("LD (IY+5), B")
+            vm.state.B = 22
+            vm.state.IY = 25
+
+            vm.run();
+            expect(vm.state.memory[30]).toBe(22)
+        })
+
+        it('LD (HL), r', () => {
+            const vm = createVm("LD (HL), C")
+            vm.state.HL = 20
+            vm.state.C = 5
+
+            vm.run();
+            expect(vm.state.memory[20]).toBe(5)
+        })
+
         it('NOP', () => {
             const state = runProgram("NOP")
             // Add one for the final HALT
