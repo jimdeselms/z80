@@ -1,16 +1,35 @@
 const { OPCODES } = require('./instructions')
 
 class Vm {
-    constructor({ size, initialImage }) {
+    constructor({ size, state, initialImage }) {
         size = size || 100
 
         this.cyclesToWait = undefined
 
         this.state = {
             A: 0,
+            B: 0,
+            C: 0,
+            D: 0,
+            E: 0,
+            H: 0,
+            L: 0,
+
             IP: 0,
             SP: 0,
+
             isHalted: false,
+
+            get HL() {
+                return this.H << 8 | this.L
+            },
+            set HL(value) {
+                this.H = 0x00ff & value >> 8;
+                this.L = 0x00ff & value;
+            },
+
+            // initialize any of the registers
+            ...(state || {})
         }
 
         if (initialImage) {
@@ -26,7 +45,6 @@ class Vm {
     }
 
     step() {
-
         if (this.cyclesToWait > 0) {
             this.cyclesToWait--
         }
@@ -49,6 +67,10 @@ class Vm {
                 inst.code(this.state)
             }
         }
+    }
+
+    loadMemory(address, memory) {
+        this.state.memory.splice(address, memory.length, ...memory)
     }
 
     run() {

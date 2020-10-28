@@ -16,6 +16,16 @@ class RegisterArgument extends Argument {
     toString() { return this.register }
 }
 
+class RegisterIndirectArgument extends Argument {
+    constructor(register) {
+        super("registerIndirect");
+
+        this.register = register.toUpperCase();
+    }
+
+    toString() { return this.register }
+}
+
 class ImmediateArgument extends Argument {
     constructor(integer) {
         super("immediate");
@@ -28,5 +38,6 @@ class ImmediateArgument extends Argument {
 
 module.exports = {
     RegisterArgument,
+    RegisterIndirectArgument,
     ImmediateArgument
 }

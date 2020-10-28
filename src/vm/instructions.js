@@ -8,6 +8,12 @@ class Instructions {
         state[register] = value
     }
 
+    static ldRegisterIndirectToRegister(state, to, from) {
+        const address = state[from]
+        const value = state.memory[address]
+        state[to] = value
+    }
+
     static ldRegisterToRegister(state, to, from) {
         state[to] = state[from]
     }
@@ -31,6 +37,15 @@ const OPCODES = {
     0b00011110: { code: state => Instructions.ldIntegerToRegister(state, "E"), cycles: 2 },
     0b00100110: { code: state => Instructions.ldIntegerToRegister(state, "H"), cycles: 2 },
     0b00101110: { code: state => Instructions.ldIntegerToRegister(state, "L"), cycles: 2 },
+
+    // LD r, (HL)
+    0b01111110: { code: state => Instructions.ldRegisterIndirectToRegister(state, "A", "HL"), cycles: 2},
+    0b01000110: { code: state => Instructions.ldRegisterIndirectToRegister(state, "B", "HL"), cycles: 2},
+    0b01001110: { code: state => Instructions.ldRegisterIndirectToRegister(state, "C", "HL"), cycles: 2},
+    0b01010110: { code: state => Instructions.ldRegisterIndirectToRegister(state, "D", "HL"), cycles: 2},
+    0b01011110: { code: state => Instructions.ldRegisterIndirectToRegister(state, "E", "HL"), cycles: 2},
+    0b01100110: { code: state => Instructions.ldRegisterIndirectToRegister(state, "H", "HL"), cycles: 2},
+    0b01101110: { code: state => Instructions.ldRegisterIndirectToRegister(state, "L", "HL"), cycles: 2},
 
     // LD r, r'
     0b01111111: { code: state => Instructions.ldRegisterToRegister(state, "A", "A"), cycles: 1 },

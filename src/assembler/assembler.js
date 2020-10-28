@@ -1,4 +1,4 @@
-const { RegisterArgument, ImmediateArgument } = require("./argument")
+const { RegisterArgument, RegisterIndirectArgument, ImmediateArgument } = require("./argument")
 
 const REGISTERS = ["A", "B", "C", "D", "E", "H", "L"]
 
@@ -39,6 +39,8 @@ function parseArg(arg) {
         return new ImmediateArgument(asInt)
     } else if (REGISTERS.includes(arg.toUpperCase())) {
         return new RegisterArgument(arg.toUpperCase())
+    } else if (arg.startsWith("(") && arg.endsWith(")")) {
+        return new RegisterIndirectArgument(arg.slice(1, arg.length-2))
     } else {
         throw new Error(`can't parse arg ${arg}`)
     }
@@ -71,6 +73,10 @@ class AssemblerOpcodes {
                     }
                     case "register": {
                         const byte = 0b01000000 | addReg(to.register, 2) | addReg(from.register, 5)
+                        return [byte]
+                    }
+                    case "registerIndirect": {
+                        const byte = 0b01000110 | addReg(to.register, 2)
                         return [byte]
                     }
                 }
