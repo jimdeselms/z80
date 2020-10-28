@@ -7,9 +7,15 @@ class Instructions {
         const value = state.memory[state.ip++]
         state[register] = value
     }
+
+    static nop() {
+    }
 }
 
 const OPCODES = {
+    // NOP
+    0b00000000: { code: Instructions.nop, cycles: 1 },
+
     // HALT
     0b01110110: { code: Instructions.halt, cycles: 1 },
     
@@ -21,7 +27,7 @@ class Vm {
     constructor({ size, initialImage }) {
         size = size || 100
 
-        this.cyclesToWait = 1
+        this.cyclesToWait = undefined
 
         this.state = {
             A: 0,
@@ -43,15 +49,28 @@ class Vm {
     }
 
     step() {
-        if (--this.cyclesToWait <= 0) {
-            const opcode = this.state.memory[this.state.ip++]
-            const inst = OPCODES[opcode]
-            if (!inst) {
-                throw new Error(`Unknown opcode ${opcode}`)
-            }
 
-            this.cyclesToWait = inst.cycles;
+        if (this.cyclesToWait > 0) {
+            this.cyclesToWait--
+        }
+
+        const opcode = this.state.memory[this.state.ip]
+        const inst = OPCODES[opcode]
+        if (!inst) {
+            throw new Error(`Unknown opcode ${opcode}`)
+        }
+
+        if (this.cyclesToWait === 0) {
+            this.state.ip++
             inst.code(this.state)
+            this.cyclesToWait = undefined
+        } else {
+            if (inst.cycles > 1) {
+                this.cyclesToWait = inst.cycles-2
+            } else {
+                this.state.ip++
+                inst.code(this.state)
+            }
         }
     }
 

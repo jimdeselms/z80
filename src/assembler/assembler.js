@@ -71,6 +71,10 @@ class AssemblerOpcodes {
     static halt() {
         return [ 0b01110110 ];
     }
+
+    static nop() {
+        return [ 0b00000000 ];
+    }
 }
 
 module.exports = Assembler;
