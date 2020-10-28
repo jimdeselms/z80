@@ -31,6 +31,22 @@ class Vm {
                 this.L = 0x00ff & value;
             },
 
+            get BC() {
+                return this.B << 8 | this.C
+            },
+            set BC(value) {
+                this.B = 0x00ff & value >> 8;
+                this.C = 0x00ff & value;
+            },
+
+            get DE() {
+                return this.D << 8 | this.E
+            },
+            set DE(value) {
+                this.D = 0x00ff & value >> 8;
+                this.E = 0x00ff & value;
+            },
+
             // initialize any of the registers
             ...(state || {})
         }

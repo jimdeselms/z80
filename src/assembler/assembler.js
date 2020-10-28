@@ -78,6 +78,14 @@ class AssemblerOpcodes {
                                 const opcode = 0b01000110 | get3BitRegisterCode(to.register, 2)
                                 return [opcode]
                             }
+                            case "BC": {
+                                if (to.register !== "A") throw new Error("Expected register A, not " + to.register)
+                                return [0b00001010];
+                            }
+                            case "DE": {
+                                if (to.register !== "A") throw new Error("Expected register A, not " + to.register)
+                                return [0b00011010];
+                            }
                         }
                     }
                     case "registerIndirectWithOffset": {
@@ -102,6 +110,12 @@ class AssemblerOpcodes {
                         const byte = 0b01110000 | get3BitRegisterCode(from.register, 5)
                         return [byte]
                     }
+                    case "immediate": {
+                        const opcode = 0b00110110
+                        const value = from.integer
+
+                        return [opcode, value]
+                    }
                 }
             }
             case "registerIndirectWithOffset": {
@@ -114,6 +128,13 @@ class AssemblerOpcodes {
                         const register = 0b01110000 | get3BitRegisterCode(from.register, 5)
 
                         return [opcode, register, to.offset]
+                    }
+                    case "immediate": {
+                        const opcode = to.register === "IX" ? 0b11011101
+                            : to.register === "IY" ? 0b11111101
+                            : undefined;
+
+                        return [opcode, 0b00110110, to.offset, from.integer]
                     }
                 }
             }

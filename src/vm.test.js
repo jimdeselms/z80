@@ -67,6 +67,28 @@ describe('vm', () => {
             })
         })
 
+        it('LD A, (BC)', () => {
+            const vm = createVm("LD A, (BC)")
+            vm.state.BC = 25
+            vm.loadMemory(25, [90])
+
+            vm.run();
+            expect(vm.state).toMatchObject({
+                A: 90
+            })
+        })
+
+        it('LD A, (DE)', () => {
+            const vm = createVm("LD A, (DE)")
+            vm.state.DE = 40
+            vm.loadMemory(40, [25])
+
+            vm.run();
+            expect(vm.state).toMatchObject({
+                A: 25
+            })
+        })
+
         it('LD r, (IX+2)', () => {
             const vm = createVm("LD C, (IX+2)")
             vm.state.IX = 30
@@ -114,6 +136,27 @@ describe('vm', () => {
 
             vm.run();
             expect(vm.state.memory[20]).toBe(5)
+        })
+
+        it ('LD (HL), n', () => {
+            const vm = createVm("LD (HL), 27")
+            vm.state.HL = 50
+            vm.run()
+            expect(vm.state.memory[50]).toBe(27)
+        })
+        
+        it ('LD (IX+d), n', () => {
+            const vm = createVm("LD (IX+3), 14")
+            vm.state.IX = 25
+            vm.run()
+            expect(vm.state.memory[28]).toBe(14)
+        })
+
+        it ('LD (IY+d), n', () => {
+            const vm = createVm("LD (IY+7), 22")
+            vm.state.IY = 30
+            vm.run()
+            expect(vm.state.memory[37]).toBe(22)
         })
 
         it('NOP', () => {

@@ -16,19 +16,46 @@ class Instructions {
         state[to] = value
     }
 
+    static ldImmediateToRegisterIndirect(state, to) {
+        const value = state.memory[state.IP++]
+        const idx = state[to]
+        state.memory[idx] = value
+    }
+
+    static ldImmediateToRegisterIndirectWithOffset(state, to) {
+        state.IP += 2;
+
+        const offset = state.memory[state.IP++]
+        const value = state.memory[state.IP++]
+
+        const idx = state[to] + offset
+
+        state.memory[idx] = value
+    }
+
     static ldRegisterToRegister(state, to, from) {
         state[to] = state[from]
     }
 
-    static ldRegisterToRegisterWithOffset(state, indexReg) {
+    static ldToRegisterWithOffset(state, indexReg) {
         const next = state.memory[state.IP++]
+        if (next === 0b00110110) {
+            // In this case, we're getting an immediate value
+            const offset = state.memory[state.IP++]
+            const value = state.memory[state.IP++]
+
+            state.memory[state[indexReg] + offset] = value
+            return
+        }
+
+        // Otherwise, we're copying from/to a register
         let otherReg = getRegisterFromOpcode(next, 2)
         let fromIndexed = true
         if (!otherReg) {
             fromIndexed = false
             otherReg = getRegisterFromOpcode(next, 5)
         }
-        
+
         const offset = state.memory[state.IP++]
 
         if (fromIndexed) {
@@ -133,12 +160,14 @@ const OPCODES = {
     0b01101101: { code: state => Instructions.ldRegisterToRegister(state, "L", "L"), cycles: 1 },
 
     // LD r, (IX+d) AND
-    // LD (IX+d), r
-    0b11011101: { code: state => Instructions.ldRegisterToRegisterWithOffset(state, "IX"), cycles: 5 },
+    // LD (IX+d), r AND
+    // LD (IX+d), n
+    0b11011101: { code: state => Instructions.ldToRegisterWithOffset(state, "IX"), cycles: 5 },
 
     // LD r, (IY+d) AND
     // LD (IY+d), r
-    0b11111101: { code: state => Instructions.ldRegisterToRegisterWithOffset(state, "IY"), cycles: 5 },
+    // LD (IY+d), n
+    0b11111101: { code: state => Instructions.ldToRegisterWithOffset(state, "IY"), cycles: 5 },
 
     // LD (HL), r
     0b01110111: { code: state => Instructions.ldRegisterToRegisterIndirect(state, "HL", "A"), cycles: 2},
@@ -149,6 +178,14 @@ const OPCODES = {
     0b01110100: { code: state => Instructions.ldRegisterToRegisterIndirect(state, "HL", "H"), cycles: 2},
     0b01110101: { code: state => Instructions.ldRegisterToRegisterIndirect(state, "HL", "L"), cycles: 2},
 
+    // LD (HL), n
+    0b00110110: { code: state => Instructions.ldImmediateToRegisterIndirect(state, "HL"), cycles: 3},
+
+    // LD A, (BC)
+    0b00001010: { code: state => Instructions.ldRegisterIndirectToRegister(state, "A", "BC"), cycles: 2},
+
+    // LD A, (DE)
+    0b00011010: { code: state => Instructions.ldRegisterIndirectToRegister(state, "A", "DE"), cycles: 2},
 }
 
 module.exports = {
