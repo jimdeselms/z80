@@ -15,6 +15,9 @@ class Vm {
             H: 0,
             L: 0,
 
+            IX: 0,
+            IY: 0,
+
             IP: 0,
             SP: 0,
 
@@ -47,6 +50,7 @@ class Vm {
     step() {
         if (this.cyclesToWait > 0) {
             this.cyclesToWait--
+            return
         }
 
         const opcode = this.state.memory[this.state.IP]

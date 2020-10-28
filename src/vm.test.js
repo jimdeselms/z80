@@ -67,6 +67,28 @@ describe('vm', () => {
             })
         })
 
+        it('LD r, (IX+2)', () => {
+            const vm = createVm("LD C, (IX+2)")
+            vm.state.IX = 30
+            vm.loadMemory(32, [12])
+
+            vm.run();
+            expect(vm.state).toMatchObject({
+                C: 12
+            })
+        })
+
+        it('LD r, (IY+5)', () => {
+            const vm = createVm("LD E, (IY+5)")
+            vm.state.IY = 15
+            vm.loadMemory(20, [22])
+
+            vm.run();
+            expect(vm.state).toMatchObject({
+                E: 22
+            })
+        })
+
         it('NOP', () => {
             const state = runProgram("NOP")
             // Add one for the final HALT

@@ -1,3 +1,5 @@
+const { getRegisterFromOpcode } = require('../helpers')
+
 class Instructions {
     static halt(state) {
         state.isHalted = true
@@ -16,6 +18,14 @@ class Instructions {
 
     static ldRegisterToRegister(state, to, from) {
         state[to] = state[from]
+    }
+
+    static ldRegisterIndirectWithOffsetToRegister(state, from) {
+        const to = getRegisterFromOpcode(state.memory[state.IP++], 2)
+        const offset = state.memory[state.IP++]
+        const idx = state[from] + offset
+
+        state[to] = state.memory[idx]
     }
 
     static nop() {
@@ -103,6 +113,12 @@ const OPCODES = {
     0b01101011: { code: state => Instructions.ldRegisterToRegister(state, "L", "E"), cycles: 1 },
     0b01101100: { code: state => Instructions.ldRegisterToRegister(state, "L", "H"), cycles: 1 },
     0b01101101: { code: state => Instructions.ldRegisterToRegister(state, "L", "L"), cycles: 1 },
+
+    // LD r, (IX+d)
+    0b11011101: { code: state => Instructions.ldRegisterIndirectWithOffsetToRegister(state, "IX"), cycles: 5 },
+
+    // LD r, (IY+d)
+    0b11111101: { code: state => Instructions.ldRegisterIndirectWithOffsetToRegister(state, "IY"), cycles: 5 },
 }
 
 module.exports = {

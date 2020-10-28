@@ -17,10 +17,11 @@ class RegisterArgument extends Argument {
 }
 
 class RegisterIndirectArgument extends Argument {
-    constructor(register) {
-        super("registerIndirect");
+    constructor(register, offset) {
+        super("registerIndirect")
 
-        this.register = register.toUpperCase();
+        this.register = register.toUpperCase()
+        this.offset = offset
     }
 
     toString() { return this.register }
@@ -28,9 +29,9 @@ class RegisterIndirectArgument extends Argument {
 
 class ImmediateArgument extends Argument {
     constructor(integer) {
-        super("immediate");
+        super("immediate")
 
-        this.integer = integer;
+        this.integer = integer
     }
 
     toString() { return this.integer.toString() }
