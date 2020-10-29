@@ -1,7 +1,7 @@
 const { get3BitRegisterCode, bit16ToBytes } = require('../helpers')
 const { RegisterArgument, RegisterIndirectArgument, ImmediateArgument, ImmediateIndirectArgument } = require("./argument")
 
-const REGISTERS = ["A", "B", "C", "D", "E", "H", "L"]
+const REGISTERS = ["A", "B", "C", "D", "E", "H", "L", "I", "R"]
 
 class Assembler {
     static assemble(code) {
@@ -71,8 +71,18 @@ class AssemblerOpcodes {
                         return [byte1, value]
                     }
                     case "register": {
-                        const byte = 0b01000000 | get3BitRegisterCode(to.register, 2) | get3BitRegisterCode(from.register, 5)
-                        return [byte]
+                        if (from.register === "I" && to.register === "A") {
+                            return [0b11101101, 0b01010111]
+                        } else if (from.register === "R" && to.register === "A") {
+                            return [0b11101101, 0b01011111]
+                        } else if (from.register === "A" && to.register ==="I") {
+                            return [0b11101101, 0b01000111]
+                        } else if (from.register === "A" && to.register ==="R") {
+                            return [0b11101101, 0b01001111]
+                        } else {
+                            const byte = 0b01000000 | get3BitRegisterCode(to.register, 2) | get3BitRegisterCode(from.register, 5)
+                            return [byte]
+                        }
                     }
                     case "registerIndirect": {
                         switch (from.register) {

@@ -67,6 +67,20 @@ class Instructions {
         }
     }
 
+    static ldFromSpecialRegisterToRegister(state) {
+        const next = state.memory[state.IP++]
+
+        switch (next) {
+            case 0b01010111: state.A = state.I; break
+            case 0b01011111: state.A = state.R; break
+            case 0b01000111: state.I = state.A; break
+            case 0b01001111: state.R = state.A; break
+
+            // TODO: What should the undefined behavior be here? What happens on a real Z80?
+            default: state.isHalted = true; break
+        }
+    }
+
     static ldRegisterToMemory16BitMemoryLocation(state, from) {
         const idx = bytesToBit16(state.memory[state.IP++], state.memory[state.IP++])
         const value = state[from]
@@ -195,6 +209,9 @@ const OPCODES = {
 
     // LD (nn), A
     0b00110010: { code: state => Instructions.ldRegisterToMemory16BitMemoryLocation(state, "A"), cycles: 4},
+
+    // LD A, I
+    0b11101101: { code: state => Instructions.ldFromSpecialRegisterToRegister(state), cycles: 2},
 }
 
 module.exports = {

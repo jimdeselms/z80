@@ -159,6 +159,34 @@ describe('vm', () => {
             expect(vm.state.memory[37]).toBe(22)
         })
 
+        it ('LD A, I', () => {
+            const vm = createVm("LD A, I")
+            vm.state.I = 23
+            vm.run()
+            expect(vm.state.A).toBe(23)
+        })
+
+        it ('LD A, R', () => {
+            const vm = createVm("LD A, R")
+            vm.state.R = 15
+            vm.run()
+            expect(vm.state.A).toBe(15)
+        })
+
+        it ('LD I, A', () => {
+            const vm = createVm("LD I, A")
+            vm.state.A = 23
+            vm.run()
+            expect(vm.state.I).toBe(23)
+        })
+
+        it ('LD R, A', () => {
+            const vm = createVm("LD R, A")
+            vm.state.A = 117
+            vm.run()
+            expect(vm.state.R).toBe(117)
+        })
+
         it('NOP', () => {
             const state = runProgram("NOP")
             // Add one for the final HALT
