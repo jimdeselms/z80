@@ -22,29 +22,29 @@ describe('vm', () => {
         })
 
         it("ld r, r'", () => {
-            expect(runProgram("ld a, 1", "ld a, a")).toMatchObject({ A: 1 })
-            expect(runProgram("ld a, 1", "ld b, a")).toMatchObject({ A: 1, B: 1 })
-            expect(runProgram("ld a, 1", "ld c, a")).toMatchObject({ A: 1, C: 1 })
-            expect(runProgram("ld a, 1", "ld d, a")).toMatchObject({ A: 1, D: 1 })
-            expect(runProgram("ld a, 1", "ld e, a")).toMatchObject({ A: 1, E: 1 })
-            expect(runProgram("ld a, 1", "ld h, a")).toMatchObject({ A: 1, H: 1 })
-            expect(runProgram("ld a, 1", "ld l, a")).toMatchObject({ A: 1, L: 1 })
+            expect(runProgram("ld a, 1; ld a, a")).toMatchObject({ A: 1 })
+            expect(runProgram("ld a, 1; ld b, a")).toMatchObject({ A: 1, B: 1 })
+            expect(runProgram("ld a, 1; ld c, a")).toMatchObject({ A: 1, C: 1 })
+            expect(runProgram("ld a, 1; ld d, a")).toMatchObject({ A: 1, D: 1 })
+            expect(runProgram("ld a, 1; ld e, a")).toMatchObject({ A: 1, E: 1 })
+            expect(runProgram("ld a, 1; ld h, a")).toMatchObject({ A: 1, H: 1 })
+            expect(runProgram("ld a, 1; ld l, a")).toMatchObject({ A: 1, L: 1 })
 
-            expect(runProgram("ld b, 5", "ld a, b")).toMatchObject({ B: 5, A: 5 })
-            expect(runProgram("ld b, 5", "ld b, b")).toMatchObject({ B: 5 })
-            expect(runProgram("ld b, 5", "ld c, b")).toMatchObject({ B: 5, C: 5 })
-            expect(runProgram("ld b, 5", "ld d, b")).toMatchObject({ B: 5, D: 5 })
-            expect(runProgram("ld b, 5", "ld e, b")).toMatchObject({ B: 5, E: 5 })
-            expect(runProgram("ld b, 5", "ld h, b")).toMatchObject({ B: 5, H: 5 })
-            expect(runProgram("ld b, 5", "ld l, b")).toMatchObject({ B: 5, L: 5 })
+            expect(runProgram("ld b, 5; ld a, b")).toMatchObject({ B: 5, A: 5 })
+            expect(runProgram("ld b, 5; ld b, b")).toMatchObject({ B: 5 })
+            expect(runProgram("ld b, 5; ld c, b")).toMatchObject({ B: 5, C: 5 })
+            expect(runProgram("ld b, 5; ld d, b")).toMatchObject({ B: 5, D: 5 })
+            expect(runProgram("ld b, 5; ld e, b")).toMatchObject({ B: 5, E: 5 })
+            expect(runProgram("ld b, 5; ld h, b")).toMatchObject({ B: 5, H: 5 })
+            expect(runProgram("ld b, 5; ld l, b")).toMatchObject({ B: 5, L: 5 })
 
-            expect(runProgram("ld c, 7", "ld a, c")).toMatchObject({ C: 7, A: 7 })
-            expect(runProgram("ld c, 7", "ld b, c")).toMatchObject({ C: 7, B: 7 })
-            expect(runProgram("ld c, 7", "ld c, c")).toMatchObject({ C: 7 })
-            expect(runProgram("ld c, 7", "ld d, c")).toMatchObject({ C: 7, D: 7 })
-            expect(runProgram("ld c, 7", "ld e, c")).toMatchObject({ C: 7, E: 7 })
-            expect(runProgram("ld c, 7", "ld h, c")).toMatchObject({ C: 7, H: 7 })
-            expect(runProgram("ld c, 7", "ld l, c")).toMatchObject({ C: 7, L: 7 })
+            expect(runProgram("ld c, 7; ld a, c")).toMatchObject({ C: 7, A: 7 })
+            expect(runProgram("ld c, 7; ld b, c")).toMatchObject({ C: 7, B: 7 })
+            expect(runProgram("ld c, 7; ld c, c")).toMatchObject({ C: 7 })
+            expect(runProgram("ld c, 7; ld d, c")).toMatchObject({ C: 7, D: 7 })
+            expect(runProgram("ld c, 7; ld e, c")).toMatchObject({ C: 7, E: 7 })
+            expect(runProgram("ld c, 7; ld h, c")).toMatchObject({ C: 7, H: 7 })
+            expect(runProgram("ld c, 7; ld l, c")).toMatchObject({ C: 7, L: 7 })
 
         })
 
@@ -160,10 +160,7 @@ describe('vm', () => {
         })
 
         it ('LD A, I', () => {
-            const vm = createVm("LD A, I")
-            vm.state.I = 23
-            vm.run()
-            expect(vm.state.A).toBe(23)
+            expect(runProgram("LD A, I", { I: 23 })).toMatchObject({ A: 23 })
         })
 
         it ('LD A, R', () => {
@@ -187,6 +184,13 @@ describe('vm', () => {
             expect(vm.state.R).toBe(117)
         })
 
+        it ("LD dd, nn", () => {
+            expect(runProgram("LD BC, 5000")).toMatchObject({ BC: 5000 })
+            expect(runProgram("LD DE, 1234")).toMatchObject({ DE: 1234 })
+            expect(runProgram("LD HL, 9999")).toMatchObject({ HL: 9999 })
+            expect(runProgram("LD SP, 14233")).toMatchObject({ SP: 14233 })
+        })
+
         it('NOP', () => {
             const state = runProgram("NOP")
             // Add one for the final HALT
@@ -199,7 +203,13 @@ describe('vm', () => {
     describe('timing', () => {
         // Since a ld takes 2 cycles, we should expect each of these to take two steps to complete.
         it('three instructions', () => {
-            const vm = createVm("LD A, 1", "LD A, 2", "NOP", "LD A, 3")
+            const program = `
+                LD A, 1
+                LD A, 2
+                NOP
+                LD A, 3`
+
+            const vm = createVm(program)
 
             vm.step();
             expect(vm.state.A).toBe(0)
@@ -225,19 +235,14 @@ describe('vm', () => {
     })
 })
 
-function runProgram(...lines) {
-    const vm = createVm(...lines)
+function runProgram(program, state) {
+    const vm = createVm(program, state)
     vm.run()
     return vm.state
 }
 
-function createVm(...lines) {
-    lines = lines.join('\n')
+function createVm(program, state) {
 
-    if (!lines.toLowerCase().endsWith("halt)")) {
-        lines += "\nhalt"
-    }
-
-    const initialImage = Assembler.assemble(lines)
-    return new Vm({initialImage})
+    const initialImage = Assembler.assemble(program + "\nhalt")
+    return new Vm({initialImage, state})
 }

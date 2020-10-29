@@ -18,6 +18,20 @@ const THREEBIT_TO_REGISTER = {
     0b101: "L",
 }
 
+const WORD_REGISTER_TO_TWOBIT = {
+    BC: 0b00,
+    DE: 0b01,
+    HL: 0b10,
+    SP: 0b11
+}
+
+const TWOBIT_TO_WORD_REGISTER = {
+    0b00: "BC",
+    0b01: "DE",
+    0b10: "HL",
+    0b11: "SP"
+}
+
 function get3BitRegisterCode(register, atBit) {
     return REGISTER_TO_THREEBIT[register] << (5 - atBit)
 }
@@ -25,6 +39,15 @@ function get3BitRegisterCode(register, atBit) {
 function getRegisterFromOpcode(opcode, atBit) {
     const code = (opcode >> (5 - atBit)) & 0b00000111
     return THREEBIT_TO_REGISTER[code]
+}
+
+function get2BitRegisterCode(register, atBit) {
+    return WORD_REGISTER_TO_TWOBIT[register] << (6 - atBit)
+}
+
+function getWordRegstierFromOpcode(opcode, atBit) {
+    const code = (opcode >> (6 - atBit)) & 0b00000011
+    return TWOBIT_TO_WORD_REGISTER[code]
 }
 
 function bit16ToBytes(number) {
@@ -37,8 +60,9 @@ function bytesToBit16(low, high) {
 
 module.exports = {
     bit16ToBytes,
-    bytesTo16Bit: bytesToBit16,
+    bytesToBit16,
     get3BitRegisterCode,
+    get2BitRegisterCode,
     getRegisterFromOpcode,
     REGISTER_TO_THREEBIT
 }

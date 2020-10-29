@@ -10,6 +10,12 @@ class Instructions {
         state[register] = value
     }
 
+    static ldInteger16ToRegister(state, to) {
+        const low = state.memory[state.IP++]
+        const high = state.memory[state.IP++]
+        state[to] = bytesToBit16(low, high)
+    }
+
     static ldRegisterIndirectToRegister(state, to, from) {
         const address = state[from]
         const value = state.memory[address]
@@ -212,6 +218,12 @@ const OPCODES = {
 
     // LD A, I
     0b11101101: { code: state => Instructions.ldFromSpecialRegisterToRegister(state), cycles: 2},
+
+    // LD dd, nn
+    0b00000001: { code: state => Instructions.ldInteger16ToRegister(state, "BC"), cycles: 2},
+    0b00010001: { code: state => Instructions.ldInteger16ToRegister(state, "DE"), cycles: 2},
+    0b00100001: { code: state => Instructions.ldInteger16ToRegister(state, "HL"), cycles: 2},
+    0b00110001: { code: state => Instructions.ldInteger16ToRegister(state, "SP"), cycles: 2},
 }
 
 module.exports = {

@@ -1,7 +1,8 @@
-const { get3BitRegisterCode, bit16ToBytes } = require('../helpers')
+const { get3BitRegisterCode, bit16ToBytes, get2BitRegisterCode } = require('../helpers')
 const { RegisterArgument, RegisterIndirectArgument, ImmediateArgument, ImmediateIndirectArgument } = require("./argument")
 
 const REGISTERS = ["A", "B", "C", "D", "E", "H", "L", "I", "R"]
+const WORD_REGISTERS = ["BC", "DE", "HL", "SP"]
 
 class Assembler {
     static assemble(code) {
@@ -9,6 +10,7 @@ class Assembler {
 
         const lines = code
             .replace('\r', '')
+            .replace(';', '\n')
             .split('\n')
             .map(l => l.trim())
             .filter(line => line.length > 0 && line[0] !== '#')
@@ -38,7 +40,7 @@ function parseArg(arg) {
     const asInt = parseInt(arg)
     if (!isNaN(asInt)) {
         return new ImmediateArgument(asInt)
-    } else if (REGISTERS.includes(arg.toUpperCase())) {
+    } else if (REGISTERS.includes(arg.toUpperCase()) || WORD_REGISTERS.includes(arg.toUpperCase())) {
         return new RegisterArgument(arg.toUpperCase())
     } else if (arg.startsWith("(") && arg.endsWith(")")) {
         const inside = arg.slice(1, -1).toUpperCase()
@@ -65,10 +67,17 @@ class AssemblerOpcodes {
             case "register": {
                 switch (from.kind) {
                     case "immediate": {
-                        const byte1 = 0b00000110 | get3BitRegisterCode(to.register, 2)
-                        const value = from.integer
-        
-                        return [byte1, value]
+                        if (WORD_REGISTERS.includes(to.register)) {
+                            const opcode = 0b00000001 | get2BitRegisterCode(to.register, 2)
+                            const [low, high] = bit16ToBytes(from.integer)
+
+                            return [opcode, low, high]
+                        } else {
+                            const byte1 = 0b00000110 | get3BitRegisterCode(to.register, 2)
+                            const value = from.integer
+            
+                            return [byte1, value]
+                        }
                     }
                     case "register": {
                         if (from.register === "I" && to.register === "A") {
