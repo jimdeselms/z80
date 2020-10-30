@@ -1,4 +1,4 @@
-const { getRegisterFromOpcode, bytesToBit16 } = require('../helpers')
+const { bytesToBit16, bit16ToBytes } = require('../helpers')
 
 class Instructions {
     static halt(state) {
@@ -25,6 +25,17 @@ class Instructions {
         const high = state.memory[state.IP++]
         const address = bytesToBit16(low, high)
         state[to] = state.memory[address]
+    }
+
+    static ldRegisterToImmediateIndirect(state, from, advanceIp) {
+        if (advanceIp) {
+            state.IP++
+        }
+
+        const address = bytesToBit16(state.memory[state.IP++], state.memory[state.IP++])
+        const [low, high] = bit16ToBytes(state[from])
+        state.memory[address] = low
+        state.memory[address+1] = high
     }
     
     static ldInteger16ToIndexRegister(state, to) {
@@ -229,6 +240,9 @@ const OPCODES = {
 
             // LD IX, nn
             0b00100001: { code: state => Instructions.ldWordImmediateToRegister(state, "IX"), cycles: 4 },
+
+            // LD IX, (nn)
+            0b00101010: { code: state => Instructions.ldImmediateIndirectToRegister(state, "IX", true), cycles: 6 },
         }
     },
 
@@ -255,8 +269,11 @@ const OPCODES = {
             // LD (IY+d), n
             0b00110110: { code: state => Instructions.ldImmediateToIndexRegister(state, "IY"), cycles: 5},
 
-            // LD IX, nn
-            0b00100001: { code: state => Instructions.ldWordImmediateToRegister(state, "IY"), cycles: 4 }
+            // LD IY, nn
+            0b00100001: { code: state => Instructions.ldWordImmediateToRegister(state, "IY"), cycles: 4 },
+
+            // LD IY, (nn)
+            0b00101010: { code: state => Instructions.ldImmediateIndirectToRegister(state, "IY", true), cycles: 6 },
         }
     },
 
@@ -306,7 +323,11 @@ const OPCODES = {
     0b00100001: { code: state => Instructions.ldInteger16ToRegister(state, "HL"), cycles: 2},
     0b00110001: { code: state => Instructions.ldInteger16ToRegister(state, "SP"), cycles: 2},
 
+    // LD HL, (dd)
     0b00101010: { code: state => Instructions.ldImmediateIndirectToRegister(state, "HL"), cycles: 5},
+
+    // LD (nn), HL
+    0b00100010: { code: state => Instructions.ldRegisterToImmediateIndirect(state, "HL"), cycles: 5},
 }
 
 module.exports = {

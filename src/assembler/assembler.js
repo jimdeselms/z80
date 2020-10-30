@@ -140,6 +140,8 @@ class AssemblerOpcodes {
                             case "DE": return [0b11101101, 0b01011011, low, high]
                             case "HL": return [0b11101101, 0b01101011, low, high]
                             case "SP": return [0b11101101, 0b01111011, low, high]
+                            case "IX": return [0b11011101, 0b00101010, low, high]
+                            case "IY": return [0b11111101, 0b00101010, low, high]
                         }
                     }
                 }
@@ -181,12 +183,10 @@ class AssemblerOpcodes {
             case "immediateIndirect": {
                 switch (from.kind) {
                     case "register": {
-                        if (from.register !== "A") throw new Error("Expected register A, not " + from.register)
-
-                        return [
-                            0b00110010,
-                            ...bit16ToBytes(to.integer)
-                        ]
+                        switch (from.register) {
+                            case "A": return [0b00110010, ...bit16ToBytes(to.integer)]
+                            case "HL": return [0b00100010, ...bit16ToBytes(to.integer)]
+                        }
                     }
                 }
             }

@@ -1,5 +1,6 @@
 const Assembler = require('./assembler/assembler')
 const Vm = require('./vm/vm')
+const { bit16ToBytes } = require('./helpers')
 
 describe('vm', () => {
     describe('instructions', () => {
@@ -200,8 +201,25 @@ describe('vm', () => {
         })
 
         it ("LD dd, (nn)", () => {
-            const state = runProgram("LD BC, (25)", { memory: { 25: 550 }})
-            expect(state).toMatchObject({ BC: 550 })
+            expect(runProgram("LD BC, (25)", { memory: { 25: 2000 }})).toMatchObject({ BC: 2000 })
+            expect(runProgram("LD DE, (17)", { memory: { 17: 4096 }})).toMatchObject({ DE: 4096 })
+            expect(runProgram("LD HL, (50)", { memory: { 50: 1234 }})).toMatchObject({ HL: 1234 })
+            expect(runProgram("LD SP, (40)", { memory: { 40: 4999 }})).toMatchObject({ SP: 4999 })
+        })
+
+        it ("LD IX, (nn)", () => {
+            expect(runProgram("LD IX, (25)", { memory: { 25: 2000 }})).toMatchObject({ IX: 2000 })
+        })
+
+        it ("LD IY, (nn)", () => {
+            expect(runProgram("LD IY, (25)", { memory: { 25: 2000 }})).toMatchObject({ IY: 2000 })
+        })
+
+        it ("LD (nn), HL", () => {
+            const state = runProgram("LD (25), HL", { state: { HL: 5555 }})
+            const [low, high] = bit16ToBytes(5555)
+            expect(state.memory[25]).toBe(low)
+            expect(state.memory[26]).toBe(high)
         })
 
         it('NOP', () => {
