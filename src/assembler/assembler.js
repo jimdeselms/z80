@@ -39,20 +39,28 @@ function assembleLine(line) {
     return AssemblerOpcodes[parts[0].toLowerCase()](...args)    
 }
 
+function parseIntArg(arg) {
+    if (arg.endsWith("H")) {
+        arg = "0x" + arg.replace("H", "")
+    }
+    return parseInt(arg)
+}
+
+
 function parseArg(arg) {
-    const asInt = parseInt(arg)
+    const asInt = parseIntArg(arg)
     if (!isNaN(asInt)) {
         return new ImmediateArgument(asInt)
     } else if (ALL_REGISTERS.includes(arg.toUpperCase())) {
         return new RegisterArgument(arg.toUpperCase())
     } else if (arg.startsWith("(") && arg.endsWith(")")) {
         const inside = arg.slice(1, -1).toUpperCase()
-        if (!isNaN(parseInt(inside))) {
-            return new ImmediateIndirectArgument(parseInt(inside))
+        if (!isNaN(parseIntArg(inside))) {
+            return new ImmediateIndirectArgument(parseIntArg(inside))
         } else if (inside.indexOf('+') > -1) {
             const [register, offset] = inside.split('+').map(part => part.trim())
             // TODO: Fail if the offset isn't a number, or is out of range.
-            return new RegisterIndirectArgument(register, parseInt(offset))
+            return new RegisterIndirectArgument(register, parseIntArg(offset))
         } else if (inside.indexOf('-') > -1) {
             const [register, offset] = inside.split('+').map(part => part.trim())
             return new RegisterIndirectArgument(register, -offset)
@@ -202,10 +210,21 @@ class AssemblerOpcodes {
                     }
                 }
             }
-
         }
-
         throw new Error("Unkonwn case for ld");
+    }
+
+    static push(from) {
+        switch(from.kind) {
+            case "register": {
+                switch (from.register) {
+                    case "BC": return [0b11000101]
+                    case "DE": return [0b11010101]
+                    case "HL": return [0b11100101]
+                    case "AF": return [0b11110101]
+                }
+            }
+        }
     }
 
     static halt() {

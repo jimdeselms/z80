@@ -50,6 +50,14 @@ class Vm {
                 this.E = 0x00ff & value;
             },
 
+            get AF() {
+                return this.A << 8 | this.F
+            },
+            set AF(value) {
+                this.A = 0x00ff & value >> 8;
+                this.F = 0x00ff & value;
+            },
+
             // initialize any of the registers
             ...(state || {})
         }

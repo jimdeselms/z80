@@ -136,6 +136,20 @@ class Instructions {
         state[to] = state[from]
     }
 
+    static pushRegister16(state, register) {
+        this.pushWord(state, state[register])
+    }
+
+    static pushByte(state, byte) {
+        state.memory[--state.SP] = byte
+    }
+
+    static pushWord(state, word) {
+        const [low, high] = bit16ToBytes(word)
+        this.pushByte(state, high)
+        this.pushByte(state, low)
+    }
+
     static nop() {
     }
 }
@@ -356,6 +370,12 @@ const OPCODES = {
 
     // LD SP, HL
     0b11111001: { code: state => Instructions.ldRegister16ToRegister16(state, "SP", "HL"), cycles: 1},
+
+    // PUSH qq
+    0b11000101: { code: state => Instructions.pushRegister16(state, "BC"), cycles: 3},
+    0b11010101: { code: state => Instructions.pushRegister16(state, "DE"), cycles: 3},
+    0b11100101: { code: state => Instructions.pushRegister16(state, "HL"), cycles: 3},
+    0b11110101: { code: state => Instructions.pushRegister16(state, "AF"), cycles: 3},
 }
 
 module.exports = {

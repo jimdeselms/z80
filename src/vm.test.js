@@ -60,10 +60,10 @@ describe('vm', () => {
         it('LD r, (HL)', () => {
             const state = runProgram("LD A, (HL)", { 
                 state: {HL: 20}, 
-                memory: {20: 123}})
-
-            expect(state).toMatchObject({
-                A: 123
+                memory: {20: 123},
+                expect: {
+                    state: { A: 123 }
+                }
             })
         })
 
@@ -149,10 +149,10 @@ describe('vm', () => {
         })
 
         it ('LD (IY+d), n', () => {
-            const vm = createVm("LD (IY+7), 22")
-            vm.state.IY = 30
-            vm.run()
-            expect(vm.state.memory[37]).toBe(22)
+            runProgram("LD (IY+7), 22", {
+                state: { IY: 30 },
+                expect: { memory: { 37: 22 }}
+            })
         })
 
         it ('LD A, I', () => {
@@ -258,10 +258,10 @@ describe('vm', () => {
         })
 
         it ("LD (nn), IY", () => {
-            const state = runProgram("LD (25), IY", { state: { IY: 5555 }})
+            const state = runProgram("LD (16h), IY", { state: { IY: 5555 }})
             const [low, high] = bit16ToBytes(5555)
-            expect(state.memory[25]).toBe(low)
-            expect(state.memory[26]).toBe(high)
+            expect(state.memory[0x16]).toBe(low)
+            expect(state.memory[0x17]).toBe(high)
         })
 
         it ("LD SP, HL", () => {
@@ -274,6 +274,19 @@ describe('vm', () => {
 
         it ("LD SP, IY", () => {
             expect(runProgram("LD SP, IY", { state: { IY: 2000 }})).toMatchObject({SP: 2000})
+        })
+
+        it ("PUSH BC", () => {
+            runProgram("PUSH BC", {
+                state: { BC: 0x2030, SP: 20 },
+                expect: {
+                    state: { SP: 18 },
+                    memory: {
+                        18: 0x30,
+                        19: 0x20
+                    }
+                }
+            })
         })
 
         it('NOP', () => {
@@ -323,12 +336,24 @@ describe('vm', () => {
 function runProgram(program, opts) {
     const vm = createVm(program, opts)
     vm.run()
+
+    if (opts && opts.expect) {
+        if (opts.expect.state) {
+            expect(vm.state).toMatchObject(opts.expect.state)
+        }
+        if (opts.expect.memory) {
+            for (const [address, value] of Object.entries(opts.expect.memory)) {
+                expect(vm.state.memory[address]).toBe(value)
+            }
+        }
+    }
+
     return vm.state
 }
 
 function createVm(program, opts) {
 
-    opts = opts ?? {}
+    opts = opts || {}
 
     const initialImage = Assembler.assemble(program + "\nhalt")
 
