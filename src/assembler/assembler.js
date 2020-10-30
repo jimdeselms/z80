@@ -186,6 +186,10 @@ class AssemblerOpcodes {
                         switch (from.register) {
                             case "A": return [0b00110010, ...bit16ToBytes(to.integer)]
                             case "HL": return [0b00100010, ...bit16ToBytes(to.integer)]
+                            case "BC": return [0b11101101, 0b01000011, ...bit16ToBytes(to.integer)]
+                            case "DE": return [0b11101101, 0b01010011, ...bit16ToBytes(to.integer)]
+                            case "HL": return [0b11101101, 0b01100011, ...bit16ToBytes(to.integer)]
+                            case "SP": return [0b11101101, 0b01110011, ...bit16ToBytes(to.integer)]
                         }
                     }
                 }

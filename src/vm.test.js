@@ -222,6 +222,34 @@ describe('vm', () => {
             expect(state.memory[26]).toBe(high)
         })
 
+        it ("LD (nn), BC", () => {
+            const state = runProgram("LD (25), BC", { state: { BC: 5555 }})
+            const [low, high] = bit16ToBytes(5555)
+            expect(state.memory[25]).toBe(low)
+            expect(state.memory[26]).toBe(high)
+        })
+
+        it ("LD (nn), DE", () => {
+            const state = runProgram("LD (25), DE", { state: { DE: 5555 }})
+            const [low, high] = bit16ToBytes(5555)
+            expect(state.memory[25]).toBe(low)
+            expect(state.memory[26]).toBe(high)
+        })
+
+        it ("LD (nn), HL", () => {
+            const state = runProgram("LD (25), HL", { state: { HL: 5555 }})
+            const [low, high] = bit16ToBytes(5555)
+            expect(state.memory[25]).toBe(low)
+            expect(state.memory[26]).toBe(high)
+        })
+
+        it ("LD (nn), SP", () => {
+            const state = runProgram("LD (25), SP", { state: { SP: 5555 }})
+            const [low, high] = bit16ToBytes(5555)
+            expect(state.memory[25]).toBe(low)
+            expect(state.memory[26]).toBe(high)
+        })
+
         it('NOP', () => {
             const state = runProgram("NOP")
             // Add one for the final HALT

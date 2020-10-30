@@ -314,6 +314,12 @@ const OPCODES = {
             0b01011011: { code: state => Instructions.ldImmediateIndirectToRegister(state, "DE", true), cycles: 6},
             0b01101011: { code: state => Instructions.ldImmediateIndirectToRegister(state, "HL", true), cycles: 6},
             0b01111011: { code: state => Instructions.ldImmediateIndirectToRegister(state, "SP", true), cycles: 6},
+
+            // LD (nn), dd
+            0b01000011: { code: state => Instructions.ldRegisterToImmediateIndirect(state, "BC", true), cycles: 6},
+            0b01010011: { code: state => Instructions.ldRegisterToImmediateIndirect(state, "DE", true), cycles: 6},
+            0b01100011: { code: state => Instructions.ldRegisterToImmediateIndirect(state, "HL", true), cycles: 6},
+            0b01110011: { code: state => Instructions.ldRegisterToImmediateIndirect(state, "SP", true), cycles: 6},
         }
     },
 
