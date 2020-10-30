@@ -96,6 +96,12 @@ class AssemblerOpcodes {
                             return [0b11101101, 0b01000111]
                         } else if (from.register === "A" && to.register ==="R") {
                             return [0b11101101, 0b01001111]
+                        } else if (from.register === "HL" && to.register === "SP") {
+                            return [0b11111001]
+                        } else if (from.register === "IX" && to.register === "SP") {
+                            return [0b11011101, 0b11111001]
+                        } else if (from.register === "IY" && to.register === "SP") {
+                            return [0b11111101, 0b11111001]
                         } else {
                             const byte = 0b01000000 | get3BitRegisterCode(to.register, 2) | get3BitRegisterCode(from.register, 5)
                             return [byte]
@@ -190,6 +196,8 @@ class AssemblerOpcodes {
                             case "DE": return [0b11101101, 0b01010011, ...bit16ToBytes(to.integer)]
                             case "HL": return [0b11101101, 0b01100011, ...bit16ToBytes(to.integer)]
                             case "SP": return [0b11101101, 0b01110011, ...bit16ToBytes(to.integer)]
+                            case "IX": return [0b11011101, 0b00100010, ...bit16ToBytes(to.integer)]
+                            case "IY": return [0b11111101, 0b00100010, ...bit16ToBytes(to.integer)]
                         }
                     }
                 }

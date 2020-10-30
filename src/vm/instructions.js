@@ -129,6 +129,13 @@ class Instructions {
         state.memory[toAddress] = value
     }
 
+    static ldRegister16ToRegister16(state, to, from, advanceIp) {
+        if (advanceIp) {
+            state.IP++
+        }
+        state[to] = state[from]
+    }
+
     static nop() {
     }
 }
@@ -243,6 +250,12 @@ const OPCODES = {
 
             // LD IX, (nn)
             0b00101010: { code: state => Instructions.ldImmediateIndirectToRegister(state, "IX", true), cycles: 6 },
+
+            // LD (nn), IX
+            0b00100010: { code: state => Instructions.ldRegisterToImmediateIndirect(state, "IX", true), cycles: 6 },
+
+            // LD SP, IX
+            0b11111001: { code: state => Instructions.ldRegister16ToRegister16(state, "SP", "IX", true), cycles: 2}
         }
     },
 
@@ -274,6 +287,12 @@ const OPCODES = {
 
             // LD IY, (nn)
             0b00101010: { code: state => Instructions.ldImmediateIndirectToRegister(state, "IY", true), cycles: 6 },
+
+            // LD (nn), IY
+            0b00100010: { code: state => Instructions.ldRegisterToImmediateIndirect(state, "IY", true), cycles: 6 },
+
+            // LD SP, IY
+            0b11111001: { code: state => Instructions.ldRegister16ToRegister16(state, "SP", "IY", true), cycles: 2}
         }
     },
 
@@ -334,6 +353,9 @@ const OPCODES = {
 
     // LD (nn), HL
     0b00100010: { code: state => Instructions.ldRegisterToImmediateIndirect(state, "HL"), cycles: 5},
+
+    // LD SP, HL
+    0b11111001: { code: state => Instructions.ldRegister16ToRegister16(state, "SP", "HL"), cycles: 1},
 }
 
 module.exports = {

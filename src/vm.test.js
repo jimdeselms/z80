@@ -250,6 +250,32 @@ describe('vm', () => {
             expect(state.memory[26]).toBe(high)
         })
 
+        it ("LD (nn), IX", () => {
+            const state = runProgram("LD (25), IX", { state: { IX: 5555 }})
+            const [low, high] = bit16ToBytes(5555)
+            expect(state.memory[25]).toBe(low)
+            expect(state.memory[26]).toBe(high)
+        })
+
+        it ("LD (nn), IY", () => {
+            const state = runProgram("LD (25), IY", { state: { IY: 5555 }})
+            const [low, high] = bit16ToBytes(5555)
+            expect(state.memory[25]).toBe(low)
+            expect(state.memory[26]).toBe(high)
+        })
+
+        it ("LD SP, HL", () => {
+            expect(runProgram("LD SP, HL", { state: { HL: 1000 }})).toMatchObject({SP: 1000})
+        })
+
+        it ("LD SP, IX", () => {
+            expect(runProgram("LD SP, IX", { state: { IX: 5000 }})).toMatchObject({SP: 5000})
+        })
+
+        it ("LD SP, IY", () => {
+            expect(runProgram("LD SP, IY", { state: { IY: 2000 }})).toMatchObject({SP: 2000})
+        })
+
         it('NOP', () => {
             const state = runProgram("NOP")
             // Add one for the final HALT
