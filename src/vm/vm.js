@@ -72,10 +72,19 @@ class Vm {
             return
         }
 
-        const opcode = this.state.memory[this.state.IP]
-        const inst = OPCODES[opcode]
+        const opcode1 = this.state.memory[this.state.IP]
+
+        let inst = OPCODES[opcode1]
         if (!inst) {
-            throw new Error(`Unknown opcode ${opcode}`)
+            throw new Error(`Unknown opcode ${opcode1}`)
+        }
+
+        if (inst.next) {
+            const opcode2 = this.state.memory[this.state.IP+1] || 0;
+            inst = inst.next[opcode2]
+            if (!inst) {
+                throw new Error(`Unknown opcode ${opcode2} after ${opcode1}`)
+            }
         }
 
         if (this.cyclesToWait === 0) {

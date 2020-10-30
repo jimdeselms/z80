@@ -3,6 +3,9 @@ const { RegisterArgument, RegisterIndirectArgument, ImmediateArgument, Immediate
 
 const REGISTERS = ["A", "B", "C", "D", "E", "H", "L", "I", "R"]
 const WORD_REGISTERS = ["BC", "DE", "HL", "SP"]
+const INDEX_REGISTERS = ["IX", "IY"]
+
+const ALL_REGISTERS = [...REGISTERS, ...WORD_REGISTERS, ...INDEX_REGISTERS]
 
 class Assembler {
     static assemble(code) {
@@ -40,12 +43,12 @@ function parseArg(arg) {
     const asInt = parseInt(arg)
     if (!isNaN(asInt)) {
         return new ImmediateArgument(asInt)
-    } else if (REGISTERS.includes(arg.toUpperCase()) || WORD_REGISTERS.includes(arg.toUpperCase())) {
+    } else if (ALL_REGISTERS.includes(arg.toUpperCase())) {
         return new RegisterArgument(arg.toUpperCase())
     } else if (arg.startsWith("(") && arg.endsWith(")")) {
         const inside = arg.slice(1, -1).toUpperCase()
         if (!isNaN(parseInt(inside))) {
-            return new ImmediateIndirectArgument(asInt)
+            return new ImmediateIndirectArgument(parseInt(inside))
         } else if (inside.indexOf('+') > -1) {
             const [register, offset] = inside.split('+').map(part => part.trim())
             // TODO: Fail if the offset isn't a number, or is out of range.
@@ -72,6 +75,11 @@ class AssemblerOpcodes {
                             const [low, high] = bit16ToBytes(from.integer)
 
                             return [opcode, low, high]
+                        } else if (INDEX_REGISTERS.includes(to.register)) {
+                            const opcode = to.register === "IX" ? 0b11011101 : 0b11111101
+                            const [low, high] = bit16ToBytes(from.integer)
+
+                            return [opcode, 0b00100001, low, high]
                         } else {
                             const byte1 = 0b00000110 | get3BitRegisterCode(to.register, 2)
                             const value = from.integer
@@ -121,6 +129,17 @@ class AssemblerOpcodes {
                                 const register = 0b01000110 | get3BitRegisterCode(to.register, 2)
                                 return [opcode, register, from.offset]
                             }
+                        }
+                    }
+                    case "immediateIndirect": {
+                        const [low, high] = bit16ToBytes(from.integer)
+
+                        switch (to.register) {
+                            case "HL": return [0b00101010, low, high]
+                            case "BC": return [0b11101101, 0b01001011, low, high]
+                            case "DE": return [0b11101101, 0b01011011, low, high]
+                            case "HL": return [0b11101101, 0b01101011, low, high]
+                            case "SP": return [0b11101101, 0b01111011, low, high]
                         }
                     }
                 }

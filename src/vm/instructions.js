@@ -16,6 +16,30 @@ class Instructions {
         state[to] = bytesToBit16(low, high)
     }
 
+    static ldImmediateIndirectToRegister(state, to, advanceIp) {
+        if (advanceIp) {
+            state.IP++
+        }
+
+        const low = state.memory[state.IP++]
+        const high = state.memory[state.IP++]
+        const address = bytesToBit16(low, high)
+        state[to] = state.memory[address]
+    }
+    
+    static ldInteger16ToIndexRegister(state, to) {
+        const next = state.memory[state.IP++]
+        const low = state.memory[state.IP++]
+        const high = state.memory[state.IP++]
+
+        // TODO: What happens if this doesn't match?
+        if (next !== 0b00100001) {
+            state.isHalted = true
+        } else {
+            state[to] = bytesToBit16(low, high)
+        }
+    }
+
     static ldRegisterIndirectToRegister(state, to, from) {
         const address = state[from]
         const value = state.memory[address]
@@ -43,48 +67,43 @@ class Instructions {
         state[to] = state[from]
     }
 
-    static ldToRegisterWithOffset(state, indexReg) {
-        const next = state.memory[state.IP++]
-        if (next === 0b00110110) {
-            // In this case, we're getting an immediate value
-            const offset = state.memory[state.IP++]
-            const value = state.memory[state.IP++]
-
-            state.memory[state[indexReg] + offset] = value
-            return
-        }
-
-        // Otherwise, we're copying from/to a register
-        let otherReg = getRegisterFromOpcode(next, 2)
-        let fromIndexed = true
-        if (!otherReg) {
-            fromIndexed = false
-            otherReg = getRegisterFromOpcode(next, 5)
-        }
-
+    static ldFromIndexRegisterToRegister(state, to, from) {
+        state.IP++
+        
         const offset = state.memory[state.IP++]
-
-        if (fromIndexed) {
-            const value = state.memory[state[indexReg] + offset]
-            state[otherReg] = value
-        } else {
-            const value = state[otherReg]
-            state.memory[state[indexReg] + offset] = value
-        }
+        const value = state.memory[state[from] + offset]
+        state[to] = value
+    }
+    
+    static ldFromRegisterToIndexRegister(state, to, from) {
+        state.IP++
+        
+        const offset = state.memory[state.IP++]
+        const value = state[from]
+        state.memory[state[to] + offset] = value
     }
 
-    static ldFromSpecialRegisterToRegister(state) {
-        const next = state.memory[state.IP++]
+    static ldImmediateToIndexRegister(state, register) {
+        state.IP++
 
-        switch (next) {
-            case 0b01010111: state.A = state.I; break
-            case 0b01011111: state.A = state.R; break
-            case 0b01000111: state.I = state.A; break
-            case 0b01001111: state.R = state.A; break
+        const offset = state.memory[state.IP++]
+        const value = state.memory[state.IP++]
 
-            // TODO: What should the undefined behavior be here? What happens on a real Z80?
-            default: state.isHalted = true; break
-        }
+        state.memory[state[register] + offset] = value
+    }
+
+    static ldWordImmediateToRegister(state, register) {
+        state.IP++
+
+        const low = state.memory[state.IP++]
+        const high = state.memory[state.IP++]
+
+        state[register] = bytesToBit16(low, high)
+    }
+
+    static ldFromSpecialRegisterToRegister(state, to, from) {
+        state.IP++
+        state[to] = state[from]
     }
 
     static ldRegisterToMemory16BitMemoryLocation(state, from) {
@@ -185,15 +204,61 @@ const OPCODES = {
     0b01101100: { code: state => Instructions.ldRegisterToRegister(state, "L", "H"), cycles: 1 },
     0b01101101: { code: state => Instructions.ldRegisterToRegister(state, "L", "L"), cycles: 1 },
 
-    // LD r, (IX+d) AND
-    // LD (IX+d), r AND
-    // LD (IX+d), n
-    0b11011101: { code: state => Instructions.ldToRegisterWithOffset(state, "IX"), cycles: 5 },
+    0b11011101: { 
+        next: {
+            // LD r, (IX+d)
+            0b01111110: { code: state => Instructions.ldFromIndexRegisterToRegister(state, "A", "IX"), cycles: 5 },
+            0b01000110: { code: state => Instructions.ldFromIndexRegisterToRegister(state, "B", "IX"), cycles: 5 },
+            0b01001110: { code: state => Instructions.ldFromIndexRegisterToRegister(state, "C", "IX"), cycles: 5 },
+            0b01010110: { code: state => Instructions.ldFromIndexRegisterToRegister(state, "D", "IX"), cycles: 5 },
+            0b01011110: { code: state => Instructions.ldFromIndexRegisterToRegister(state, "E", "IX"), cycles: 5 },
+            0b01100110: { code: state => Instructions.ldFromIndexRegisterToRegister(state, "H", "IX"), cycles: 5 },
+            0b01101110: { code: state => Instructions.ldFromIndexRegisterToRegister(state, "L", "IX"), cycles: 5 },
 
-    // LD r, (IY+d) AND
-    // LD (IY+d), r
-    // LD (IY+d), n
-    0b11111101: { code: state => Instructions.ldToRegisterWithOffset(state, "IY"), cycles: 5 },
+            // LD (IX+d), r
+            0b01110111: { code: state => Instructions.ldFromRegisterToIndexRegister(state, "IX", "A"), cycles: 5 },
+            0b01110000: { code: state => Instructions.ldFromRegisterToIndexRegister(state, "IX", "B"), cycles: 5 },
+            0b01110001: { code: state => Instructions.ldFromRegisterToIndexRegister(state, "IX", "C"), cycles: 5 },
+            0b01110010: { code: state => Instructions.ldFromRegisterToIndexRegister(state, "IX", "D"), cycles: 5 },
+            0b01110011: { code: state => Instructions.ldFromRegisterToIndexRegister(state, "IX", "E"), cycles: 5 },
+            0b01110100: { code: state => Instructions.ldFromRegisterToIndexRegister(state, "IX", "F"), cycles: 5 },
+            0b01110101: { code: state => Instructions.ldFromRegisterToIndexRegister(state, "IX", "G"), cycles: 5 },
+
+            // LD (IX+d), n
+            0b00110110: { code: state => Instructions.ldImmediateToIndexRegister(state, "IX"), cycles: 5 },
+
+            // LD IX, nn
+            0b00100001: { code: state => Instructions.ldWordImmediateToRegister(state, "IX"), cycles: 4 },
+        }
+    },
+
+    0b11111101: { 
+        next: {
+            // LD r, (IY+d)
+            0b01111110: { code: state => Instructions.ldFromIndexRegisterToRegister(state, "A", "IY"), cycles: 5 },
+            0b01000110: { code: state => Instructions.ldFromIndexRegisterToRegister(state, "B", "IY"), cycles: 5 },
+            0b01001110: { code: state => Instructions.ldFromIndexRegisterToRegister(state, "C", "IY"), cycles: 5 },
+            0b01010110: { code: state => Instructions.ldFromIndexRegisterToRegister(state, "D", "IY"), cycles: 5 },
+            0b01011110: { code: state => Instructions.ldFromIndexRegisterToRegister(state, "E", "IY"), cycles: 5 },
+            0b01100110: { code: state => Instructions.ldFromIndexRegisterToRegister(state, "H", "IY"), cycles: 5 },
+            0b01101110: { code: state => Instructions.ldFromIndexRegisterToRegister(state, "L", "IY"), cycles: 5 },
+
+            // LD (IY+d), r
+            0b01110111: { code: state => Instructions.ldFromRegisterToIndexRegister(state, "IY", "A"), cycles: 5 },
+            0b01110000: { code: state => Instructions.ldFromRegisterToIndexRegister(state, "IY", "B"), cycles: 5 },
+            0b01110001: { code: state => Instructions.ldFromRegisterToIndexRegister(state, "IY", "C"), cycles: 5 },
+            0b01110010: { code: state => Instructions.ldFromRegisterToIndexRegister(state, "IY", "D"), cycles: 5 },
+            0b01110011: { code: state => Instructions.ldFromRegisterToIndexRegister(state, "IY", "E"), cycles: 5 },
+            0b01110100: { code: state => Instructions.ldFromRegisterToIndexRegister(state, "IY", "F"), cycles: 5 },
+            0b01110101: { code: state => Instructions.ldFromRegisterToIndexRegister(state, "IY", "G"), cycles: 5 },
+
+            // LD (IY+d), n
+            0b00110110: { code: state => Instructions.ldImmediateToIndexRegister(state, "IY"), cycles: 5},
+
+            // LD IX, nn
+            0b00100001: { code: state => Instructions.ldWordImmediateToRegister(state, "IY"), cycles: 4 }
+        }
+    },
 
     // LD (HL), r
     0b01110111: { code: state => Instructions.ldRegisterToRegisterIndirect(state, "HL", "A"), cycles: 2},
@@ -216,14 +281,32 @@ const OPCODES = {
     // LD (nn), A
     0b00110010: { code: state => Instructions.ldRegisterToMemory16BitMemoryLocation(state, "A"), cycles: 4},
 
-    // LD A, I
-    0b11101101: { code: state => Instructions.ldFromSpecialRegisterToRegister(state), cycles: 2},
+    0b11101101: { 
+        next: {
+            // LD A, I
+            0b01010111: { code: state => Instructions.ldFromSpecialRegisterToRegister(state, "A", "I"), cycles: 2},
+            // LD A, R
+            0b01011111: { code: state => Instructions.ldFromSpecialRegisterToRegister(state, "A", "R"), cycles: 2},
+            // LD I, A
+            0b01000111: { code: state => Instructions.ldFromSpecialRegisterToRegister(state, "I", "A"), cycles: 2},
+            // LD R, A
+            0b01001111: { code: state => Instructions.ldFromSpecialRegisterToRegister(state, "R", "A"), cycles: 2},
+
+            // LD dd, (nn)
+            0b01001011: { code: state => Instructions.ldImmediateIndirectToRegister(state, "BC", true), cycles: 6},
+            0b01011011: { code: state => Instructions.ldImmediateIndirectToRegister(state, "DE", true), cycles: 6},
+            0b01101011: { code: state => Instructions.ldImmediateIndirectToRegister(state, "HL", true), cycles: 6},
+            0b01111011: { code: state => Instructions.ldImmediateIndirectToRegister(state, "SP", true), cycles: 6},
+        }
+    },
 
     // LD dd, nn
     0b00000001: { code: state => Instructions.ldInteger16ToRegister(state, "BC"), cycles: 2},
     0b00010001: { code: state => Instructions.ldInteger16ToRegister(state, "DE"), cycles: 2},
     0b00100001: { code: state => Instructions.ldInteger16ToRegister(state, "HL"), cycles: 2},
     0b00110001: { code: state => Instructions.ldInteger16ToRegister(state, "SP"), cycles: 2},
+
+    0b00101010: { code: state => Instructions.ldImmediateIndirectToRegister(state, "HL"), cycles: 5},
 }
 
 module.exports = {

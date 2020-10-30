@@ -57,12 +57,11 @@ describe('vm', () => {
         })
 
         it('LD r, (HL)', () => {
-            const vm = createVm("LD A, (HL)")
-            vm.state.HL = 20
-            vm.loadMemory(20, [123])
+            const state = runProgram("LD A, (HL)", { 
+                state: {HL: 20}, 
+                memory: {20: 123}})
 
-            vm.run();
-            expect(vm.state).toMatchObject({
+            expect(state).toMatchObject({
                 A: 123
             })
         })
@@ -112,12 +111,8 @@ describe('vm', () => {
         })
 
         it('LD (IX+2), r', () => {
-            const vm = createVm("LD (IX+2), B")
-            vm.state.B = 22
-            vm.state.IX = 15
-
-            vm.run();
-            expect(vm.state.memory[17]).toBe(22)
+            const state = runProgram("LD (IX+2), B", { state: { B: 22, IX: 15 }})
+            expect(state.memory[17]).toBe(22)
         })
 
         it('LD (IY+5), r', () => {
@@ -160,14 +155,12 @@ describe('vm', () => {
         })
 
         it ('LD A, I', () => {
-            expect(runProgram("LD A, I", { I: 23 })).toMatchObject({ A: 23 })
+            expect(runProgram("LD A, I", { state: { I: 23 }})).toMatchObject({ A: 23 })
         })
 
         it ('LD A, R', () => {
-            const vm = createVm("LD A, R")
-            vm.state.R = 15
-            vm.run()
-            expect(vm.state.A).toBe(15)
+            const state = runProgram("LD A, R", { state: { R: 15 }})
+            expect(state.A).toBe(15)
         })
 
         it ('LD I, A', () => {
@@ -189,6 +182,26 @@ describe('vm', () => {
             expect(runProgram("LD DE, 1234")).toMatchObject({ DE: 1234 })
             expect(runProgram("LD HL, 9999")).toMatchObject({ HL: 9999 })
             expect(runProgram("LD SP, 14233")).toMatchObject({ SP: 14233 })
+        })
+
+        it ("LD IX, nn", () => {
+            expect(runProgram("LD IX, 5000")).toMatchObject({ IX: 5000 })
+        })
+
+        it ("LD IY, nn", () => {
+            expect(runProgram("LD IY, 2000")).toMatchObject({ IY: 2000 })
+        })
+
+        it ("LD HL, (nn)", () => {
+            const vm = createVm("LD HL, (20)")
+            vm.state.memory[20] = 15
+            vm.run()
+            expect(vm.state.memory[20]).toBe(15)
+        })
+
+        it ("LD dd, (nn)", () => {
+            const state = runProgram("LD BC, (25)", { memory: { 25: 550 }})
+            expect(state).toMatchObject({ BC: 550 })
         })
 
         it('NOP', () => {
@@ -235,14 +248,21 @@ describe('vm', () => {
     })
 })
 
-function runProgram(program, state) {
-    const vm = createVm(program, state)
+function runProgram(program, opts) {
+    const vm = createVm(program, opts)
     vm.run()
     return vm.state
 }
 
-function createVm(program, state) {
+function createVm(program, opts) {
+
+    opts = opts ?? {}
 
     const initialImage = Assembler.assemble(program + "\nhalt")
-    return new Vm({initialImage, state})
+
+    for (const [address, value] of Object.entries(opts.memory || {})) {
+        initialImage[address] = value
+    }
+
+    return new Vm({initialImage, state: opts.state})
 }
