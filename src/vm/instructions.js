@@ -27,6 +27,21 @@ class Instructions {
         state[to] = state.memory[address]
     }
 
+    static ldImmediateIndirectToWordRegister(state, to, advanceIp) {
+        if (advanceIp) {
+            state.IP++
+        }
+
+        const low = state.memory[state.IP++]
+        const high = state.memory[state.IP++]
+        const address = bytesToBit16(low, high)
+
+        const lowByte = state.memory[address]
+        const highByte = state.memory[address+1]
+        
+        state[to] = bytesToBit16(lowByte, highByte)
+    }
+
     static ldRegisterToImmediateIndirect(state, from, advanceIp) {
         if (advanceIp) {
             state.IP++
@@ -136,12 +151,25 @@ class Instructions {
         state[to] = state[from]
     }
 
-    static pushRegister16(state, register) {
+    static pushRegister16(state, register, advanceIp) {
+        if (advanceIp) state.IP++
+
         this.pushWord(state, state[register])
+    }
+
+    static popRegister16(state, register, advanceIp) {
+        if (advanceIp) state.IP++
+
+        const low = this.popByte(state)
+        const high = this.popByte(state)
     }
 
     static pushByte(state, byte) {
         state.memory[--state.SP] = byte
+    }
+
+    static popByte(state) {
+        return state.memory[state.SP++]
     }
 
     static pushWord(state, word) {
@@ -263,13 +291,16 @@ const OPCODES = {
             0b00100001: { code: state => Instructions.ldWordImmediateToRegister(state, "IX"), cycles: 4 },
 
             // LD IX, (nn)
-            0b00101010: { code: state => Instructions.ldImmediateIndirectToRegister(state, "IX", true), cycles: 6 },
+            0b00101010: { code: state => Instructions.ldImmediateIndirectToWordRegister(state, "IX", true), cycles: 6 },
 
             // LD (nn), IX
             0b00100010: { code: state => Instructions.ldRegisterToImmediateIndirect(state, "IX", true), cycles: 6 },
 
             // LD SP, IX
-            0b11111001: { code: state => Instructions.ldRegister16ToRegister16(state, "SP", "IX", true), cycles: 2}
+            0b11111001: { code: state => Instructions.ldRegister16ToRegister16(state, "SP", "IX", true), cycles: 2},
+
+            // PUSH IX
+            0b11100101: { code: state => Instructions.pushRegister16(state, "IX", true), cycles: 4 },
         }
     },
 
@@ -300,13 +331,16 @@ const OPCODES = {
             0b00100001: { code: state => Instructions.ldWordImmediateToRegister(state, "IY"), cycles: 4 },
 
             // LD IY, (nn)
-            0b00101010: { code: state => Instructions.ldImmediateIndirectToRegister(state, "IY", true), cycles: 6 },
+            0b00101010: { code: state => Instructions.ldImmediateIndirectToWordRegister(state, "IY", true), cycles: 6 },
 
             // LD (nn), IY
             0b00100010: { code: state => Instructions.ldRegisterToImmediateIndirect(state, "IY", true), cycles: 6 },
 
             // LD SP, IY
-            0b11111001: { code: state => Instructions.ldRegister16ToRegister16(state, "SP", "IY", true), cycles: 2}
+            0b11111001: { code: state => Instructions.ldRegister16ToRegister16(state, "SP", "IY", true), cycles: 2},
+
+            // PUSH IY
+            0b11100101: { code: state => Instructions.pushRegister16(state, "IY", true), cycles: 4 },
         }
     },
 
@@ -343,10 +377,10 @@ const OPCODES = {
             0b01001111: { code: state => Instructions.ldFromSpecialRegisterToRegister(state, "R", "A"), cycles: 2},
 
             // LD dd, (nn)
-            0b01001011: { code: state => Instructions.ldImmediateIndirectToRegister(state, "BC", true), cycles: 6},
-            0b01011011: { code: state => Instructions.ldImmediateIndirectToRegister(state, "DE", true), cycles: 6},
-            0b01101011: { code: state => Instructions.ldImmediateIndirectToRegister(state, "HL", true), cycles: 6},
-            0b01111011: { code: state => Instructions.ldImmediateIndirectToRegister(state, "SP", true), cycles: 6},
+            0b01001011: { code: state => Instructions.ldImmediateIndirectToWordRegister(state, "BC", true), cycles: 6},
+            0b01011011: { code: state => Instructions.ldImmediateIndirectToWordRegister(state, "DE", true), cycles: 6},
+            0b01101011: { code: state => Instructions.ldImmediateIndirectToWordRegister(state, "HL", true), cycles: 6},
+            0b01111011: { code: state => Instructions.ldImmediateIndirectToWordRegister(state, "SP", true), cycles: 6},
 
             // LD (nn), dd
             0b01000011: { code: state => Instructions.ldRegisterToImmediateIndirect(state, "BC", true), cycles: 6},
@@ -363,7 +397,7 @@ const OPCODES = {
     0b00110001: { code: state => Instructions.ldInteger16ToRegister(state, "SP"), cycles: 2},
 
     // LD HL, (dd)
-    0b00101010: { code: state => Instructions.ldImmediateIndirectToRegister(state, "HL"), cycles: 5},
+    0b00101010: { code: state => Instructions.ldImmediateIndirectToWordRegister(state, "HL"), cycles: 5},
 
     // LD (nn), HL
     0b00100010: { code: state => Instructions.ldRegisterToImmediateIndirect(state, "HL"), cycles: 5},

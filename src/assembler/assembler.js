@@ -222,6 +222,8 @@ class AssemblerOpcodes {
                     case "DE": return [0b11010101]
                     case "HL": return [0b11100101]
                     case "AF": return [0b11110101]
+                    case "IX": return [0b11011101, 0b11100101]
+                    case "IY": return [0b11111101, 0b11100101]
                 }
             }
         }
