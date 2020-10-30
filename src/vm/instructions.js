@@ -160,8 +160,9 @@ class Instructions {
     static popRegister16(state, register, advanceIp) {
         if (advanceIp) state.IP++
 
-        const low = this.popByte(state)
-        const high = this.popByte(state)
+        const value = this.popWord(state)
+
+        state[register] = value
     }
 
     static pushByte(state, byte) {
@@ -170,6 +171,13 @@ class Instructions {
 
     static popByte(state) {
         return state.memory[state.SP++]
+    }
+
+    static popWord(state) {
+        const low = this.popByte(state)
+        const high = this.popByte(state)
+
+        return bytesToBit16(low, high)
     }
 
     static pushWord(state, word) {
@@ -410,6 +418,13 @@ const OPCODES = {
     0b11010101: { code: state => Instructions.pushRegister16(state, "DE"), cycles: 3},
     0b11100101: { code: state => Instructions.pushRegister16(state, "HL"), cycles: 3},
     0b11110101: { code: state => Instructions.pushRegister16(state, "AF"), cycles: 3},
+
+    // POP qq
+    0b11000001: { code: state => Instructions.popRegister16(state, "BC"), cycles: 3},
+    0b11010001: { code: state => Instructions.popRegister16(state, "DE"), cycles: 3},
+    0b11100001: { code: state => Instructions.popRegister16(state, "HL"), cycles: 3},
+    0b11110001: { code: state => Instructions.popRegister16(state, "AF"), cycles: 3},
+    
 }
 
 module.exports = {

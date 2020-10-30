@@ -358,8 +358,23 @@ describe('vm', () => {
         })
         
         describe("POP", () => {
-            it ("POP BC", () => {
-                runProgram("")
+            it ("POP rr", () => {
+                runProgram("POP BC", {
+                    setup: { state: { SP: 20 }, memory: { 20: 0x01, 21: 0x02 }},
+                    expect: { state: { BC: 0x0201, SP: 22 }}
+                })
+                runProgram("POP DE", {
+                    setup: { state: { SP: 20 }, memory: { 20: 0x01, 21: 0x02 }},
+                    expect: { state: { DE: 0x0201, SP: 22 }}
+                })
+                runProgram("POP HL", {
+                    setup: { state: { SP: 20 }, memory: { 20: 0x01, 21: 0x02 }},
+                    expect: { state: { HL: 0x0201, SP: 22 }}
+                })
+                runProgram("POP AF", {
+                    setup: { state: { SP: 20 }, memory: { 20: 0x01, 21: 0x02 }},
+                    expect: { state: { AF: 0x0201, SP: 22 }}
+                })
             })
         })
 

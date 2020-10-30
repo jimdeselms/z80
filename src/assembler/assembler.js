@@ -2,7 +2,7 @@ const { get3BitRegisterCode, bit16ToBytes, get2BitRegisterCode } = require('../h
 const { RegisterArgument, RegisterIndirectArgument, ImmediateArgument, ImmediateIndirectArgument } = require("./argument")
 
 const REGISTERS = ["A", "B", "C", "D", "E", "H", "L", "I", "R"]
-const WORD_REGISTERS = ["BC", "DE", "HL", "SP"]
+const WORD_REGISTERS = ["BC", "DE", "HL", "SP", "AF"]
 const INDEX_REGISTERS = ["IX", "IY"]
 
 const ALL_REGISTERS = [...REGISTERS, ...WORD_REGISTERS, ...INDEX_REGISTERS]
@@ -224,6 +224,19 @@ class AssemblerOpcodes {
                     case "AF": return [0b11110101]
                     case "IX": return [0b11011101, 0b11100101]
                     case "IY": return [0b11111101, 0b11100101]
+                }
+            }
+        }
+    }
+
+    static pop(to) {
+        switch (to.kind) {
+            case "register": {
+                switch (to.register) {
+                    case "BC": return [0b11000001]
+                    case "DE": return [0b11010001]
+                    case "HL": return [0b11100001]
+                    case "AF": return [0b11110001]
                 }
             }
         }
