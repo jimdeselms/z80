@@ -376,6 +376,20 @@ describe('vm', () => {
                     expect: { state: { AF: 0x0201, SP: 22 }}
                 })
             })
+
+            it ("POP IX", () => {
+                runProgram("POP IX", {
+                    setup: { state: { SP: 25 }, memory: { 25: 0x15, 26: 0x30 }},
+                    expect: { state: { IX: 0x3015, SP: 27 }}
+                })
+            })
+
+            it ("POP IY", () => {
+                runProgram("POP IY", {
+                    setup: { state: { SP: 25 }, memory: { 25: 0x15, 26: 0x30 }},
+                    expect: { state: { IY: 0x3015, SP: 27 }}
+                })
+            })
         })
 
         it('NOP', () => {
@@ -418,6 +432,80 @@ describe('vm', () => {
 
             vm.step();
             expect(vm.state.A).toBe(3)
+        })
+    })
+
+    describe("ex", () => {
+        it("EX DE, HL", () => {
+            runProgram("EX DE, HL", {
+                setup: {
+                    state: { DE: 1234, HL: 2345 }
+                },
+                expect: {
+                    state: { DE: 2345, HL: 1234 }
+                }
+            })
+        })
+
+        it("EX AF, AF'", () => {
+            runProgram("EX AF, AF'", {
+                setup: {
+                    state: { AF: 9999, "AF'": 2222 }
+                },
+                expect: {
+                    state: { AF: 2222, "AF'": 9999 }
+                }
+            })
+        })
+
+        it ("EX (SP), HL", () => {
+            runProgram("EX (SP), HL", {
+                setup: {
+                    state: { SP: 25, HL: 0x3322 },
+                    memory: { 25: 0x20, 26: 0x40 }
+                },
+                expect: {
+                    state: { SP: 25, HL: 0x4020 },
+                    memory: { 25: 0x22, 26: 0x33 }
+                }
+            })
+        })
+
+        it ("EX (SP), IX", () => {
+            runProgram("EX (SP), IX", {
+                setup: {
+                    state: { SP: 25, IX: 0x3322 },
+                    memory: { 25: 0x20, 26: 0x40 }
+                },
+                expect: {
+                    state: { SP: 25, IX: 0x4020 },
+                    memory: { 25: 0x22, 26: 0x33 }
+                }
+            })
+        })
+
+        it ("EX (SP), IY", () => {
+            runProgram("EX (SP), IY", {
+                setup: {
+                    state: { SP: 25, IY: 0x3322 },
+                    memory: { 25: 0x20, 26: 0x40 }
+                },
+                expect: {
+                    state: { SP: 25, IY: 0x4020 },
+                    memory: { 25: 0x22, 26: 0x33 }
+                }
+            })
+        })
+    })
+
+    it("exx", () => {
+        runProgram("EXX", {
+            setup: {
+                state: { BC: 1000, "BC'": 100, DE: 2000, "DE'": 200, HL: 3000, "HL'": 300 }
+            },
+            expect: {
+                state: { BC: 100, "BC'": 1000, DE: 200, "DE'": 2000, HL: 300, "HL'": 3000 }
+            }
         })
     })
 })

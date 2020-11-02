@@ -2,7 +2,7 @@ const { get3BitRegisterCode, bit16ToBytes, get2BitRegisterCode } = require('../h
 const { RegisterArgument, RegisterIndirectArgument, ImmediateArgument, ImmediateIndirectArgument } = require("./argument")
 
 const REGISTERS = ["A", "B", "C", "D", "E", "H", "L", "I", "R"]
-const WORD_REGISTERS = ["BC", "DE", "HL", "SP", "AF"]
+const WORD_REGISTERS = ["BC", "DE", "HL", "SP", "AF", "AF'", "BC'", "DE'", "HL'"]
 const INDEX_REGISTERS = ["IX", "IY"]
 
 const ALL_REGISTERS = [...REGISTERS, ...WORD_REGISTERS, ...INDEX_REGISTERS]
@@ -237,9 +237,35 @@ class AssemblerOpcodes {
                     case "DE": return [0b11010001]
                     case "HL": return [0b11100001]
                     case "AF": return [0b11110001]
+                    case "IX": return [0b11011101, 0b11100001]
+                    case "IY": return [0b11111101, 0b11100001]
                 }
             }
         }
+    }
+
+    static ex(to, from) {
+        if (to.kind === "register" && from.kind === "register") {
+            if (to.register === "DE" && from.register === "HL") {
+                return [0b11101011]
+            } else if (to.register === "AF" && from.register === "AF'") {
+                return [0b00001000]
+            }
+        } else if (to.kind === "registerIndirect" && from.kind === "register") {
+            if (to.register === "SP" && from.register === "HL") {
+                return [0b11100011]
+            } else if (to.register === "SP" && from.register === "IX") {
+                return [0b11011101, 0b11100011]
+            } else if (to.register === "SP" && from.register === "IY") {
+                return [0b11111101, 0b11100011]
+            }
+
+
+        }
+    }
+
+    static exx() {
+        return [0b11011001]
     }
 
     static halt() {

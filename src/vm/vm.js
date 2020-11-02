@@ -24,6 +24,8 @@ class Vm {
             IP: 0,
             SP: 0,
 
+            "AF'": 0,
+
             isHalted: false,
 
             get HL() {

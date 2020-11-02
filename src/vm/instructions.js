@@ -165,6 +165,32 @@ class Instructions {
         state[register] = value
     }
 
+    static exRegisters(state, to, from) {
+        const swap = state[to]
+        state[to] = state[from]
+        state[from] = swap
+    }
+
+    static exRegisterWithStackIndirect(state, reg, advanceIp) {
+        if (advanceIp) state.IP++
+
+        const [lowReg, highReg] = bit16ToBytes(state[reg])
+        
+        const stackAddr = state.SP
+        const lowStack = state.memory[stackAddr]
+        const highStack = state.memory[stackAddr+1]
+
+        state[reg] = bytesToBit16(lowStack, highStack)
+        state.memory[stackAddr] = lowReg
+        state.memory[stackAddr+1] = highReg
+    }
+
+    static exx(state) {
+        this.exRegisters(state, "BC", "BC'")
+        this.exRegisters(state, "DE", "DE'")
+        this.exRegisters(state, "HL", "HL'")
+    }
+
     static pushByte(state, byte) {
         state.memory[--state.SP] = byte
     }
@@ -309,6 +335,12 @@ const OPCODES = {
 
             // PUSH IX
             0b11100101: { code: state => Instructions.pushRegister16(state, "IX", true), cycles: 4 },
+
+            // POP IX
+            0b11100001: { code: state => Instructions.popRegister16(state, "IX", true), cycles: 4 },
+
+            // EX (SP), IX
+            0b11100011: { code: state => Instructions.exRegisterWithStackIndirect(state, "IX", true), cycles: 6 }
         }
     },
 
@@ -349,6 +381,12 @@ const OPCODES = {
 
             // PUSH IY
             0b11100101: { code: state => Instructions.pushRegister16(state, "IY", true), cycles: 4 },
+
+            // POP IY
+            0b11100001: { code: state => Instructions.popRegister16(state, "IY", true), cycles: 4 },
+
+            // EX (SP), IX
+            0b11100011: { code: state => Instructions.exRegisterWithStackIndirect(state, "IY", true), cycles: 6 }
         }
     },
 
@@ -424,6 +462,18 @@ const OPCODES = {
     0b11010001: { code: state => Instructions.popRegister16(state, "DE"), cycles: 3},
     0b11100001: { code: state => Instructions.popRegister16(state, "HL"), cycles: 3},
     0b11110001: { code: state => Instructions.popRegister16(state, "AF"), cycles: 3},
+
+    // EX DE, HL
+    0b11101011: { code: state => Instructions.exRegisters(state, "DE", "HL"), cycles: 1},
+
+    // EX AF, AF'
+    0b00001000: { code: state => Instructions.exRegisters(state, "AF", "AF'"), cycles: 1},
+
+    // EXX
+    0b11011001: { code: state => Instructions.exx(state), cycles: 1},
+
+    // EX (SP), HL
+    0b11100011: { code: state => Instructions.exRegisterWithStackIndirect(state, "HL"), cycles: 5}
     
 }
 
