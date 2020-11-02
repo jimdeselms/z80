@@ -138,7 +138,7 @@ class Vm {
                 this.state.memory = initialImage
             }
         } else {
-            this.state.memory = new Array(size)
+            this.state.memory = new Array(size).fill(0)
         }
     }
 
@@ -175,6 +175,10 @@ class Vm {
                 inst.code(this.state)
             }
         }
+    }
+
+    stepOneInstruction() {
+
     }
 
     loadMemory(address, memory) {

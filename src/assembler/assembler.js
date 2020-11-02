@@ -279,6 +279,10 @@ class AssemblerOpcodes {
     static ldi() {
         return [ 0b11101101, 0b10100000 ]
     }
+
+    static ldir() {
+        return [ 0b11101101, 0b10110000 ]
+    }
 }
 
 module.exports = Assembler;

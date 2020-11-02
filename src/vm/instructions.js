@@ -193,7 +193,7 @@ class Instructions {
 
     static ldi(state) {
         state.IP++
-        
+
         state.memory[state.DE] = state.memory[state.HL]
         state.DE = state.DE + 1
         state.HL = state.HL + 1
@@ -202,6 +202,14 @@ class Instructions {
         state.HFlag = 0
         state.PVFlag = state.BC !== 0 ? 1 : 0
         state.NFlag = 0
+    }
+
+    static ldir(state) {
+        this.ldi(state)
+
+        if (state.PVFlag) {
+            state.IP -= 2
+        }
     }
 
     static pushByte(state, byte) {
@@ -446,6 +454,12 @@ const OPCODES = {
             0b01010011: { code: state => Instructions.ldRegisterToImmediateIndirect(state, "DE", true), cycles: 6},
             0b01100011: { code: state => Instructions.ldRegisterToImmediateIndirect(state, "HL", true), cycles: 6},
             0b01110011: { code: state => Instructions.ldRegisterToImmediateIndirect(state, "SP", true), cycles: 6},
+
+            // LDI
+            0b10100000: { code: state => Instructions.ldi(state), cycles: 4},
+
+            // LDIR
+            0b10110000: { code: state => Instructions.ldir(state), cycles: 5}
         }
     },
 
@@ -487,13 +501,6 @@ const OPCODES = {
 
     // EX (SP), HL
     0b11100011: { code: state => Instructions.exRegisterWithStackIndirect(state, "HL"), cycles: 5},
-
-    0b11101101: {
-        next: {
-            0b10100000: { code: state => Instructions.ldi(state), cycles: 4}
-        }
-    }
-    
 }
 
 module.exports = {

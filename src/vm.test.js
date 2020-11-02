@@ -535,13 +535,32 @@ describe('vm', () => {
             })
         }) 
     })
+
+    describe("LDIR", () => {
+    it("LDIR", () => {
+        runProgram("LDIR", {
+            setup: {
+                state: { DE: 10, HL: 20, BC: 3, HFlag: 1, NFlag: 1, PVFlag: 1 },
+                memory: { 20: 0x20, 21: 0x21, 22: 0x22, 23: 0x23 },
+            },
+            expect: {
+                state: { DE: 13, HL: 23, BC: 0, HFlag: 0, NFlag: 0, PVFlag: 0 },
+                memory: { 10: 0x20, 11: 0x21, 12: 0x22, 13: 0x00, 20: 0x20, 21: 0x21, 22: 0x22, 23: 0x23 }
+            }
+        })
+    })
+})
 })
 
 function runProgram(program, opts) {
     opts = opts || {}
 
     const vm = createVm(program, opts.setup || {})
-    vm.run()
+    if (opts.step) {
+        vm.step()
+    } else {
+        vm.run()
+    }
 
     if (opts.expect) {
         if (opts.expect.state) {
@@ -565,6 +584,12 @@ function createVm(program, setup) {
 
     for (const [address, value] of Object.entries(setup.memory || {})) {
         initialImage[address] = value
+    }
+
+    for (let i = 0; i < initialImage.length; i++) {
+        if (initialImage[i] === undefined) {
+            initialImage[i] = 0
+        }
     }
 
     return new Vm({initialImage, state: setup.state})
