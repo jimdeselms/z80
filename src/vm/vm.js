@@ -60,6 +60,72 @@ class Vm {
                 this.F = 0x00ff & value;
             },
 
+            get SFlag() {
+                return (this.F & 0b10000000) > 7
+            },
+            set SFlag(value) {
+                if (value) {
+                    this.F |= 0b10000000
+                } else {
+                    this.F &= 0b01111111
+                }
+            },
+
+            get ZFlag() {
+                return (this.F & 0b01000000) > 6
+            },
+            set ZFlag(value) {
+                if (value) {
+                    this.F |= 0b01000000
+                } else {
+                    this.F &= 0b10111111
+                }
+            },
+
+            get HFlag() {
+                return (this.F & 0b00010000) > 4
+            },
+            set HFlag(value) {
+                if (value) {
+                    this.F |= 0b00010000
+                } else {
+                    this.F &= 0b11101111
+                }
+            },
+
+            get PVFlag() {
+                return (this.F & 0b00000100) > 2
+            },
+            set PVFlag(value) {
+                if (value) {
+                    this.F |= 0b00000100
+                } else {
+                    this.F &= 0b11111011
+                }
+            },
+
+            get NFlag() {
+                return (this.F & 0b00000010) > 2
+            },
+            set NFlag(value) {
+                if (value) {
+                    this.F |= 0b00000010
+                } else {
+                    this.F &= 0b11111101
+                }
+            },
+
+            get CFlag() {
+                return this.F & 0b00000001
+            },
+            set CFlag(value) {
+                if (value) {
+                    this.F |= 0b00000001
+                } else {
+                    this.F &= 0b11111110
+                }
+            },
+
             // initialize any of the registers
             ...(state || {})
         }

@@ -508,6 +508,33 @@ describe('vm', () => {
             }
         })
     })
+
+    describe("LDI", () => {
+        it("LDI", () => {
+            runProgram("LDI", {
+                setup: {
+                    state: { DE: 10, HL: 20, BC: 5, HFlag: 1, NFlag: 1, PVFlag: 1 },
+                    memory: { 10: 0x20, 20: 0x30 }
+                },
+                expect: {
+                    state: { DE: 11, HL: 21, BC: 4, HFlag: 0, NFlag: 0, PVFlag: 1 },
+                    memory: { 10: 0x30, 20: 0x30 }
+                }
+            })
+        }) 
+        it("LDI when BC becomes zero", () => {
+            runProgram("LDI", {
+                setup: {
+                    state: { DE: 10, HL: 20, BC: 1, HFlag: 1, NFlag: 1, PVFlag: 1 },
+                    memory: { 10: 0x20, 20: 0x30 }
+                },
+                expect: {
+                    state: { DE: 11, HL: 21, BC: 0, HFlag: 0, NFlag: 0, PVFlag: 0 },
+                    memory: { 10: 0x30, 20: 0x30 }
+                }
+            })
+        }) 
+    })
 })
 
 function runProgram(program, opts) {

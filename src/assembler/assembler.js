@@ -275,6 +275,10 @@ class AssemblerOpcodes {
     static nop() {
         return [ 0b00000000 ];
     }
+
+    static ldi() {
+        return [ 0b11101101, 0b10100000 ]
+    }
 }
 
 module.exports = Assembler;

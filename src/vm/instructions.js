@@ -191,6 +191,19 @@ class Instructions {
         this.exRegisters(state, "HL", "HL'")
     }
 
+    static ldi(state) {
+        state.IP++
+        
+        state.memory[state.DE] = state.memory[state.HL]
+        state.DE = state.DE + 1
+        state.HL = state.HL + 1
+        state.BC = state.BC - 1
+
+        state.HFlag = 0
+        state.PVFlag = state.BC !== 0 ? 1 : 0
+        state.NFlag = 0
+    }
+
     static pushByte(state, byte) {
         state.memory[--state.SP] = byte
     }
@@ -473,7 +486,13 @@ const OPCODES = {
     0b11011001: { code: state => Instructions.exx(state), cycles: 1},
 
     // EX (SP), HL
-    0b11100011: { code: state => Instructions.exRegisterWithStackIndirect(state, "HL"), cycles: 5}
+    0b11100011: { code: state => Instructions.exRegisterWithStackIndirect(state, "HL"), cycles: 5},
+
+    0b11101101: {
+        next: {
+            0b10100000: { code: state => Instructions.ldi(state), cycles: 4}
+        }
+    }
     
 }
 
