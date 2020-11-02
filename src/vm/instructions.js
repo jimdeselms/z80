@@ -283,6 +283,26 @@ class Instructions {
         }
     }
 
+    static addRegister(state, register) {
+        this.addToAccumulator(state, state[register])
+    }
+
+    static addToAccumulator(state, amount) {
+        const newAmount = state.A + amount
+
+        // TODO: Handle overflow, etc.
+        state.A = newAmount
+
+        state.SFlag = newAmount < 0 ? 1 : 0
+        state.ZFlag = newAmount === 0 ? 1 : 0
+        
+        // TODO: what to do with HFlag
+        state.PFFlag = newAmount > 127 || newAmount < -128 ? 1 : 0
+
+        // TODO: I think this is wrong too.
+        state.CFlag = 0
+    }
+
     static pushByte(state, byte) {
         state.memory[--state.SP] = byte
     }
@@ -592,6 +612,15 @@ const OPCODES = {
 
     // EX (SP), HL
     0b11100011: { code: state => Instructions.exRegisterWithStackIndirect(state, "HL"), cycles: 5},
+
+    // ADD A, r
+    0b10000111: { code: state => Instructions.addRegister(state, "A"), cycles: 1},
+    0b10000000: { code: state => Instructions.addRegister(state, "B"), cycles: 1},
+    0b10000001: { code: state => Instructions.addRegister(state, "C"), cycles: 1},
+    0b10000010: { code: state => Instructions.addRegister(state, "D"), cycles: 1},
+    0b10000011: { code: state => Instructions.addRegister(state, "E"), cycles: 1},
+    0b10000100: { code: state => Instructions.addRegister(state, "H"), cycles: 1},
+    0b10000101: { code: state => Instructions.addRegister(state, "L"), cycles: 1},
 }
 
 module.exports = {

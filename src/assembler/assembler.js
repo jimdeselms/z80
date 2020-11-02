@@ -307,6 +307,24 @@ class AssemblerOpcodes {
     static cpdr() {
         return [ 0b11101101, 0b10111001 ]
     }
+
+    static add(to, from) {
+        if (to.kind === "register" && to.register === "A") {
+            switch (from.kind) {
+                case "register": {
+                    switch (from.register) {
+                        case "A": return [0b10000111]
+                        case "B": return [0b10000000]
+                        case "C": return [0b10000001]
+                        case "D": return [0b10000010]
+                        case "E": return [0b10000011]
+                        case "H": return [0b10000100]
+                        case "L": return [0b10000101]
+                    }
+                }
+            }
+        }
+    }
 }
 
 module.exports = Assembler;

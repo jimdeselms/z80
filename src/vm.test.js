@@ -680,6 +680,39 @@ describe('vm', () => {
             })
         })
     })
+    
+    describe("add", () => {
+        it("ADD A, r", () => {
+            runProgram("ADD A, A", {
+                setup: { state: { A: 10 } },
+                expect: { state: { A: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("ADD A, B", {
+                setup: { state: { A: 10, B: 20 } },
+                expect: { state: { A: 30, B: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("ADD A, C", {
+                setup: { state: { A: 10, C: 20 } },
+                expect: { state: { A: 30, C: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("ADD A, D", {
+                setup: { state: { A: 10, D: 20 } },
+                expect: { state: { A: 30, D: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("ADD A, E", {
+                setup: { state: { A: 10, E: 20 } },
+                expect: { state: { A: 30, E: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("ADD A, H", {
+                setup: { state: { A: 10, H: 20 } },
+                expect: { state: { A: 30, H: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("ADD A, L", {
+                setup: { state: { A: 10, L: 20 } },
+                expect: { state: { A: 30, L: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+    })
 })
 
 function runProgram(program, opts) {
