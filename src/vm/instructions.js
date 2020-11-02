@@ -312,7 +312,6 @@ class Instructions {
 
     static subRegisterIndirect(state, register, subCarryBit) {
         const value = state.memory[state[register]]
-
         this.subFromAccumulator(state, value, subCarryBit)
     }
 
@@ -320,7 +319,6 @@ class Instructions {
         state.IP++
         const addr = state[register] + state.memory[state.IP++]
         const value = state.memory[addr]
-
         this.subFromAccumulator(state, value, subCarryBit)
     }
 
@@ -328,10 +326,31 @@ class Instructions {
         const value = state.memory[state.IP++]
         this.subFromAccumulator(state, value, subCarryBit)
     }
+    
+    static andRegister(state, register, addCarryBit) {
+        this.andWithAccumulator(state, state[register], addCarryBit)
+    }
 
-    static addToAccumulator(state, amount, addCarryBit) {
-        const newAmount = state.A + amount + (addCarryBit && state.CFlag ? 1 : 0)
+    static andRegisterIndirect(state, register, addCarryBit) {
+        const value = state.memory[state[register]]
 
+        this.andWithAccumulator(state, value, addCarryBit)
+    }
+
+    static andRegisterIndirectWithOffset(state, register, addCarryBit) {
+        state.IP++
+        const addr = state[register] + state.memory[state.IP++]
+        const value = state.memory[addr]
+
+        this.andWithAccumulator(state, value, addCarryBit)
+    }
+
+    static andImmediate(state, addCarryBit) {
+        const value = state.memory[state.IP++]
+        this.andWithAccumulator(state, value, addCarryBit)
+    }
+
+    static updateAccumulator(state, newAmount) {
         // TODO: Handle overflow, etc.
         state.A = newAmount
 
@@ -345,20 +364,24 @@ class Instructions {
         state.CFlag = 0
     }
 
+    static addToAccumulator(state, amount, addCarryBit) {
+        const newAmount = state.A + amount + (addCarryBit && state.CFlag ? 1 : 0)
+        this.updateAccumulator(state, newAmount)
+    }
+
     static subFromAccumulator(state, amount, subCarryBit) {
         const newAmount = state.A - amount - (subCarryBit && state.CFlag ? 1 : 0)
+        this.updateAccumulator(state, newAmount)
+    }
 
-        // TODO: Handle overflow, etc.
-        state.A = newAmount
+    static andWithAccumulator(state, amount) {
+        const newAmount = state.A & amount
+        this.updateAccumulator(state, newAmount)
+    }
 
-        state.SFlag = newAmount < 0 ? 1 : 0
-        state.ZFlag = newAmount === 0 ? 1 : 0
-        
-        // TODO: what to do with HFlag
-        state.PFFlag = newAmount > 127 || newAmount < -128 ? 1 : 0
-
-        // TODO: I think this is wrong too.
-        state.CFlag = 0
+    static orWithAccumulator(state, amount) {
+        const newAmount = state.A | amount
+        this.updateAccumulator(state, newAmount)
     }
 
     static pushByte(state, byte) {
@@ -523,6 +546,9 @@ const OPCODES = {
 
             // SBC A, (IX + d)
             0b10011110: { code: state => Instructions.subRegisterIndirectWithOffset(state, "IX", true), cycles: 5},
+
+            // AND A, (IX + d)
+            0b10100110: { code: state => Instructions.andRegisterIndirectWithOffset(state, "IX", true), cycles: 5},
         }
     },
 
@@ -581,6 +607,9 @@ const OPCODES = {
 
             // SBC A, (IY + d)
             0b10011110: { code: state => Instructions.subRegisterIndirectWithOffset(state, "IY", true), cycles: 5},
+
+            // AND A, (IY + d)
+            0b10100110: { code: state => Instructions.andRegisterIndirectWithOffset(state, "IY", true), cycles: 5},
         }
     },
 
@@ -749,11 +778,26 @@ const OPCODES = {
     0b10011100: { code: state => Instructions.subRegister(state, "H", true), cycles: 1},
     0b10011101: { code: state => Instructions.subRegister(state, "L", true), cycles: 1},
 
+    // AND A, r
+    0b10101111: { code: state => Instructions.andRegister(state, "A", true), cycles: 1},
+    0b10101000: { code: state => Instructions.andRegister(state, "B", true), cycles: 1},
+    0b10101001: { code: state => Instructions.andRegister(state, "C", true), cycles: 1},
+    0b10101010: { code: state => Instructions.andRegister(state, "D", true), cycles: 1},
+    0b10101011: { code: state => Instructions.andRegister(state, "E", true), cycles: 1},
+    0b10101100: { code: state => Instructions.andRegister(state, "H", true), cycles: 1},
+    0b10101101: { code: state => Instructions.andRegister(state, "L", true), cycles: 1},
+
     // SBC A, n
     0b11011110: { code: state => Instructions.subImmediate(state, true), cycles: 2},
 
+    // AND A, n
+    0b11100110: { code: state => Instructions.andImmediate(state, true), cycles: 2},
+
     // SBC A, (HL)
     0b10011110: { code: state => Instructions.subRegisterIndirect(state, "HL", true), cycles: 2}, 
+
+    // AND A, (HL)
+    0b10100110: { code: state => Instructions.andRegisterIndirect(state, "HL", true), cycles: 2}, 
 }
 
 module.exports = {

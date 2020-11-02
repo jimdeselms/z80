@@ -900,6 +900,7 @@ describe('vm', () => {
             })
         })
     })
+
     describe("sbc", () => {
         it("SBC A, r", () => {
             runProgram("SBC A, A", {
@@ -968,6 +969,78 @@ describe('vm', () => {
             runProgram("SBC A, (IY)", {
                 setup: { state: { A: 55, IY: 25 }, memory: { 25: 50 } },
                 expect: { state: { A: 5, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+    })
+
+    describe("and", () => {
+        it("AND A, r", () => {
+            runProgram("AND A, A", {
+                setup: { state: { A: 10 } },
+                expect: { state: { A: 10, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("AND A, B", {
+                setup: { state: { A: 0xFF, B: 0x01 } },
+                expect: { state: { A: 0x01, B: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("AND A, C", {
+                setup: { state: { A: 0xFF, C: 0x01 } },
+                expect: { state: { A: 0x01, C: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("AND A, D", {
+                setup: { state: { A: 0xFF, D: 0x01 } },
+                expect: { state: { A: 0x01, D: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("AND A, E", {
+                setup: { state: { A: 0xFF, E: 0x01 } },
+                expect: { state: { A: 0x01, E: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("AND A, H", {
+                setup: { state: { A: 0xFF, H: 0x01 } },
+                expect: { state: { A: 0x01, H: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("AND A, L", {
+                setup: { state: { A: 0xFF, L: 0x01 } },
+                expect: { state: { A: 0x01, L: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+
+        it("AND A, n", () => {
+            runProgram("AND A, 0x1F", {
+                setup: { state: { A: 0xF1 } },
+                expect: { state: { A: 0x11, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+
+        it("AND A, (HL)", () => {
+            runProgram("AND A, (HL)", {
+                setup: { state: { A: 0xF1, HL: 15 }, memory: { 15: 0x0F } },
+                expect: { state: { A: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+
+        it("AND A, (IX+2)", () => {
+            runProgram("AND A, (IX+2)", {
+                setup: { state: { A: 0xFF, IX: 25 }, memory: { 27: 0xFF } },
+                expect: { state: { A: 0xFF, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+        it("AND A, (IX)", () => {
+            runProgram("AND A, (IX)", {
+                setup: { state: { A: 0xFF, IX: 25 }, memory: { 25: 0xFF } },
+                expect: { state: { A: 0xFF, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+        it("AND A, (IY+2)", () => {
+            runProgram("AND A, (IY+2)", {
+                setup: { state: { A: 0xFF, IY: 25 }, memory: { 27: 0xFF } },
+                expect: { state: { A: 0xFF, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+        it("AND A, (IY)", () => {
+            runProgram("AND A, (IY)", {
+                setup: { state: { A: 0xFF, IY: 25 }, memory: { 25: 0xFF } },
+                expect: { state: { A: 0xFF, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
     })
