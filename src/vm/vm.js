@@ -61,7 +61,7 @@ class Vm {
             },
 
             get SFlag() {
-                return (this.F & 0b10000000) > 7
+                return (this.F & 0b10000000) >> 7
             },
             set SFlag(value) {
                 if (value) {
@@ -72,7 +72,7 @@ class Vm {
             },
 
             get ZFlag() {
-                return (this.F & 0b01000000) > 6
+                return (this.F & 0b01000000) >> 6
             },
             set ZFlag(value) {
                 if (value) {
@@ -83,7 +83,7 @@ class Vm {
             },
 
             get HFlag() {
-                return (this.F & 0b00010000) > 4
+                return (this.F & 0b00010000) >> 4
             },
             set HFlag(value) {
                 if (value) {
@@ -94,7 +94,7 @@ class Vm {
             },
 
             get PVFlag() {
-                return (this.F & 0b00000100) > 2
+                return (this.F & 0b00000100) >> 2
             },
             set PVFlag(value) {
                 if (value) {
@@ -105,7 +105,7 @@ class Vm {
             },
 
             get NFlag() {
-                return (this.F & 0b00000010) > 2
+                return (this.F & 0b00000010) >> 1
             },
             set NFlag(value) {
                 if (value) {

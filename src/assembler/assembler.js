@@ -283,6 +283,30 @@ class AssemblerOpcodes {
     static ldir() {
         return [ 0b11101101, 0b10110000 ]
     }
+
+    static ldd() {
+        return [ 0b11101101, 0b10101000 ]
+    }
+
+    static lddr() {
+        return [ 0b11101101, 0b10111000 ]
+    }
+
+    static cpi() {
+        return [ 0b11101101, 0b10100001 ]
+    }
+
+    static cpir() {
+        return [ 0b11101101, 0b10110001 ]
+    }
+
+    static cpd() {
+        return [ 0b11101101, 0b10101001 ]
+    }
+
+    static cpdr() {
+        return [ 0b11101101, 0b10111001 ]
+    }
 }
 
 module.exports = Assembler;

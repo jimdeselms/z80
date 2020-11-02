@@ -212,6 +212,77 @@ class Instructions {
         }
     }
 
+    static ldd(state) {
+        state.IP++
+
+        state.memory[state.DE] = state.memory[state.HL]
+        state.DE = state.DE - 1
+        state.HL = state.HL - 1
+        state.BC = state.BC - 1
+
+        state.HFlag = 0
+        state.PVFlag = state.BC !== 0 ? 1 : 0
+        state.NFlag = 0
+    }
+
+    static lddr(state) {
+        this.ldd(state)
+
+        if (state.PVFlag) {
+            state.IP -= 2
+        }
+    }
+
+    static cpi(state) {
+        state.IP++
+
+        const diff = state.A - state.memory[state.HL]
+        state.HL = state.HL + 1
+        state.BC = state.BC - 1
+
+        state.SFlag = diff < 0 ? 1 : 0
+        state.ZFlag = diff === 0 ? 1 : 0
+
+        // TODO: Figure out exactly how the H flag works
+        state.HFlag = 0
+
+        state.PVFlag = state.BC !== 0 ? 1 : 0
+        state.NFlag = 1
+    }
+
+    static cpir(state) {
+        this.cpi(state)
+
+        if (state.PVFlag) {
+            state.IP -= 2
+        }
+    }
+
+    static cpd(state) {
+        state.IP++
+
+        const diff = state.A - state.memory[state.HL]
+        state.HL = state.HL - 1
+        state.BC = state.BC - 1
+
+        state.SFlag = diff < 0 ? 1 : 0
+        state.ZFlag = diff === 0 ? 1 : 0
+
+        // TODO: Figure out exactly how the H flag works
+        state.HFlag = 0
+
+        state.PVFlag = state.BC !== 0 ? 1 : 0
+        state.NFlag = 1
+    }
+
+    static cpdr(state) {
+        this.cpd(state)
+
+        if (state.PVFlag) {
+            state.IP -= 2
+        }
+    }
+
     static pushByte(state, byte) {
         state.memory[--state.SP] = byte
     }
@@ -459,7 +530,27 @@ const OPCODES = {
             0b10100000: { code: state => Instructions.ldi(state), cycles: 4},
 
             // LDIR
-            0b10110000: { code: state => Instructions.ldir(state), cycles: 5}
+            // TODO: It's only 4 cycles if already at 0.
+            0b10110000: { code: state => Instructions.ldir(state), cycles: 5},
+
+            // LDD
+            0b10101000: { code: state => Instructions.ldd(state), cycles: 4},
+
+            // LDDR
+            // TODO: it's only 4 cycles if already at 0.
+            0b10111000: { code: state => Instructions.lddr(state), cycles: 5},
+
+            // CPI
+            0b10100001: { code: state => Instructions.cpi(state), cycles: 4},
+
+            // CPIR
+            0b10110001: { code: state => Instructions.cpir(state), cycles: 4},
+
+            // CPD
+            0b10101001: { code: state => Instructions.cpd(state), cycles: 4},
+
+            // CPDR
+            0b10111001: { code: state => Instructions.cpdr(state), cycles: 4},
         }
     },
 
