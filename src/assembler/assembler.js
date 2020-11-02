@@ -322,6 +322,52 @@ class AssemblerOpcodes {
                         case "L": return [0b10000101]
                     }
                 }
+                case "immediate": {
+                    return [0b11000110, from.integer]
+                }
+                case "registerIndirect": {
+                    switch (from.register) {
+                        case "HL": return [0b10000110]
+                    }
+                }
+                case "registerIndirectWithOffset": {
+                    switch (from.register) {
+                        case "IX": return [0b11011101, 0b10000110, from.offset]
+                        case "IY": return [0b11111101, 0b10000110, from.offset]
+                    }
+                }
+            }
+        }
+    }
+
+    static adc(to, from) {
+        if (to.kind === "register" && to.register === "A") {
+            switch (from.kind) {
+                case "register": {
+                    switch (from.register) {
+                        case "A": return [0b10001111]
+                        case "B": return [0b10001000]
+                        case "C": return [0b10001001]
+                        case "D": return [0b10001010]
+                        case "E": return [0b10001011]
+                        case "H": return [0b10001100]
+                        case "L": return [0b10001101]
+                    }
+                }
+                case "immediate": {
+                    return [0b11001110, from.integer]
+                }
+                case "registerIndirect": {
+                    switch (from.register) {
+                        case "HL": return [0b10001110]
+                    }
+                }
+                case "registerIndirectWithOffset": {
+                    switch (from.register) {
+                        case "IX": return [0b11011101, 0b10001110, from.offset]
+                        case "IY": return [0b11111101, 0b10001110, from.offset]
+                    }
+                }
             }
         }
     }

@@ -712,7 +712,123 @@ describe('vm', () => {
                 expect: { state: { A: 30, L: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
+
+        it("ADD A, n", () => {
+            runProgram("ADD A, 15", {
+                setup: { state: { A: 10 } },
+                expect: { state: { A: 25, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+
+        it("ADD A, (HL)", () => {
+            runProgram("ADD A, (HL)", {
+                setup: { state: { A: 10, HL: 25 }, memory: { 25: 50 } },
+                expect: { state: { A: 60, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+
+        it("ADD A, (IX+2)", () => {
+            runProgram("ADD A, (IX+2)", {
+                setup: { state: { A: 10, IX: 25 }, memory: { 27: 50 } },
+                expect: { state: { A: 60, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+        it("ADD A, (IX)", () => {
+            runProgram("ADD A, (IX)", {
+                setup: { state: { A: 10, IX: 25 }, memory: { 25: 50 } },
+                expect: { state: { A: 60, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+        it("ADD A, (IY+2)", () => {
+            runProgram("ADD A, (IY+2)", {
+                setup: { state: { A: 10, IY: 25 }, memory: { 27: 50 } },
+                expect: { state: { A: 60, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+        it("ADD A, (IY)", () => {
+            runProgram("ADD A, (IY)", {
+                setup: { state: { A: 10, IY: 25 }, memory: { 25: 50 } },
+                expect: { state: { A: 60, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
     })
+
+    describe("adc", () => {
+        it("ADC A, r", () => {
+            runProgram("ADC A, A", {
+                setup: { state: { A: 10, CFlag: 1 } },
+                expect: { state: { A: 21, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("ADC A, B", {
+                setup: { state: { A: 10, B: 20 } },
+                expect: { state: { A: 30, B: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("ADC A, C", {
+                setup: { state: { A: 10, C: 20, CFlag: 1 } },
+                expect: { state: { A: 31, C: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("ADC A, D", {
+                setup: { state: { A: 10, D: 20 } },
+                expect: { state: { A: 30, D: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("ADC A, E", {
+                setup: { state: { A: 10, E: 20 } },
+                expect: { state: { A: 30, E: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("ADC A, H", {
+                setup: { state: { A: 10, H: 20 } },
+                expect: { state: { A: 30, H: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("ADC A, L", {
+                setup: { state: { A: 10, L: 20 } },
+                expect: { state: { A: 30, L: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+
+        it("ADC A, n", () => {
+            runProgram("ADC A, 15", {
+                setup: { state: { A: 10, CFlag: 0 } },
+                expect: { state: { A: 25, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("ADC A, 15", {
+                setup: { state: { A: 10, CFlag: 1 } },
+                expect: { state: { A: 26, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+
+        it("ADC A, (HL)", () => {
+            runProgram("ADC A, (HL)", {
+                setup: { state: { A: 10, HL: 25 }, memory: { 25: 50 } },
+                expect: { state: { A: 60, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+
+        it("ADC A, (IX+2)", () => {
+            runProgram("ADC A, (IX+2)", {
+                setup: { state: { A: 10, IX: 25, CFlag: 1 }, memory: { 27: 50 } },
+                expect: { state: { A: 61, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+        it("ADC A, (IX)", () => {
+            runProgram("ADC A, (IX)", {
+                setup: { state: { A: 10, IX: 25 }, memory: { 25: 50 } },
+                expect: { state: { A: 60, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+        it("ADC A, (IY+2)", () => {
+            runProgram("ADC A, (IY+2)", {
+                setup: { state: { A: 10, IY: 25 }, memory: { 27: 50 } },
+                expect: { state: { A: 60, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+        it("ADC A, (IY)", () => {
+            runProgram("ADC A, (IY)", {
+                setup: { state: { A: 10, IY: 25 }, memory: { 25: 50 } },
+                expect: { state: { A: 60, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+    })
+
 })
 
 function runProgram(program, opts) {

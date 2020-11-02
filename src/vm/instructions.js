@@ -283,12 +283,31 @@ class Instructions {
         }
     }
 
-    static addRegister(state, register) {
-        this.addToAccumulator(state, state[register])
+    static addRegister(state, register, addCarryBit) {
+        this.addToAccumulator(state, state[register], addCarryBit)
     }
 
-    static addToAccumulator(state, amount) {
-        const newAmount = state.A + amount
+    static addRegisterIndirect(state, register, addCarryBit) {
+        const value = state.memory[state[register]]
+
+        this.addToAccumulator(state, value, addCarryBit)
+    }
+
+    static addRegisterIndirectWithOffset(state, register, addCarryBit) {
+        state.IP++
+        const addr = state[register] + state.memory[state.IP++]
+        const value = state.memory[addr]
+
+        this.addToAccumulator(state, value, addCarryBit)
+    }
+
+    static addImmediate(state, addCarryBit) {
+        const value = state.memory[state.IP++]
+        this.addToAccumulator(state, value, addCarryBit)
+    }
+
+    static addToAccumulator(state, amount, addCarryBit) {
+        const newAmount = state.A + amount + (addCarryBit && state.CFlag ? 1 : 0)
 
         // TODO: Handle overflow, etc.
         state.A = newAmount
@@ -452,7 +471,13 @@ const OPCODES = {
             0b11100001: { code: state => Instructions.popRegister16(state, "IX", true), cycles: 4 },
 
             // EX (SP), IX
-            0b11100011: { code: state => Instructions.exRegisterWithStackIndirect(state, "IX", true), cycles: 6 }
+            0b11100011: { code: state => Instructions.exRegisterWithStackIndirect(state, "IX", true), cycles: 6 },
+
+            // ADD A, (IX + d)
+            0b10000110: { code: state => Instructions.addRegisterIndirectWithOffset(state, "IX"), cycles: 5},
+
+            // ADC A, (IX + d)
+            0b10001110: { code: state => Instructions.addRegisterIndirectWithOffset(state, "IX", true), cycles: 5},
         }
     },
 
@@ -498,7 +523,13 @@ const OPCODES = {
             0b11100001: { code: state => Instructions.popRegister16(state, "IY", true), cycles: 4 },
 
             // EX (SP), IX
-            0b11100011: { code: state => Instructions.exRegisterWithStackIndirect(state, "IY", true), cycles: 6 }
+            0b11100011: { code: state => Instructions.exRegisterWithStackIndirect(state, "IY", true), cycles: 6 },
+
+            // ADD A, (IY + d)
+            0b10000110: { code: state => Instructions.addRegisterIndirectWithOffset(state, "IY"), cycles: 5},
+
+            // ADC A, (IY + d)
+            0b10001110: { code: state => Instructions.addRegisterIndirectWithOffset(state, "IY", true), cycles: 5},
         }
     },
 
@@ -621,6 +652,27 @@ const OPCODES = {
     0b10000011: { code: state => Instructions.addRegister(state, "E"), cycles: 1},
     0b10000100: { code: state => Instructions.addRegister(state, "H"), cycles: 1},
     0b10000101: { code: state => Instructions.addRegister(state, "L"), cycles: 1},
+
+    // ADD A, n
+    0b11000110: { code: state => Instructions.addImmediate(state), cycles: 2},
+
+    // ADD A, (HL)
+    0b10000110: { code: state => Instructions.addRegisterIndirect(state, "HL"), cycles: 2}, 
+
+    // ADC A, r
+    0b10001111: { code: state => Instructions.addRegister(state, "A", true), cycles: 1},
+    0b10001000: { code: state => Instructions.addRegister(state, "B", true), cycles: 1},
+    0b10001001: { code: state => Instructions.addRegister(state, "C", true), cycles: 1},
+    0b10001010: { code: state => Instructions.addRegister(state, "D", true), cycles: 1},
+    0b10001011: { code: state => Instructions.addRegister(state, "E", true), cycles: 1},
+    0b10001100: { code: state => Instructions.addRegister(state, "H", true), cycles: 1},
+    0b10001101: { code: state => Instructions.addRegister(state, "L", true), cycles: 1},
+
+    // ADC A, n
+    0b11001110: { code: state => Instructions.addImmediate(state, true), cycles: 2},
+
+    // ADC A, (HL)
+    0b10001110: { code: state => Instructions.addRegisterIndirect(state, "HL", true), cycles: 2}, 
 }
 
 module.exports = {
