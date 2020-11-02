@@ -829,6 +829,148 @@ describe('vm', () => {
         })
     })
 
+    describe("sub", () => {
+        it("SUB A, r", () => {
+            runProgram("SUB A, A", {
+                setup: { state: { A: 10 } },
+                expect: { state: { A: 0, SFlag: 0, ZFlag: 1, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("SUB A, B", {
+                setup: { state: { A: 20, B: 5 } },
+                expect: { state: { A: 15, B: 5, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("SUB A, C", {
+                setup: { state: { A: 30, C: 20 } },
+                expect: { state: { A: 10, C: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("SUB A, D", {
+                setup: { state: { A: 30, D: 20 } },
+                expect: { state: { A: 10, D: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("SUB A, E", {
+                setup: { state: { A: 30, E: 20 } },
+                expect: { state: { A: 10, E: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("SUB A, H", {
+                setup: { state: { A: 30, H: 20 } },
+                expect: { state: { A: 10, H: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("SUB A, L", {
+                setup: { state: { A: 30, L: 20 } },
+                expect: { state: { A: 10, L: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+
+        it("SUB A, n", () => {
+            runProgram("SUB A, 15", {
+                setup: { state: { A: 35 } },
+                expect: { state: { A: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+
+        it("SUB A, (HL)", () => {
+            runProgram("SUB A, (HL)", {
+                setup: { state: { A: 55, HL: 25 }, memory: { 25: 50 } },
+                expect: { state: { A: 5, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+
+        it("SUB A, (IX+2)", () => {
+            runProgram("SUB A, (IX+2)", {
+                setup: { state: { A: 100, IX: 25 }, memory: { 27: 50 } },
+                expect: { state: { A: 50, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+        it("SUB A, (IX)", () => {
+            runProgram("SUB A, (IX)", {
+                setup: { state: { A: 80, IX: 25 }, memory: { 25: 50 } },
+                expect: { state: { A: 30, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+        it("SUB A, (IY+2)", () => {
+            runProgram("SUB A, (IY+2)", {
+                setup: { state: { A: 65, IY: 25 }, memory: { 27: 50 } },
+                expect: { state: { A: 15, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+        it("SUB A, (IY)", () => {
+            runProgram("SUB A, (IY)", {
+                setup: { state: { A: 55, IY: 25 }, memory: { 25: 50 } },
+                expect: { state: { A: 5, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+    })
+    describe("sbc", () => {
+        it("SBC A, r", () => {
+            runProgram("SBC A, A", {
+                setup: { state: { A: 10 } },
+                expect: { state: { A: 0, SFlag: 0, ZFlag: 1, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("SBC A, B", {
+                setup: { state: { A: 20, B: 5 } },
+                expect: { state: { A: 15, B: 5, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("SBC A, C", {
+                setup: { state: { A: 30, C: 20 } },
+                expect: { state: { A: 10, C: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("SBC A, D", {
+                setup: { state: { A: 30, D: 20 } },
+                expect: { state: { A: 10, D: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("SBC A, E", {
+                setup: { state: { A: 30, E: 20 } },
+                expect: { state: { A: 10, E: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("SBC A, H", {
+                setup: { state: { A: 30, H: 20 } },
+                expect: { state: { A: 10, H: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("SBC A, L", {
+                setup: { state: { A: 30, L: 20 } },
+                expect: { state: { A: 10, L: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+
+        it("SBC A, n", () => {
+            runProgram("SBC A, 15", {
+                setup: { state: { A: 35 } },
+                expect: { state: { A: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+
+        it("SBC A, (HL)", () => {
+            runProgram("SBC A, (HL)", {
+                setup: { state: { A: 55, HL: 25 }, memory: { 25: 50 } },
+                expect: { state: { A: 5, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+
+        it("SBC A, (IX+2)", () => {
+            runProgram("SBC A, (IX+2)", {
+                setup: { state: { A: 100, IX: 25 }, memory: { 27: 50 } },
+                expect: { state: { A: 50, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+        it("SBC A, (IX)", () => {
+            runProgram("SBC A, (IX)", {
+                setup: { state: { A: 80, IX: 25 }, memory: { 25: 50 } },
+                expect: { state: { A: 30, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+        it("SBC A, (IY+2)", () => {
+            runProgram("SBC A, (IY+2)", {
+                setup: { state: { A: 65, IY: 25 }, memory: { 27: 50 } },
+                expect: { state: { A: 15, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+        it("SBC A, (IY)", () => {
+            runProgram("SBC A, (IY)", {
+                setup: { state: { A: 55, IY: 25 }, memory: { 25: 50 } },
+                expect: { state: { A: 5, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+    })
 })
 
 function runProgram(program, opts) {

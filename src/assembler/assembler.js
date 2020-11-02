@@ -371,6 +371,70 @@ class AssemblerOpcodes {
             }
         }
     }
+
+    static sub(to, from) {
+        if (to.kind === "register" && to.register === "A") {
+            switch (from.kind) {
+                case "register": {
+                    switch (from.register) {
+                        case "A": return [0b10010111]
+                        case "B": return [0b10010000]
+                        case "C": return [0b10010001]
+                        case "D": return [0b10010010]
+                        case "E": return [0b10010011]
+                        case "H": return [0b10010100]
+                        case "L": return [0b10010101]
+                    }
+                }
+                case "immediate": {
+                    return [0b11010110, from.integer]
+                }
+                case "registerIndirect": {
+                    switch (from.register) {
+                        case "HL": return [0b10010110]
+                    }
+                }
+                case "registerIndirectWithOffset": {
+                    switch (from.register) {
+                        case "IX": return [0b11011101, 0b10010110, from.offset]
+                        case "IY": return [0b11111101, 0b10010110, from.offset]
+                    }
+                }
+            }
+        }
+    }
+
+    static sbc(to, from) {
+        if (to.kind === "register" && to.register === "A") {
+            switch (from.kind) {
+                case "register": {
+                    switch (from.register) {
+                        case "A": return [0b10011111]
+                        case "B": return [0b10011000]
+                        case "C": return [0b10011001]
+                        case "D": return [0b10011010]
+                        case "E": return [0b10011011]
+                        case "H": return [0b10011100]
+                        case "L": return [0b10011101]
+                    }
+                }
+                case "immediate": {
+                    return [0b11011110, from.integer]
+                }
+                case "registerIndirect": {
+                    switch (from.register) {
+                        case "HL": return [0b10011110]
+                    }
+                }
+                case "registerIndirectWithOffset": {
+                    switch (from.register) {
+                        case "IX": return [0b11011101, 0b10011110, from.offset]
+                        case "IY": return [0b11111101, 0b10011110, from.offset]
+                    }
+                }
+            }
+        }
+    }
 }
 
 module.exports = Assembler;
