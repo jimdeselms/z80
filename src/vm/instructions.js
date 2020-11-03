@@ -306,6 +306,11 @@ class Instructions {
         this.addToAccumulator(state, value, addCarryBit)
     }
 
+    static addToAccumulator(state, amount, addCarryBit) {
+        const newAmount = state.A + amount + (addCarryBit && state.CFlag ? 1 : 0)
+        this.updateAccumulator(state, newAmount)
+    }
+
     static subRegister(state, register, subCarryBit) {
         this.subFromAccumulator(state, state[register], subCarryBit)
     }
@@ -327,27 +332,37 @@ class Instructions {
         this.subFromAccumulator(state, value, subCarryBit)
     }
     
-    static andRegister(state, register, addCarryBit) {
-        this.andWithAccumulator(state, state[register], addCarryBit)
+    static subFromAccumulator(state, amount, subCarryBit) {
+        const newAmount = state.A - amount - (subCarryBit && state.CFlag ? 1 : 0)
+        this.updateAccumulator(state, newAmount)
     }
 
-    static andRegisterIndirect(state, register, addCarryBit) {
+    static andRegister(state, register) {
+        this.andWithAccumulator(state, state[register])
+    }
+
+    static andRegisterIndirect(state, register) {
         const value = state.memory[state[register]]
 
-        this.andWithAccumulator(state, value, addCarryBit)
+        this.andWithAccumulator(state, value)
     }
 
-    static andRegisterIndirectWithOffset(state, register, addCarryBit) {
+    static andRegisterIndirectWithOffset(state, register) {
         state.IP++
         const addr = state[register] + state.memory[state.IP++]
         const value = state.memory[addr]
 
-        this.andWithAccumulator(state, value, addCarryBit)
+        this.andWithAccumulator(state, value)
     }
 
-    static andImmediate(state, addCarryBit) {
+    static andImmediate(state) {
         const value = state.memory[state.IP++]
-        this.andWithAccumulator(state, value, addCarryBit)
+        this.andWithAccumulator(state, value)
+    }
+
+    static andWithAccumulator(state, amount) {
+        const newAmount = state.A & amount
+        this.updateAccumulator(state, newAmount)
     }
 
     static updateAccumulator(state, newAmount) {
@@ -364,19 +379,27 @@ class Instructions {
         state.CFlag = 0
     }
 
-    static addToAccumulator(state, amount, addCarryBit) {
-        const newAmount = state.A + amount + (addCarryBit && state.CFlag ? 1 : 0)
-        this.updateAccumulator(state, newAmount)
+    static orRegister(state, register) {
+        this.orWithAccumulator(state, state[register])
     }
 
-    static subFromAccumulator(state, amount, subCarryBit) {
-        const newAmount = state.A - amount - (subCarryBit && state.CFlag ? 1 : 0)
-        this.updateAccumulator(state, newAmount)
+    static orRegisterIndirect(state, register) {
+        const value = state.memory[state[register]]
+
+        this.orWithAccumulator(state, value)
     }
 
-    static andWithAccumulator(state, amount) {
-        const newAmount = state.A & amount
-        this.updateAccumulator(state, newAmount)
+    static orRegisterIndirectWithOffset(state, register) {
+        state.IP++
+        const addr = state[register] + state.memory[state.IP++]
+        const value = state.memory[addr]
+
+        this.orWithAccumulator(state, value)
+    }
+
+    static orImmediate(state) {
+        const value = state.memory[state.IP++]
+        this.orWithAccumulator(state, value)
     }
 
     static orWithAccumulator(state, amount) {
@@ -548,7 +571,10 @@ const OPCODES = {
             0b10011110: { code: state => Instructions.subRegisterIndirectWithOffset(state, "IX", true), cycles: 5},
 
             // AND A, (IX + d)
-            0b10100110: { code: state => Instructions.andRegisterIndirectWithOffset(state, "IX", true), cycles: 5},
+            0b10100110: { code: state => Instructions.andRegisterIndirectWithOffset(state, "IX"), cycles: 5},
+
+            // OR A, (IX + d)
+            0b10110110: { code: state => Instructions.orRegisterIndirectWithOffset(state, "IX"), cycles: 5},
         }
     },
 
@@ -609,7 +635,10 @@ const OPCODES = {
             0b10011110: { code: state => Instructions.subRegisterIndirectWithOffset(state, "IY", true), cycles: 5},
 
             // AND A, (IY + d)
-            0b10100110: { code: state => Instructions.andRegisterIndirectWithOffset(state, "IY", true), cycles: 5},
+            0b10100110: { code: state => Instructions.andRegisterIndirectWithOffset(state, "IY"), cycles: 5},
+
+            // OR A, (IY + d)
+            0b10110110: { code: state => Instructions.orRegisterIndirectWithOffset(state, "IY"), cycles: 5},
         }
     },
 
@@ -779,25 +808,40 @@ const OPCODES = {
     0b10011101: { code: state => Instructions.subRegister(state, "L", true), cycles: 1},
 
     // AND A, r
-    0b10101111: { code: state => Instructions.andRegister(state, "A", true), cycles: 1},
-    0b10101000: { code: state => Instructions.andRegister(state, "B", true), cycles: 1},
-    0b10101001: { code: state => Instructions.andRegister(state, "C", true), cycles: 1},
-    0b10101010: { code: state => Instructions.andRegister(state, "D", true), cycles: 1},
-    0b10101011: { code: state => Instructions.andRegister(state, "E", true), cycles: 1},
-    0b10101100: { code: state => Instructions.andRegister(state, "H", true), cycles: 1},
-    0b10101101: { code: state => Instructions.andRegister(state, "L", true), cycles: 1},
+    0b10101111: { code: state => Instructions.andRegister(state, "A"), cycles: 1},
+    0b10101000: { code: state => Instructions.andRegister(state, "B"), cycles: 1},
+    0b10101001: { code: state => Instructions.andRegister(state, "C"), cycles: 1},
+    0b10101010: { code: state => Instructions.andRegister(state, "D"), cycles: 1},
+    0b10101011: { code: state => Instructions.andRegister(state, "E"), cycles: 1},
+    0b10101100: { code: state => Instructions.andRegister(state, "H"), cycles: 1},
+    0b10101101: { code: state => Instructions.andRegister(state, "L"), cycles: 1},
+
+    // OR A, r
+    0b10110111: { code: state => Instructions.orRegister(state, "A"), cycles: 1},
+    0b10110000: { code: state => Instructions.orRegister(state, "B"), cycles: 1},
+    0b10110001: { code: state => Instructions.orRegister(state, "C"), cycles: 1},
+    0b10110010: { code: state => Instructions.orRegister(state, "D"), cycles: 1},
+    0b10110011: { code: state => Instructions.orRegister(state, "E"), cycles: 1},
+    0b10110100: { code: state => Instructions.orRegister(state, "H"), cycles: 1},
+    0b10110101: { code: state => Instructions.orRegister(state, "L"), cycles: 1},
 
     // SBC A, n
     0b11011110: { code: state => Instructions.subImmediate(state, true), cycles: 2},
 
     // AND A, n
-    0b11100110: { code: state => Instructions.andImmediate(state, true), cycles: 2},
+    0b11100110: { code: state => Instructions.andImmediate(state), cycles: 2},
+
+    // OR A, n
+    0b11110110: { code: state => Instructions.orImmediate(state), cycles: 2},
 
     // SBC A, (HL)
     0b10011110: { code: state => Instructions.subRegisterIndirect(state, "HL", true), cycles: 2}, 
 
     // AND A, (HL)
-    0b10100110: { code: state => Instructions.andRegisterIndirect(state, "HL", true), cycles: 2}, 
+    0b10100110: { code: state => Instructions.andRegisterIndirect(state, "HL"), cycles: 2}, 
+
+    // OR A, (HL)
+    0b10110110: { code: state => Instructions.orRegisterIndirect(state, "HL"), cycles: 2}, 
 }
 
 module.exports = {
