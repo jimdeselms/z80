@@ -1188,6 +1188,78 @@ describe('vm', () => {
             })
         })
     })
+
+    describe("cp", () => {
+        it("CP r", () => {
+            runProgram("CP A", {
+                setup: { state: { A: 25 } },
+                expect: { state: { A: 25, SFlag: 0, ZFlag: 1, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("CP B", {
+                setup: { state: { A: 0xFF, B: 0x01 } },
+                expect: { state: { A: 0xFF, B: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("CP C", {
+                setup: { state: { A: 0xFF, C: 0x01 } },
+                expect: { state: { A: 0xFF, C: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("CP D", {
+                setup: { state: { A: 0xFF, D: 0x01 } },
+                expect: { state: { A: 0xFF, D: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("CP E", {
+                setup: { state: { A: 0xFF, E: 0x01 } },
+                expect: { state: { A: 0xFF, E: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("CP H", {
+                setup: { state: { A: 0xFF, H: 0x01 } },
+                expect: { state: { A: 0xFF, H: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+            runProgram("CP L", {
+                setup: { state: { A: 0xFF, L: 0x01 } },
+                expect: { state: { A: 0xFF, L: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+
+        it("CP n", () => {
+            runProgram("CP 0x1F", {
+                setup: { state: { A: 0x1F } },
+                expect: { state: { A: 0x1F, SFlag: 0, ZFlag: 1, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+
+        it("CP (HL)", () => {
+            runProgram("CP (HL)", {
+                setup: { state: { A: 0x10, HL: 15 }, memory: { 15: 0x0F } },
+                expect: { state: { A: 0x10, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+
+        it("CP (IX+2)", () => {
+            runProgram("CP (IX+2)", {
+                setup: { state: { A: 0xFF, IX: 25 }, memory: { 27: 0xFF } },
+                expect: { state: { A: 0xFF, SFlag: 0, ZFlag: 1, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+        it("CP (IX)", () => {
+            runProgram("CP (IX)", {
+                setup: { state: { A: 0x0F, IX: 25 }, memory: { 25: 0xFF } },
+                expect: { state: { A: 0x0F, SFlag: 1, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+        it("CP (IY+2)", () => {
+            runProgram("CP (IY+2)", {
+                setup: { state: { A: 0xF0, IY: 25 }, memory: { 27: 0x0F } },
+                expect: { state: { A: 0xF0, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+        it("CP (IY)", () => {
+            runProgram("CP (IY)", {
+                setup: { state: { A: 0xF0, IY: 25 }, memory: { 25: 0x0F } },
+                expect: { state: { A: 0xF0, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+    })
 })
 
 function runProgram(program, opts) {

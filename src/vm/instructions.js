@@ -368,7 +368,11 @@ class Instructions {
     static updateAccumulator(state, newAmount) {
         // TODO: Handle overflow, etc.
         state.A = newAmount
+        this.updateFlags(state, newAmount)
+    }
 
+    static updateFlags(state, newAmount) {
+        // TODO: Handle overflow, etc.
         state.SFlag = newAmount < 0 ? 1 : 0
         state.ZFlag = newAmount === 0 ? 1 : 0
         
@@ -433,6 +437,34 @@ class Instructions {
     static xorWithAccumulator(state, amount) {
         const newAmount = state.A ^ amount
         this.updateAccumulator(state, newAmount)
+    }
+
+    static cpRegister(state, register) {
+        this.cpWithAccumulator(state, state[register])
+    }
+
+    static cpRegisterIndirect(state, register) {
+        const value = state.memory[state[register]]
+
+        this.cpWithAccumulator(state, value)
+    }
+
+    static cpRegisterIndirectWithOffset(state, register) {
+        state.IP++
+        const addr = state[register] + state.memory[state.IP++]
+        const value = state.memory[addr]
+
+        this.cpWithAccumulator(state, value)
+    }
+
+    static cpImmediate(state) {
+        const value = state.memory[state.IP++]
+        this.cpWithAccumulator(state, value)
+    }
+
+    static cpWithAccumulator(state, amount) {
+        const newAmount = state.A - amount
+        this.updateFlags(state, newAmount)
     }
 
     static pushByte(state, byte) {
@@ -606,6 +638,9 @@ const OPCODES = {
 
             // XOR A, (IX + d)
             0b10101110: { code: state => Instructions.xorRegisterIndirectWithOffset(state, "IX"), cycles: 5},
+
+            // CP (IX + d)
+            0b10111110: { code: state => Instructions.cpRegisterIndirectWithOffset(state, "IX"), cycles: 5},
         }
     },
 
@@ -673,6 +708,9 @@ const OPCODES = {
 
             // XOR A, (IY + d)
             0b10101110: { code: state => Instructions.xorRegisterIndirectWithOffset(state, "IY"), cycles: 5},
+
+            // CP (IY + d)
+            0b10111110: { code: state => Instructions.cpRegisterIndirectWithOffset(state, "IY"), cycles: 5},
         }
     },
 
@@ -862,7 +900,7 @@ const OPCODES = {
     // AND A, (HL)
     0b10100110: { code: state => Instructions.andRegisterIndirect(state, "HL"), cycles: 2}, 
 
-    // OR A, r
+    // XOR A, r
     0b10101111: { code: state => Instructions.xorRegister(state, "A"), cycles: 1},
     0b10101000: { code: state => Instructions.xorRegister(state, "B"), cycles: 1},
     0b10101001: { code: state => Instructions.xorRegister(state, "C"), cycles: 1},
@@ -871,11 +909,26 @@ const OPCODES = {
     0b10101100: { code: state => Instructions.xorRegister(state, "H"), cycles: 1},
     0b10101101: { code: state => Instructions.xorRegister(state, "L"), cycles: 1},
 
-    // OR A, n
+    // XOR A, n
     0b11101110: { code: state => Instructions.xorImmediate(state), cycles: 2},
 
-    // OR A, (HL)
+    // XOR A, (HL)
     0b10101110: { code: state => Instructions.xorRegisterIndirect(state, "HL"), cycles: 2}, 
+
+    // CP r
+    0b10111111: { code: state => Instructions.cpRegister(state, "A"), cycles: 1},
+    0b10111000: { code: state => Instructions.cpRegister(state, "B"), cycles: 1},
+    0b10111001: { code: state => Instructions.cpRegister(state, "C"), cycles: 1},
+    0b10111010: { code: state => Instructions.cpRegister(state, "D"), cycles: 1},
+    0b10111011: { code: state => Instructions.cpRegister(state, "E"), cycles: 1},
+    0b10111100: { code: state => Instructions.cpRegister(state, "H"), cycles: 1},
+    0b10111101: { code: state => Instructions.cpRegister(state, "L"), cycles: 1},
+
+    // CP n
+    0b11111110: { code: state => Instructions.cpImmediate(state), cycles: 2},
+
+    // CP (HL)
+    0b10111110: { code: state => Instructions.cpRegisterIndirect(state, "HL"), cycles: 2}, 
 }
 
 module.exports = {

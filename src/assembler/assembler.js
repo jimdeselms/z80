@@ -529,6 +529,35 @@ class AssemblerOpcodes {
             }
         }
     }
+    static cp(from) {
+        switch (from.kind) {
+            case "register": {
+                switch (from.register) {
+                    case "A": return [0b10111111]
+                    case "B": return [0b10111000]
+                    case "C": return [0b10111001]
+                    case "D": return [0b10111010]
+                    case "E": return [0b10111011]
+                    case "H": return [0b10111100]
+                    case "L": return [0b10111101]
+                }
+            }
+            case "immediate": {
+                return [0b11111110, from.integer]
+            }
+            case "registerIndirect": {
+                switch (from.register) {
+                    case "HL": return [0b10111110]
+                }
+            }
+            case "registerIndirectWithOffset": {
+                switch (from.register) {
+                    case "IX": return [0b11011101, 0b10111110, from.offset]
+                    case "IY": return [0b11111101, 0b10111110, from.offset]
+                }
+            }
+        }
+    }
 }
 
 module.exports = Assembler;
