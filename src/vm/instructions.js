@@ -407,6 +407,34 @@ class Instructions {
         this.updateAccumulator(state, newAmount)
     }
 
+    static xorRegister(state, register) {
+        this.xorWithAccumulator(state, state[register])
+    }
+
+    static xorRegisterIndirect(state, register) {
+        const value = state.memory[state[register]]
+
+        this.xorWithAccumulator(state, value)
+    }
+
+    static xorRegisterIndirectWithOffset(state, register) {
+        state.IP++
+        const addr = state[register] + state.memory[state.IP++]
+        const value = state.memory[addr]
+
+        this.xorWithAccumulator(state, value)
+    }
+
+    static xorImmediate(state) {
+        const value = state.memory[state.IP++]
+        this.xorWithAccumulator(state, value)
+    }
+
+    static xorWithAccumulator(state, amount) {
+        const newAmount = state.A ^ amount
+        this.updateAccumulator(state, newAmount)
+    }
+
     static pushByte(state, byte) {
         state.memory[--state.SP] = byte
     }
@@ -575,6 +603,9 @@ const OPCODES = {
 
             // OR A, (IX + d)
             0b10110110: { code: state => Instructions.orRegisterIndirectWithOffset(state, "IX"), cycles: 5},
+
+            // XOR A, (IX + d)
+            0b10101110: { code: state => Instructions.xorRegisterIndirectWithOffset(state, "IX"), cycles: 5},
         }
     },
 
@@ -639,6 +670,9 @@ const OPCODES = {
 
             // OR A, (IY + d)
             0b10110110: { code: state => Instructions.orRegisterIndirectWithOffset(state, "IY"), cycles: 5},
+
+            // XOR A, (IY + d)
+            0b10101110: { code: state => Instructions.xorRegisterIndirectWithOffset(state, "IY"), cycles: 5},
         }
     },
 
@@ -816,23 +850,11 @@ const OPCODES = {
     0b10101100: { code: state => Instructions.andRegister(state, "H"), cycles: 1},
     0b10101101: { code: state => Instructions.andRegister(state, "L"), cycles: 1},
 
-    // OR A, r
-    0b10110111: { code: state => Instructions.orRegister(state, "A"), cycles: 1},
-    0b10110000: { code: state => Instructions.orRegister(state, "B"), cycles: 1},
-    0b10110001: { code: state => Instructions.orRegister(state, "C"), cycles: 1},
-    0b10110010: { code: state => Instructions.orRegister(state, "D"), cycles: 1},
-    0b10110011: { code: state => Instructions.orRegister(state, "E"), cycles: 1},
-    0b10110100: { code: state => Instructions.orRegister(state, "H"), cycles: 1},
-    0b10110101: { code: state => Instructions.orRegister(state, "L"), cycles: 1},
-
     // SBC A, n
     0b11011110: { code: state => Instructions.subImmediate(state, true), cycles: 2},
 
     // AND A, n
     0b11100110: { code: state => Instructions.andImmediate(state), cycles: 2},
-
-    // OR A, n
-    0b11110110: { code: state => Instructions.orImmediate(state), cycles: 2},
 
     // SBC A, (HL)
     0b10011110: { code: state => Instructions.subRegisterIndirect(state, "HL", true), cycles: 2}, 
@@ -840,8 +862,20 @@ const OPCODES = {
     // AND A, (HL)
     0b10100110: { code: state => Instructions.andRegisterIndirect(state, "HL"), cycles: 2}, 
 
+    // OR A, r
+    0b10101111: { code: state => Instructions.xorRegister(state, "A"), cycles: 1},
+    0b10101000: { code: state => Instructions.xorRegister(state, "B"), cycles: 1},
+    0b10101001: { code: state => Instructions.xorRegister(state, "C"), cycles: 1},
+    0b10101010: { code: state => Instructions.xorRegister(state, "D"), cycles: 1},
+    0b10101011: { code: state => Instructions.xorRegister(state, "E"), cycles: 1},
+    0b10101100: { code: state => Instructions.xorRegister(state, "H"), cycles: 1},
+    0b10101101: { code: state => Instructions.xorRegister(state, "L"), cycles: 1},
+
+    // OR A, n
+    0b11101110: { code: state => Instructions.xorImmediate(state), cycles: 2},
+
     // OR A, (HL)
-    0b10110110: { code: state => Instructions.orRegisterIndirect(state, "HL"), cycles: 2}, 
+    0b10101110: { code: state => Instructions.xorRegisterIndirect(state, "HL"), cycles: 2}, 
 }
 
 module.exports = {
