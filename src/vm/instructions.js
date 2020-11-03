@@ -487,6 +487,34 @@ class Instructions {
         this.pushByte(state, high)
         this.pushByte(state, low)
     }
+    
+    static addToRegister(state, register, amountToAdd) {
+        state[register] = this.getAddToValue(state, state[register], amountToAdd)
+    }
+
+    static addToRegisterIndirect(state, register, amountToAdd) {
+        const addr = state[register]
+        state.memory[addr] = this.getAddToValue(state, state.memory[addr], amountToAdd)
+    }
+
+    static addToRegisterIndirectWithOffset(state, register, amountToAdd) {
+        state.IP++
+        const offset = state.memory[state.IP++]
+        const addr = state[register] + offset
+
+        state.memory[addr] = this.getAddToValue(state, state.memory[addr], amountToAdd)
+    }
+
+    static getAddToValue(state, value, amountToAdd) {
+        // TODO: This is way too simple.
+        // Need to handle negatives, overflow, etc.
+
+        const newValue = value + amountToAdd
+
+        this.updateFlags(state, newValue)
+
+        return newValue
+    }
 
     static nop() {
     }
@@ -641,6 +669,9 @@ const OPCODES = {
 
             // CP (IX + d)
             0b10111110: { code: state => Instructions.cpRegisterIndirectWithOffset(state, "IX"), cycles: 5},
+
+            // INC (IX + d)
+            0b00110100: { code: state => Instructions.addToRegisterIndirectWithOffset(state, "IX", 1), cycles: 6},
         }
     },
 
@@ -711,6 +742,9 @@ const OPCODES = {
 
             // CP (IY + d)
             0b10111110: { code: state => Instructions.cpRegisterIndirectWithOffset(state, "IY"), cycles: 5},
+
+            // INC (IY + d)
+            0b00110100: { code: state => Instructions.addToRegisterIndirectWithOffset(state, "IY", 1), cycles: 6},
         }
     },
 
@@ -929,6 +963,17 @@ const OPCODES = {
 
     // CP (HL)
     0b10111110: { code: state => Instructions.cpRegisterIndirect(state, "HL"), cycles: 2}, 
+
+    // INC r
+    0b00111100: { code: state => Instructions.addToRegister(state, "A", 1), cycles: 1},
+    0b00000100: { code: state => Instructions.addToRegister(state, "B", 1), cycles: 1},
+    0b00001100: { code: state => Instructions.addToRegister(state, "C", 1), cycles: 1},
+    0b00010100: { code: state => Instructions.addToRegister(state, "D", 1), cycles: 1},
+    0b00011100: { code: state => Instructions.addToRegister(state, "E", 1), cycles: 1},
+    0b00100100: { code: state => Instructions.addToRegister(state, "L", 1), cycles: 1},
+    0b00101100: { code: state => Instructions.addToRegister(state, "H", 1), cycles: 1},
+
+    0b00110100: { code: state => Instructions.addToRegisterIndirect(state, "HL", 1), cycles: 3},
 }
 
 module.exports = {

@@ -1260,6 +1260,39 @@ describe('vm', () => {
             })
         })
     })
+
+    describe("inc", () => {
+        it("INC r", () => {
+            runProgram("INC A", { setup: { state: { A: 25 } }, expect: { state: { A: 26 }} })
+            runProgram("INC B", { setup: { state: { B: 25 } }, expect: { state: { B: 26 }} })
+            runProgram("INC C", { setup: { state: { C: 25 } }, expect: { state: { C: 26 }} })
+            runProgram("INC D", { setup: { state: { D: 25 } }, expect: { state: { D: 26 }} })
+            runProgram("INC E", { setup: { state: { E: 25 } }, expect: { state: { E: 26 }} })
+            runProgram("INC L", { setup: { state: { L: 25 } }, expect: { state: { L: 26 }} })
+            runProgram("INC H", { setup: { state: { H: 25 } }, expect: { state: { H: 26 }} })
+        })
+
+        it("INC (HL)", () => {
+            runProgram("INC (HL)", { 
+                setup: { state: { HL: 25 }, memory: { 25: 15 } }, 
+                expect: { memory: { 25: 16 } }
+            })
+        })
+
+        it("INC (IX+d)", () => {
+            runProgram("INC (IX+1)", { 
+                setup: { state: { IX: 25 }, memory: { 26: 15 } }, 
+                expect: { memory: { 26: 16 } }
+            })
+        })
+
+        it("INC (IY+d)", () => {
+            runProgram("INC (IY+1)", { 
+                setup: { state: { IY: 25 }, memory: { 26: 15 } }, 
+                expect: { memory: { 26: 16 } }
+            })
+        })
+    })
 })
 
 function runProgram(program, opts) {
