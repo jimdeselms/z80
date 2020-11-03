@@ -441,13 +441,13 @@ class AssemblerOpcodes {
             switch (from.kind) {
                 case "register": {
                     switch (from.register) {
-                        case "A": return [0b10101111]
-                        case "B": return [0b10101000]
-                        case "C": return [0b10101001]
-                        case "D": return [0b10101010]
-                        case "E": return [0b10101011]
-                        case "H": return [0b10101100]
-                        case "L": return [0b10101101]
+                        case "A": return [0b10100111]
+                        case "B": return [0b10100000]
+                        case "C": return [0b10100001]
+                        case "D": return [0b10100010]
+                        case "E": return [0b10100011]
+                        case "H": return [0b10100100]
+                        case "L": return [0b10100101]
                     }
                 }
                 case "immediate": {
@@ -568,8 +568,8 @@ class AssemblerOpcodes {
                     case "C": return [ 0b00001100 ]
                     case "D": return [ 0b00010100 ]
                     case "E": return [ 0b00011100 ]
-                    case "L": return [ 0b00100100 ]
-                    case "H": return [ 0b00101100 ]
+                    case "L": return [ 0b00101100 ]
+                    case "H": return [ 0b00100100 ]
                 }
             }
             case "registerIndirect": {
@@ -581,6 +581,33 @@ class AssemblerOpcodes {
                 switch (dest.register) {
                     case "IX": return [0b11011101, 0b00110100, dest.offset]
                     case "IY": return [0b11111101, 0b00110100, dest.offset]
+                }
+            }
+        }
+    }
+
+    static dec(dest) {
+        switch (dest.kind) {
+            case "register": {
+                switch (dest.register) {
+                    case "A": return [ 0b00111101 ]
+                    case "B": return [ 0b00000101 ]
+                    case "C": return [ 0b00001101 ]
+                    case "D": return [ 0b00010101 ]
+                    case "E": return [ 0b00011101 ]
+                    case "L": return [ 0b00101101 ]
+                    case "H": return [ 0b00100101 ]
+                }
+            }
+            case "registerIndirect": {
+                switch (dest.register) {
+                    case "HL": return [ 0b00110101 ]
+                }
+            }
+            case "registerIndirectWithOffset": {
+                switch (dest.register) {
+                    case "IX": return [0b11011101, 0b00110101, dest.offset]
+                    case "IY": return [0b11111101, 0b00110101, dest.offset]
                 }
             }
         }

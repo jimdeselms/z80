@@ -672,6 +672,9 @@ const OPCODES = {
 
             // INC (IX + d)
             0b00110100: { code: state => Instructions.addToRegisterIndirectWithOffset(state, "IX", 1), cycles: 6},
+
+            // DEC (IX + d)
+            0b00110101: { code: state => Instructions.addToRegisterIndirectWithOffset(state, "IX", -1), cycles: 6},
         }
     },
 
@@ -745,6 +748,9 @@ const OPCODES = {
 
             // INC (IY + d)
             0b00110100: { code: state => Instructions.addToRegisterIndirectWithOffset(state, "IY", 1), cycles: 6},
+
+            // DEC (IY + d)
+            0b00110101: { code: state => Instructions.addToRegisterIndirectWithOffset(state, "IY", -1), cycles: 6},
         }
     },
 
@@ -914,13 +920,13 @@ const OPCODES = {
     0b10011101: { code: state => Instructions.subRegister(state, "L", true), cycles: 1},
 
     // AND A, r
-    0b10101111: { code: state => Instructions.andRegister(state, "A"), cycles: 1},
-    0b10101000: { code: state => Instructions.andRegister(state, "B"), cycles: 1},
-    0b10101001: { code: state => Instructions.andRegister(state, "C"), cycles: 1},
-    0b10101010: { code: state => Instructions.andRegister(state, "D"), cycles: 1},
-    0b10101011: { code: state => Instructions.andRegister(state, "E"), cycles: 1},
-    0b10101100: { code: state => Instructions.andRegister(state, "H"), cycles: 1},
-    0b10101101: { code: state => Instructions.andRegister(state, "L"), cycles: 1},
+    0b10100111: { code: state => Instructions.andRegister(state, "A"), cycles: 1},
+    0b10100000: { code: state => Instructions.andRegister(state, "B"), cycles: 1},
+    0b10100001: { code: state => Instructions.andRegister(state, "C"), cycles: 1},
+    0b10100010: { code: state => Instructions.andRegister(state, "D"), cycles: 1},
+    0b10100011: { code: state => Instructions.andRegister(state, "E"), cycles: 1},
+    0b10100100: { code: state => Instructions.andRegister(state, "H"), cycles: 1},
+    0b10100101: { code: state => Instructions.andRegister(state, "L"), cycles: 1},
 
     // SBC A, n
     0b11011110: { code: state => Instructions.subImmediate(state, true), cycles: 2},
@@ -933,6 +939,21 @@ const OPCODES = {
 
     // AND A, (HL)
     0b10100110: { code: state => Instructions.andRegisterIndirect(state, "HL"), cycles: 2}, 
+
+    // OR A, r
+    0b10110111: { code: state => Instructions.orRegister(state, "A"), cycles: 1},
+    0b10110000: { code: state => Instructions.orRegister(state, "B"), cycles: 1},
+    0b10110001: { code: state => Instructions.orRegister(state, "C"), cycles: 1},
+    0b10110010: { code: state => Instructions.orRegister(state, "D"), cycles: 1},
+    0b10110011: { code: state => Instructions.orRegister(state, "E"), cycles: 1},
+    0b10110100: { code: state => Instructions.orRegister(state, "H"), cycles: 1},
+    0b10110101: { code: state => Instructions.orRegister(state, "L"), cycles: 1},
+
+    // OR A, n
+    0b11110110: { code: state => Instructions.orImmediate(state), cycles: 2},
+
+    // OR A, (HL)
+    0b10110110: { code: state => Instructions.orRegisterIndirect(state, "HL"), cycles: 2}, 
 
     // XOR A, r
     0b10101111: { code: state => Instructions.xorRegister(state, "A"), cycles: 1},
@@ -970,10 +991,21 @@ const OPCODES = {
     0b00001100: { code: state => Instructions.addToRegister(state, "C", 1), cycles: 1},
     0b00010100: { code: state => Instructions.addToRegister(state, "D", 1), cycles: 1},
     0b00011100: { code: state => Instructions.addToRegister(state, "E", 1), cycles: 1},
-    0b00100100: { code: state => Instructions.addToRegister(state, "L", 1), cycles: 1},
-    0b00101100: { code: state => Instructions.addToRegister(state, "H", 1), cycles: 1},
+    0b00101100: { code: state => Instructions.addToRegister(state, "L", 1), cycles: 1},
+    0b00100100: { code: state => Instructions.addToRegister(state, "H", 1), cycles: 1},
 
     0b00110100: { code: state => Instructions.addToRegisterIndirect(state, "HL", 1), cycles: 3},
+
+    // DEC r
+    0b00111101: { code: state => Instructions.addToRegister(state, "A", -1), cycles: 1},
+    0b00000101: { code: state => Instructions.addToRegister(state, "B", -1), cycles: 1},
+    0b00001101: { code: state => Instructions.addToRegister(state, "C", -1), cycles: 1},
+    0b00010101: { code: state => Instructions.addToRegister(state, "D", -1), cycles: 1},
+    0b00011101: { code: state => Instructions.addToRegister(state, "E", -1), cycles: 1},
+    0b00101101: { code: state => Instructions.addToRegister(state, "L", -1), cycles: 1},
+    0b00100101: { code: state => Instructions.addToRegister(state, "H", -1), cycles: 1},
+
+    0b00110101: { code: state => Instructions.addToRegisterIndirect(state, "HL", -1), cycles: 3},
 }
 
 module.exports = {

@@ -1293,6 +1293,39 @@ describe('vm', () => {
             })
         })
     })
+
+    describe("dec", () => {
+        it("DEC r", () => {
+            runProgram("DEC A", { setup: { state: { A: 25 } }, expect: { state: { A: 24 }} })
+            runProgram("DEC B", { setup: { state: { B: 25 } }, expect: { state: { B: 24 }} })
+            runProgram("DEC C", { setup: { state: { C: 25 } }, expect: { state: { C: 24 }} })
+            runProgram("DEC D", { setup: { state: { D: 25 } }, expect: { state: { D: 24 }} })
+            runProgram("DEC E", { setup: { state: { E: 25 } }, expect: { state: { E: 24 }} })
+            runProgram("DEC L", { setup: { state: { L: 25 } }, expect: { state: { L: 24 }} })
+            runProgram("DEC H", { setup: { state: { H: 25 } }, expect: { state: { H: 24 }} })
+        })
+
+        it("DEC (HL)", () => {
+            runProgram("DEC (HL)", { 
+                setup: { state: { HL: 25 }, memory: { 25: 15 } }, 
+                expect: { memory: { 25: 14 } }
+            })
+        })
+
+        it("DEC (IX+d)", () => {
+            runProgram("DEC (IX+1)", { 
+                setup: { state: { IX: 25 }, memory: { 26: 15 } }, 
+                expect: { memory: { 26: 14 } }
+            })
+        })
+
+        it("DEC (IY+d)", () => {
+            runProgram("DEC (IY+1)", { 
+                setup: { state: { IY: 25 }, memory: { 26: 15 } }, 
+                expect: { memory: { 26: 14 } }
+            })
+        })
+    })
 })
 
 function runProgram(program, opts) {
