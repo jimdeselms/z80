@@ -1,6 +1,6 @@
-const Assembler = require('./assembler/assembler')
+const config = require('./config')
+const { buildAssembler } = require('./assembler/assemblerBuilder')
 const Vm = require('./vm/vm')
-const { bit16ToBytes } = require('./helpers')
 
 describe('vm', () => {
     describe('instructions', () => {
@@ -1356,7 +1356,9 @@ function createVm(program, setup) {
 
     setup = setup || {}
 
-    const initialImage = Assembler.assemble(program + "\nhalt")
+    const assembler = buildAssembler(config)
+
+    const initialImage = assembler.assemble(program + "\nhalt")
 
     for (const [address, value] of Object.entries(setup.memory || {})) {
         initialImage[address] = value

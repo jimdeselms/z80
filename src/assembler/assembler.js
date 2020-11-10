@@ -8,7 +8,11 @@ const INDEX_REGISTERS = ["IX", "IY"]
 const ALL_REGISTERS = [...REGISTERS, ...WORD_REGISTERS, ...INDEX_REGISTERS]
 
 class Assembler {
-    static assemble(code) {
+    constructor(assemblerConfig) {
+        this.assemblerConfig = assemblerConfig
+    }
+
+    assemble(code) {
         const result = [];
 
         const lines = code
@@ -19,14 +23,24 @@ class Assembler {
             .filter(line => line.length > 0 && line[0] !== '#')
 
         for (const line of lines) {
-            result.push(...assembleLine(line))
+            result.push(...assembleLine(line, this.assemblerConfig))
         }
 
         return result;
     }
 }
 
-function assembleLine(line) {
+const THREE_BIT_REGISTER_CODES = {
+    'A': 0b111,
+    'B': 0b000,
+    'C': 0b001,
+    'D': 0b010,
+    'E': 0b011,
+    'H': 0b100,
+    'L': 0b101,
+}
+
+function assembleLine(line, assemblerConfig) {
     const parts = line
         .replace('\t', ' ')
         .replace(',', '')
@@ -34,9 +48,111 @@ function assembleLine(line) {
         .map(l => l.trim())
         .filter(l => l.length > 0)
 
+    const opcode = parts[0].toUpperCase()
     const args = parts.slice(1).map(parseArg)
 
-    return AssemblerOpcodes[parts[0].toLowerCase()](...args)    
+    const matchingRule = findMatch(opcode, args, assemblerConfig)
+    if (!matchingRule) {
+        throw new Error("Failed to find matching assembly rule")
+    }
+
+    const result = []
+
+    for (const code of matchingRule) {
+        const num = getCodeAsNumber(code, args)
+        result.push(num)
+    }
+    return result
+}
+
+function findMatch(opcode, args, assemblerConfig) {
+    let currNode = assemblerConfig[opcode]
+    if (!currNode) {
+        throw new Error(`Opcode ${opcode} not found`)
+    }
+
+    const matchingNode = currNode.find(rule => argsMatchRule(args, rule))
+    if (matchingNode) {
+        return matchingNode.bits
+    }
+
+    throw new Error("No matching rule found for " + opcode)
+}
+
+function argsMatchRule(args, rule) {
+    if (args.length !== rule.args.length) return false
+
+    for (let i = 0; i < args.length; i++) {
+        if (!args[i].matchesArg(rule.args[i])) {
+            return false
+        }
+    }
+    return true
+}
+
+function getCodeAsNumber(code, args) {
+    let result = parseInt(code
+        .replace(/n/g, "0")
+        .replace(/N/g, "0")
+        .replace(/r/g, "0")
+        .replace(/R/g, "0"), 2)
+
+    if (code === "dddddddd" || code === "nnnnnnnn") {
+        const arg0 = args[0]
+        if (arg0 && (arg0.kind === "immediate" || arg0.kind == "immediateIndirect")) {
+            return arg.integer
+        }
+    }
+
+    if (code === "DDDDDDDD" || code === "NNNNNNNN") {
+        const arg1 = args[1]
+        if (arg1 && (arg1.kind === "immediate" || arg1.kind == "immediateIndirect")) {
+            return arg1.integer
+        }
+    }
+
+    if (stringMatchesPattern(code, "  rrr   ")) {
+        const arg0 = args[0]
+        if (arg0 && arg0.kind === "register") {
+            code = code.replace("rrr", "000")
+            result |= (THREE_BIT_REGISTER_CODES[arg0.register] << 3)
+        }
+    }
+
+    if (stringMatchesPattern(code, "     rrr")) {
+        const arg0 = args[0]
+        if (arg0 && arg0.kind === "register") {
+            code = code.replace("rrr", "000")
+            result |= (THREE_BIT_REGISTER_CODES[arg0.register])
+        }
+    }
+
+    if (stringMatchesPattern(code, "  RRR   ")) {
+        const arg1 = args[1]
+        if (arg1 && arg1.kind === "register") {
+            code = code.replace("RRR", "000")
+            result |= (THREE_BIT_REGISTER_CODES[arg1.register] << 3)
+        }
+    }
+
+    if (stringMatchesPattern(code, "     RRR")) {
+        const arg1 = args[0]
+        if (arg1 && arg1.kind === "register") {
+            code = code.replace("RRR", "000")
+            result |= (THREE_BIT_REGISTER_CODES[arg1.register])
+        }
+    }
+
+    return result
+}
+
+function stringMatchesPattern(string, pattern) {
+    for (let i = 0; i < string.length; i++) {
+        if (pattern[i] !== string[i] && !(pattern[i] == ' ' && (string[i] === '1' || string[i] === '0'))) {
+            return false            
+        }
+    }
+    return true
 }
 
 function parseIntArg(arg) {
@@ -45,7 +161,6 @@ function parseIntArg(arg) {
     }
     return parseInt(arg)
 }
-
 
 function parseArg(arg) {
     const asInt = parseIntArg(arg)

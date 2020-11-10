@@ -3,6 +3,10 @@ class Argument {
         this.kind = kind
     }
 
+    matchesArg(type) {
+        return false
+    }
+
     toString() { return "???" }
 }
 
@@ -11,6 +15,10 @@ class RegisterArgument extends Argument {
         super("register");
 
         this.register = register.toUpperCase();
+    }
+
+    matchesArg(type) {
+        return type === "r" || type === "r'" || type === this.register
     }
 
     toString() { return this.register }
@@ -22,6 +30,12 @@ class RegisterIndirectArgument extends Argument {
 
         this.register = register.toUpperCase()
         this.offset = offset
+    }
+
+    matchesArg(type) {
+        return (type === "(HL)" && this.register === "HL")
+            || (type === "(IX+d)" && this.register === "(IY+d)")
+            || (type === "(IY+D)" && this.register === "(IY+d)")
     }
 
     toString() { 
@@ -42,6 +56,10 @@ class ImmediateArgument extends Argument {
         this.integer = integer
     }
 
+    matchesArg(type) {
+        return type === "n"
+    }
+
     toString() { return this.integer.toString() }
 }
 
@@ -50,6 +68,10 @@ class ImmediateIndirectArgument extends Argument {
         super("immediateIndirect")
 
         this.integer = integer
+    }
+
+    matchesArg(type) {
+        return type === "(n)"
     }
 
     toString() { return `(${this.integer.toString()})` }
