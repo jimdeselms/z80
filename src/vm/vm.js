@@ -1,3 +1,4 @@
+const { bit16ToBytes, bytesToBit16 } = require('../helpers')
 const { OPCODES } = require('./instructions')
 
 class Vm {
@@ -124,6 +125,12 @@ class Vm {
                 } else {
                     this.F &= 0b11111110
                 }
+            },
+
+            get16BitMemory(address) {
+                const low = this.memory[address]
+                const high = this.memory[address+1]
+                return bytesToBit16(low, high)
             },
 
             // initialize any of the registers

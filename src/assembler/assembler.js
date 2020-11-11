@@ -40,6 +40,20 @@ const THREE_BIT_REGISTER_CODES = {
     'L': 0b101,
 }
 
+const TWO_BIT_REGISTER_CODES = {
+    'BC': 0b00,
+    'DE': 0b01,
+    'HL': 0b10,
+    'SP': 0b11,
+}
+
+const TWO_BIT_ALTERNATE_REGISTER_CODES = {
+    'BC': 0b00,
+    'DE': 0b01,
+    'HL': 0b10,
+    'AF': 0b11,
+}
+
 function assembleLine(line, assemblerConfig) {
     const parts = line
         .replace('\t', ' ')
@@ -91,26 +105,74 @@ function argsMatchRule(args, rule) {
 }
 
 function getCodeAsNumber(code, args) {
-    let result = parseInt(code
-        .replace(/n/g, "0")
-        .replace(/N/g, "0")
-        .replace(/r/g, "0")
-        .replace(/R/g, "0"), 2)
+    let result = parseInt(code.replace(/[a-zA-Z]/g, "0"), 2)
 
     if (code === "dddddddd" || code === "nnnnnnnn") {
         const arg0 = args[0]
-        if (arg0 && (arg0.kind === "immediate" || arg0.kind == "immediateIndirect")) {
-            return arg.integer
+        if (arg0) {
+            if (arg0.kind === "immediate" || arg0.kind === "immediateIndirect") {
+                return arg0.integer
+            } else if (arg0.kind === "registerIndirectWithOffset") {
+                return arg0.offset
+            }
         }
     }
 
     if (code === "DDDDDDDD" || code === "NNNNNNNN") {
         const arg1 = args[1]
-        if (arg1 && (arg1.kind === "immediate" || arg1.kind == "immediateIndirect")) {
-            return arg1.integer
+        if (arg1) {
+            if (arg1.kind === "immediate" || arg1.kind === "immediateIndirect") {
+                return arg1.integer
+            } else if (arg1.kind === "registerIndirectWithOffset") {
+                return arg1.offset
+            }
         }
     }
 
+    if (code === "hhhhhhhh") {
+        const arg0 = args[0]
+        if (arg0) {
+            if (arg0.kind === "immediate" || arg0.kind === "immediateIndirect") {
+                return (arg0.integer >> 8) & 0xFF
+            } else if (arg0.kind === "registerIndirectWithOffset") {
+                return (arg0.integer >> 8) & 0xFF
+            }
+        }
+    }
+
+    if (code === "HHHHHHHH") {
+        const arg1 = args[1]
+        if (arg1) {
+            if (arg1.kind === "immediate" || arg1.kind === "immediateIndirect") {
+                return (arg1.integer >> 8) & 0xFF
+            } else if (arg1.kind === "registerIndirectWithOffset") {
+                return (arg1.integer >> 8) & 0xFF
+            }
+        }
+    }
+        
+    if (code === "llllllll") {
+        const arg0 = args[0]
+        if (arg0) {
+            if (arg0.kind === "immediate" || arg0.kind === "immediateIndirect") {
+                return arg0.integer & 0xFF
+            } else if (arg0.kind === "registerIndirectWithOffset") {
+                return arg0.integer & 0xFF
+            }
+        }
+    }
+
+    if (code === "LLLLLLLL") {
+        const arg1 = args[1]
+        if (arg1) {
+            if (arg1.kind === "immediate" || arg1.kind === "immediateIndirect") {
+                return arg1.integer & 0xFF
+            } else if (arg1.kind === "registerIndirectWithOffset") {
+                return arg1.integer & 0xFF
+            }
+        }
+    }
+        
     if (stringMatchesPattern(code, "  rrr   ")) {
         const arg0 = args[0]
         if (arg0 && arg0.kind === "register") {
@@ -136,10 +198,42 @@ function getCodeAsNumber(code, args) {
     }
 
     if (stringMatchesPattern(code, "     RRR")) {
-        const arg1 = args[0]
+        const arg1 = args[1]
         if (arg1 && arg1.kind === "register") {
             code = code.replace("RRR", "000")
             result |= (THREE_BIT_REGISTER_CODES[arg1.register])
+        }
+    }
+
+    if (stringMatchesPattern(code, "  dd    ")) {
+        const arg0 = args[0]
+        if (arg0 && arg0.kind === "register") {
+            code = code.replace("dd", "00")
+            result |= (TWO_BIT_REGISTER_CODES[arg0.register] << 4)
+        }
+    }
+
+    if (stringMatchesPattern(code, "  DD    ")) {
+        const arg1 = args[1]
+        if (arg1 && arg1.kind === "register") {
+            code = code.replace("DD", "00")
+            result |= (TWO_BIT_REGISTER_CODES[arg1.register] << 4)
+        }
+    }
+
+    if (stringMatchesPattern(code, "  qq    ")) {
+        const arg0 = args[0]
+        if (arg0 && arg0.kind === "register") {
+            code = code.replace("qq", "00")
+            result |= (TWO_BIT_ALTERNATE_REGISTER_CODES[arg0.register] << 4)
+        }
+    }
+
+    if (stringMatchesPattern(code, "  QQ    ")) {
+        const arg1 = args[1]
+        if (arg1 && arg1.kind === "register") {
+            code = code.replace("QQ", "00")
+            result |= (TWO_BIT_ALTERNATE_REGISTER_CODES[arg1.register] << 4)
         }
     }
 
@@ -148,7 +242,7 @@ function getCodeAsNumber(code, args) {
 
 function stringMatchesPattern(string, pattern) {
     for (let i = 0; i < string.length; i++) {
-        if (pattern[i] !== string[i] && !(pattern[i] == ' ' && (string[i] === '1' || string[i] === '0'))) {
+        if (pattern[i] !== ' ' && pattern[i] !== string[i]) {
             return false            
         }
     }

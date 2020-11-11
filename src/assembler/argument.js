@@ -1,3 +1,7 @@
+const EIGHT_BIT_REGISTERS=new Set(["A", "B", "C", "D", "E", "H", "L", "F", "I", "R"])
+const SIXTEEN_BIT_DD_REGISTERS = new Set(["HL", "BC", "DE", "SP"])
+const SIXTEEN_BIT_QQ_REGISTERS = new Set(["HL", "BC", "DE", "AF"])
+
 class Argument {
     constructor(kind) {
         this.kind = kind
@@ -18,7 +22,10 @@ class RegisterArgument extends Argument {
     }
 
     matchesArg(type) {
-        return type === "r" || type === "r'" || type === this.register
+        return type === this.register
+            || ((type === "r" || type === "r'") && EIGHT_BIT_REGISTERS.has(this.register))
+            || ((type === "dd" || type === "dd'") && SIXTEEN_BIT_DD_REGISTERS.has(this.register))
+            || ((type === "qq" || type === "qq'") && SIXTEEN_BIT_QQ_REGISTERS.has(this.register))
     }
 
     toString() { return this.register }
@@ -34,8 +41,11 @@ class RegisterIndirectArgument extends Argument {
 
     matchesArg(type) {
         return (type === "(HL)" && this.register === "HL")
-            || (type === "(IX+d)" && this.register === "(IY+d)")
-            || (type === "(IY+D)" && this.register === "(IY+d)")
+            || (type === "(SP)" && this.register === "SP")
+            || (type === "(BC)" && this.register === "BC")
+            || (type === "(DE)" && this.register === "DE")
+            || (type === "(IX+d)" && this.register === "IX")
+            || (type === "(IY+d)" && this.register === "IY")
     }
 
     toString() { 
@@ -57,7 +67,7 @@ class ImmediateArgument extends Argument {
     }
 
     matchesArg(type) {
-        return type === "n"
+        return type === "n" || type === "nn"
     }
 
     toString() { return this.integer.toString() }
@@ -71,7 +81,7 @@ class ImmediateIndirectArgument extends Argument {
     }
 
     matchesArg(type) {
-        return type === "(n)"
+        return type === "(n)" || type === "(nn)"
     }
 
     toString() { return `(${this.integer.toString()})` }

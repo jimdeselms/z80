@@ -218,11 +218,18 @@ describe('vm', () => {
                     setup: { memory: { 30: 0x12, 31: 0x13 }},
                     expect: { state: { BC: 0x1312 }}
                 })
-
-                // expect(runProgram("LD BC, (25)", { memory: { 25: 2000 }})).toMatchObject({ BC: 2000 })
-                // expect(runProgram("LD DE, (17)", { memory: { 17: 4096 }})).toMatchObject({ DE: 4096 })
-                // expect(runProgram("LD HL, (50)", { memory: { 50: 1234 }})).toMatchObject({ HL: 1234 })
-                // expect(runProgram("LD SP, (40)", { memory: { 40: 4999 }})).toMatchObject({ SP: 4999 })
+                runProgram("LD DE, (30)", {
+                    setup: { memory: { 30: 0x12, 31: 0x13 }},
+                    expect: { state: { DE: 0x1312 }}
+                })
+                runProgram("LD HL, (30)", {
+                    setup: { memory: { 30: 0x12, 31: 0x13 }},
+                    expect: { state: { HL: 0x1312 }}
+                })
+                runProgram("LD SP, (30)", {
+                    setup: { memory: { 30: 0x12, 31: 0x13 }},
+                    expect: { state: { SP: 0x1312 }}
+                })
             })
 
             it ("LD IX, (nn)", () => {
@@ -256,13 +263,6 @@ describe('vm', () => {
             it ("LD (nn), DE", () => {
                 runProgram("LD (16h), DE", { 
                     setup: { state: { DE: 0x1234 }},
-                    expect: { memory: { 0x16: 0x34, 0x17: 0x12 }}
-                });
-            })
-
-            it ("LD (nn), HL", () => {
-                runProgram("LD (16h), HL", { 
-                    setup: { state: { HL: 0x1234 }},
                     expect: { memory: { 0x16: 0x34, 0x17: 0x12 }}
                 });
             })
@@ -830,71 +830,71 @@ describe('vm', () => {
     })
 
     describe("sub", () => {
-        it("SUB A, r", () => {
-            runProgram("SUB A, A", {
+        it("SUB r", () => {
+            runProgram("SUB A", {
                 setup: { state: { A: 10 } },
                 expect: { state: { A: 0, SFlag: 0, ZFlag: 1, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("SUB A, B", {
+            runProgram("SUB B", {
                 setup: { state: { A: 20, B: 5 } },
                 expect: { state: { A: 15, B: 5, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("SUB A, C", {
+            runProgram("SUB C", {
                 setup: { state: { A: 30, C: 20 } },
                 expect: { state: { A: 10, C: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("SUB A, D", {
+            runProgram("SUB D", {
                 setup: { state: { A: 30, D: 20 } },
                 expect: { state: { A: 10, D: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("SUB A, E", {
+            runProgram("SUB E", {
                 setup: { state: { A: 30, E: 20 } },
                 expect: { state: { A: 10, E: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("SUB A, H", {
+            runProgram("SUB H", {
                 setup: { state: { A: 30, H: 20 } },
                 expect: { state: { A: 10, H: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("SUB A, L", {
+            runProgram("SUB L", {
                 setup: { state: { A: 30, L: 20 } },
                 expect: { state: { A: 10, L: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
 
-        it("SUB A, n", () => {
-            runProgram("SUB A, 15", {
+        it("SUB n", () => {
+            runProgram("SUB 15", {
                 setup: { state: { A: 35 } },
                 expect: { state: { A: 20, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
 
-        it("SUB A, (HL)", () => {
-            runProgram("SUB A, (HL)", {
+        it("SUB (HL)", () => {
+            runProgram("SUB (HL)", {
                 setup: { state: { A: 55, HL: 25 }, memory: { 25: 50 } },
                 expect: { state: { A: 5, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
 
-        it("SUB A, (IX+2)", () => {
-            runProgram("SUB A, (IX+2)", {
+        it("SUB (IX+2)", () => {
+            runProgram("SUB (IX+2)", {
                 setup: { state: { A: 100, IX: 25 }, memory: { 27: 50 } },
                 expect: { state: { A: 50, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
-        it("SUB A, (IX)", () => {
-            runProgram("SUB A, (IX)", {
+        it("SUB (IX)", () => {
+            runProgram("SUB (IX)", {
                 setup: { state: { A: 80, IX: 25 }, memory: { 25: 50 } },
                 expect: { state: { A: 30, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
-        it("SUB A, (IY+2)", () => {
-            runProgram("SUB A, (IY+2)", {
+        it("SUB (IY+2)", () => {
+            runProgram("SUB (IY+2)", {
                 setup: { state: { A: 65, IY: 25 }, memory: { 27: 50 } },
                 expect: { state: { A: 15, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
-        it("SUB A, (IY)", () => {
-            runProgram("SUB A, (IY)", {
+        it("SUB (IY)", () => {
+            runProgram("SUB (IY)", {
                 setup: { state: { A: 55, IY: 25 }, memory: { 25: 50 } },
                 expect: { state: { A: 5, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
@@ -974,71 +974,71 @@ describe('vm', () => {
     })
 
     describe("and", () => {
-        it("AND A, r", () => {
-            runProgram("AND A, A", {
+        it("AND r", () => {
+            runProgram("AND A", {
                 setup: { state: { A: 10 } },
                 expect: { state: { A: 10, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("AND A, B", {
+            runProgram("AND B", {
                 setup: { state: { A: 0xFF, B: 0x01 } },
                 expect: { state: { A: 0x01, B: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("AND A, C", {
+            runProgram("AND C", {
                 setup: { state: { A: 0xFF, C: 0x01 } },
                 expect: { state: { A: 0x01, C: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("AND A, D", {
+            runProgram("AND D", {
                 setup: { state: { A: 0xFF, D: 0x01 } },
                 expect: { state: { A: 0x01, D: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("AND A, E", {
+            runProgram("AND E", {
                 setup: { state: { A: 0xFF, E: 0x01 } },
                 expect: { state: { A: 0x01, E: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("AND A, H", {
+            runProgram("AND H", {
                 setup: { state: { A: 0xFF, H: 0x01 } },
                 expect: { state: { A: 0x01, H: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("AND A, L", {
+            runProgram("AND L", {
                 setup: { state: { A: 0xFF, L: 0x01 } },
                 expect: { state: { A: 0x01, L: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
 
-        it("AND A, n", () => {
-            runProgram("AND A, 0x1F", {
+        it("AND n", () => {
+            runProgram("AND 0x1F", {
                 setup: { state: { A: 0xF1 } },
                 expect: { state: { A: 0x11, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
 
-        it("AND A, (HL)", () => {
-            runProgram("AND A, (HL)", {
+        it("AND (HL)", () => {
+            runProgram("AND (HL)", {
                 setup: { state: { A: 0xF1, HL: 15 }, memory: { 15: 0x0F } },
                 expect: { state: { A: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
 
-        it("AND A, (IX+2)", () => {
-            runProgram("AND A, (IX+2)", {
+        it("AND (IX+2)", () => {
+            runProgram("AND (IX+2)", {
                 setup: { state: { A: 0xFF, IX: 25 }, memory: { 27: 0xFF } },
                 expect: { state: { A: 0xFF, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
-        it("AND A, (IX)", () => {
-            runProgram("AND A, (IX)", {
+        it("AND (IX)", () => {
+            runProgram("AND (IX)", {
                 setup: { state: { A: 0xFF, IX: 25 }, memory: { 25: 0xFF } },
                 expect: { state: { A: 0xFF, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
-        it("AND A, (IY+2)", () => {
-            runProgram("AND A, (IY+2)", {
+        it("AND (IY+2)", () => {
+            runProgram("AND (IY+2)", {
                 setup: { state: { A: 0xFF, IY: 25 }, memory: { 27: 0xFF } },
                 expect: { state: { A: 0xFF, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
-        it("AND A, (IY)", () => {
-            runProgram("AND A, (IY)", {
+        it("AND (IY)", () => {
+            runProgram("AND (IY)", {
                 setup: { state: { A: 0xFF, IY: 25 }, memory: { 25: 0xFF } },
                 expect: { state: { A: 0xFF, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
@@ -1046,71 +1046,71 @@ describe('vm', () => {
     })
 
     describe("or", () => {
-        it("OR A, r", () => {
-            runProgram("OR A, A", {
+        it("OR r", () => {
+            runProgram("OR A", {
                 setup: { state: { A: 10 } },
                 expect: { state: { A: 10, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("OR A, B", {
+            runProgram("OR B", {
                 setup: { state: { A: 0xE1, B: 0x01 } },
                 expect: { state: { A: 0xE1, B: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("OR A, C", {
+            runProgram("OR C", {
                 setup: { state: { A: 0xD1, C: 0x01 } },
                 expect: { state: { A: 0xD1, C: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("OR A, D", {
+            runProgram("OR D", {
                 setup: { state: { A: 0xA1, D: 0x01 } },
                 expect: { state: { A: 0xA1, D: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("OR A, E", {
+            runProgram("OR E", {
                 setup: { state: { A: 0xF1, E: 0x01 } },
                 expect: { state: { A: 0xF1, E: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("OR A, H", {
+            runProgram("OR H", {
                 setup: { state: { A: 0xF1, H: 0x01 } },
                 expect: { state: { A: 0xF1, H: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("OR A, L", {
+            runProgram("OR L", {
                 setup: { state: { A: 0xF1, L: 0x01 } },
                 expect: { state: { A: 0xF1, L: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
 
-        it("OR A, n", () => {
-            runProgram("OR A, 0x1F", {
+        it("OR n", () => {
+            runProgram("OR 0x1F", {
                 setup: { state: { A: 0xF1 } },
                 expect: { state: { A: 0xFF, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
 
-        it("OR A, (HL)", () => {
-            runProgram("OR A, (HL)", {
+        it("OR (HL)", () => {
+            runProgram("OR (HL)", {
                 setup: { state: { A: 0xA1, HL: 15 }, memory: { 15: 0x0F } },
                 expect: { state: { A: 0xAF, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
 
-        it("OR A, (IX+2)", () => {
-            runProgram("OR A, (IX+2)", {
+        it("OR (IX+2)", () => {
+            runProgram("OR (IX+2)", {
                 setup: { state: { A: 0xA1, IX: 25 }, memory: { 27: 0xFF } },
                 expect: { state: { A: 0xFF, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
-        it("OR A, (IX)", () => {
-            runProgram("OR A, (IX)", {
+        it("OR (IX)", () => {
+            runProgram("OR (IX)", {
                 setup: { state: { A: 0xB1, IX: 25 }, memory: { 25: 0xFF } },
                 expect: { state: { A: 0xFF, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
-        it("OR A, (IY+2)", () => {
-            runProgram("OR A, (IY+2)", {
+        it("OR (IY+2)", () => {
+            runProgram("OR (IY+2)", {
                 setup: { state: { A: 0xC1, IY: 25 }, memory: { 27: 0x0F } },
                 expect: { state: { A: 0xCF, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
-        it("OR A, (IY)", () => {
-            runProgram("OR A, (IY)", {
+        it("OR (IY)", () => {
+            runProgram("OR (IY)", {
                 setup: { state: { A: 0xFF, IY: 25 }, memory: { 25: 0xFF } },
                 expect: { state: { A: 0xFF, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
@@ -1118,71 +1118,71 @@ describe('vm', () => {
     })
     
     describe("xor", () => {
-        it("XOR A, r", () => {
-            runProgram("XOR A, A", {
+        it("XOR r", () => {
+            runProgram("XOR A", {
                 setup: { state: { A: 25 } },
                 expect: { state: { A: 0, SFlag: 0, ZFlag: 1, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("XOR A, B", {
+            runProgram("XOR B", {
                 setup: { state: { A: 0xFF, B: 0x01 } },
                 expect: { state: { A: 0xFE, B: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("XOR A, C", {
+            runProgram("XOR C", {
                 setup: { state: { A: 0xFF, C: 0x01 } },
                 expect: { state: { A: 0xFE, C: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("XOR A, D", {
+            runProgram("XOR D", {
                 setup: { state: { A: 0xFF, D: 0x01 } },
                 expect: { state: { A: 0xFE, D: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("XOR A, E", {
+            runProgram("XOR E", {
                 setup: { state: { A: 0xFF, E: 0x01 } },
                 expect: { state: { A: 0xFE, E: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("XOR A, H", {
+            runProgram("XOR H", {
                 setup: { state: { A: 0xFF, H: 0x01 } },
                 expect: { state: { A: 0xFE, H: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
-            runProgram("XOR A, L", {
+            runProgram("XOR L", {
                 setup: { state: { A: 0xFF, L: 0x01 } },
                 expect: { state: { A: 0xFE, L: 0x01, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
 
-        it("XOR A, n", () => {
-            runProgram("XOR A, 0x1F", {
+        it("XOR n", () => {
+            runProgram("XOR 0x1F", {
                 setup: { state: { A: 0x10 } },
                 expect: { state: { A: 0x0F, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
 
-        it("XOR A, (HL)", () => {
-            runProgram("XOR A, (HL)", {
+        it("XOR (HL)", () => {
+            runProgram("XOR (HL)", {
                 setup: { state: { A: 0x10, HL: 15 }, memory: { 15: 0x0F } },
                 expect: { state: { A: 0x1F, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
 
-        it("XOR A, (IX+2)", () => {
-            runProgram("XOR A, (IX+2)", {
+        it("XOR (IX+2)", () => {
+            runProgram("XOR (IX+2)", {
                 setup: { state: { A: 0xFF, IX: 25 }, memory: { 27: 0xFF } },
                 expect: { state: { A: 0x00, SFlag: 0, ZFlag: 1, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
-        it("XOR A, (IX)", () => {
-            runProgram("XOR A, (IX)", {
+        it("XOR (IX)", () => {
+            runProgram("XOR (IX)", {
                 setup: { state: { A: 0x0F, IX: 25 }, memory: { 25: 0xFF } },
                 expect: { state: { A: 0xF0, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
-        it("XOR A, (IY+2)", () => {
-            runProgram("XOR A, (IY+2)", {
+        it("XOR (IY+2)", () => {
+            runProgram("XOR (IY+2)", {
                 setup: { state: { A: 0xF0, IY: 25 }, memory: { 27: 0x0F } },
                 expect: { state: { A: 0xFF, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
-        it("XOR A, (IY)", () => {
-            runProgram("XOR A, (IY)", {
+        it("XOR (IY)", () => {
+            runProgram("XOR (IY)", {
                 setup: { state: { A: 0xF0, IY: 25 }, memory: { 25: 0x0F } },
                 expect: { state: { A: 0xFF, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
