@@ -1,6 +1,6 @@
 const config = require('./config')
 const { buildAssembler } = require('./assembler/assemblerBuilder')
-const Vm = require('./vm/vm')
+const { buildVm } = require('./vm/vmBuilder')
 
 describe('vm', () => {
     describe('instructions', () => {
@@ -14,17 +14,17 @@ describe('vm', () => {
             })
         })
 
-        // describe('LD', () => {
+        describe('LD', () => {
 
-        //     it('ld r, n', () => {
-        //         expect(runProgram("ld a, 50")).toMatchObject({ A: 50 })
-        //         expect(runProgram("ld b, 1")).toMatchObject({ B: 1 })
-        //         expect(runProgram("Ld c, 2")).toMatchObject({ C: 2 })
-        //         expect(runProgram("LD D, 3")).toMatchObject({ D: 3 })
-        //         expect(runProgram("LD E, 3")).toMatchObject({ E: 3 })
-        //         expect(runProgram("LD H, 3")).toMatchObject({ H: 3 })
-        //         expect(runProgram("LD L, 3")).toMatchObject({ L: 3 })
-        //     })
+            it('ld r, n', () => {
+                expect(runProgram("ld a, 50")).toMatchObject({ A: 50 })
+                expect(runProgram("ld b, 1")).toMatchObject({ B: 1 })
+                expect(runProgram("Ld c, 2")).toMatchObject({ C: 2 })
+                expect(runProgram("LD D, 3")).toMatchObject({ D: 3 })
+                expect(runProgram("LD E, 3")).toMatchObject({ E: 3 })
+                expect(runProgram("LD H, 3")).toMatchObject({ H: 3 })
+                expect(runProgram("LD L, 3")).toMatchObject({ L: 3 })
+            })
 
         //     it("ld r, r'", () => {
         //         expect(runProgram("ld a, 1; ld a, a")).toMatchObject({ A: 1 })
@@ -53,25 +53,25 @@ describe('vm', () => {
 
         //     })
 
-        //     it('LD A, 50', () => {
-        //         const state = runProgram("LD A, 25")
-        //         expect(state).toMatchObject({ 
-        //             A: 25,
-        //             IP: 3 // add 1 for final HALT
-        //         })
-        //     })
+            // it('LD A, 50', () => {
+            //     const state = runProgram("LD A, 25")
+            //     expect(state).toMatchObject({ 
+            //         A: 25,
+            //         IP: 3 // add 1 for final HALT
+            //     })
+            // })
 
-        //     it('LD r, (HL)', () => {
-        //         runProgram("LD A, (HL)", { 
-        //             setup: { 
-        //                 state: { HL: 20 },
-        //                 memory: { 20: 123 }
-        //             },
-        //             expect: {
-        //                 state: { A: 123 }
-        //             }
-        //         })
-        //     })
+            // it('LD r, (HL)', () => {
+            //     runProgram("LD A, (HL)", { 
+            //         setup: { 
+            //             state: { HL: 20 },
+            //             memory: { 20: 123 }
+            //         },
+            //         expect: {
+            //             state: { A: 123 }
+            //         }
+            //     })
+            // })
 
         //     it('LD A, (BC)', () => {
         //         const vm = createVm("LD A, (BC)")
@@ -308,7 +308,7 @@ describe('vm', () => {
         //             expect: { state: { SP: 2000 }}
         //         })
         //     })
-        // })
+        })
 
         // describe("PUSH", () => {
         //     it ("PUSH BC", () => {
@@ -1370,7 +1370,5 @@ function createVm(program, setup) {
         }
     }
 
-    
-
-    return new Vm({initialImage, state: setup.state})
+    return buildVm(config, { initialImage, state: setup.state})
 }

@@ -155,7 +155,7 @@ class Vm {
         }
     }
 
-    step2() {
+    step() {
         // Are we in the middle of another instruction? Then skip this step
         if (--this.cyclesToWait > 0) {
             return
@@ -168,6 +168,9 @@ class Vm {
         for (let i = 0; i < MAX_OPCODES; i++) {
             const code = this.state.memory[this.state.IP + i]
             currNode = currNode[code]
+            if (!currNode) {
+                throw new Error("INVALID CODE " + code)
+            }
             if (currNode.args) {
                 args.push(...currNode.args)
             }
@@ -182,13 +185,13 @@ class Vm {
             ? handler.cycles
             : handler.cycles(this.state)
 
-        if (cycles > 1) {
+        if (this.cyclesToWait > 1) {
             return
         }
 
-        args.push(...handler.getArgs ? handler.getArgs(this.state) : [])
+        args.push(...(handler.getArgs ? handler.getArgs(this.state) : []))
 
-        handler.exec(this.stage, ...args)
+        handler.exec(this.state, ...args)
 
         // Unless the was a jump or other instruction that modified the IP, we'll
         // move the IP forward for the next instruction
@@ -199,7 +202,7 @@ class Vm {
         }
     }
 
-    step() {
+    stepOld() {
         if (this.cyclesToWait > 0) {
             this.cyclesToWait--
             return
