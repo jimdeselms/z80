@@ -26,32 +26,32 @@ describe('vm', () => {
                 expect(runProgram("LD L, 3")).toMatchObject({ L: 3 })
             })
 
-        //     it("ld r, r'", () => {
-        //         expect(runProgram("ld a, 1; ld a, a")).toMatchObject({ A: 1 })
-        //         expect(runProgram("ld a, 1; ld b, a")).toMatchObject({ A: 1, B: 1 })
-        //         expect(runProgram("ld a, 1; ld c, a")).toMatchObject({ A: 1, C: 1 })
-        //         expect(runProgram("ld a, 1; ld d, a")).toMatchObject({ A: 1, D: 1 })
-        //         expect(runProgram("ld a, 1; ld e, a")).toMatchObject({ A: 1, E: 1 })
-        //         expect(runProgram("ld a, 1; ld h, a")).toMatchObject({ A: 1, H: 1 })
-        //         expect(runProgram("ld a, 1; ld l, a")).toMatchObject({ A: 1, L: 1 })
+            it("ld r, r'", () => {
+                expect(runProgram("ld a, 1; ld a, a")).toMatchObject({ A: 1 })
+                expect(runProgram("ld a, 1; ld b, a")).toMatchObject({ A: 1, B: 1 })
+                expect(runProgram("ld a, 1; ld c, a")).toMatchObject({ A: 1, C: 1 })
+                expect(runProgram("ld a, 1; ld d, a")).toMatchObject({ A: 1, D: 1 })
+                expect(runProgram("ld a, 1; ld e, a")).toMatchObject({ A: 1, E: 1 })
+                expect(runProgram("ld a, 1; ld h, a")).toMatchObject({ A: 1, H: 1 })
+                expect(runProgram("ld a, 1; ld l, a")).toMatchObject({ A: 1, L: 1 })
 
-        //         expect(runProgram("ld b, 5; ld a, b")).toMatchObject({ B: 5, A: 5 })
-        //         expect(runProgram("ld b, 5; ld b, b")).toMatchObject({ B: 5 })
-        //         expect(runProgram("ld b, 5; ld c, b")).toMatchObject({ B: 5, C: 5 })
-        //         expect(runProgram("ld b, 5; ld d, b")).toMatchObject({ B: 5, D: 5 })
-        //         expect(runProgram("ld b, 5; ld e, b")).toMatchObject({ B: 5, E: 5 })
-        //         expect(runProgram("ld b, 5; ld h, b")).toMatchObject({ B: 5, H: 5 })
-        //         expect(runProgram("ld b, 5; ld l, b")).toMatchObject({ B: 5, L: 5 })
+                expect(runProgram("ld b, 5; ld a, b")).toMatchObject({ B: 5, A: 5 })
+                expect(runProgram("ld b, 5; ld b, b")).toMatchObject({ B: 5 })
+                expect(runProgram("ld b, 5; ld c, b")).toMatchObject({ B: 5, C: 5 })
+                expect(runProgram("ld b, 5; ld d, b")).toMatchObject({ B: 5, D: 5 })
+                expect(runProgram("ld b, 5; ld e, b")).toMatchObject({ B: 5, E: 5 })
+                expect(runProgram("ld b, 5; ld h, b")).toMatchObject({ B: 5, H: 5 })
+                expect(runProgram("ld b, 5; ld l, b")).toMatchObject({ B: 5, L: 5 })
 
-        //         expect(runProgram("ld c, 7; ld a, c")).toMatchObject({ C: 7, A: 7 })
-        //         expect(runProgram("ld c, 7; ld b, c")).toMatchObject({ C: 7, B: 7 })
-        //         expect(runProgram("ld c, 7; ld c, c")).toMatchObject({ C: 7 })
-        //         expect(runProgram("ld c, 7; ld d, c")).toMatchObject({ C: 7, D: 7 })
-        //         expect(runProgram("ld c, 7; ld e, c")).toMatchObject({ C: 7, E: 7 })
-        //         expect(runProgram("ld c, 7; ld h, c")).toMatchObject({ C: 7, H: 7 })
-        //         expect(runProgram("ld c, 7; ld l, c")).toMatchObject({ C: 7, L: 7 })
+                expect(runProgram("ld c, 7; ld a, c")).toMatchObject({ C: 7, A: 7 })
+                expect(runProgram("ld c, 7; ld b, c")).toMatchObject({ C: 7, B: 7 })
+                expect(runProgram("ld c, 7; ld c, c")).toMatchObject({ C: 7 })
+                expect(runProgram("ld c, 7; ld d, c")).toMatchObject({ C: 7, D: 7 })
+                expect(runProgram("ld c, 7; ld e, c")).toMatchObject({ C: 7, E: 7 })
+                expect(runProgram("ld c, 7; ld h, c")).toMatchObject({ C: 7, H: 7 })
+                expect(runProgram("ld c, 7; ld l, c")).toMatchObject({ C: 7, L: 7 })
 
-        //     })
+            })
 
             it('LD A, 50', () => {
                 const state = runProgram("LD A, 25")
@@ -310,284 +310,284 @@ describe('vm', () => {
             })
         })
 
-        // describe("PUSH", () => {
-        //     it ("PUSH BC", () => {
-        //         runProgram("PUSH BC", {
-        //             setup: {
-        //                 state: { BC: 0x2030, SP: 20 }
-        //             },
-        //             expect: {
-        //                 state: { SP: 18 },
-        //                 memory: {
-        //                     18: 0x30,
-        //                     19: 0x20
-        //                 }
-        //             }
-        //         })
-        //     })
+        describe("PUSH", () => {
+            it ("PUSH BC", () => {
+                runProgram("PUSH BC", {
+                    setup: {
+                        state: { BC: 0x2030, SP: 20 }
+                    },
+                    expect: {
+                        state: { SP: 18 },
+                        memory: {
+                            18: 0x30,
+                            19: 0x20
+                        }
+                    }
+                })
+            })
 
-        //     it ("PUSH IX", () => {
-        //         runProgram("PUSH IX", {
-        //             setup: {
-        //                 state: { IX: 0x2030, SP: 20 }
-        //             },
-        //             expect: {
-        //                 state: { SP: 18 },
-        //                 memory: {
-        //                     18: 0x30,
-        //                     19: 0x20
-        //                 }
-        //             }
-        //         })
-        //     })
+            it ("PUSH IX", () => {
+                runProgram("PUSH IX", {
+                    setup: {
+                        state: { IX: 0x2030, SP: 20 }
+                    },
+                    expect: {
+                        state: { SP: 18 },
+                        memory: {
+                            18: 0x30,
+                            19: 0x20
+                        }
+                    }
+                })
+            })
 
-        //     it ("PUSH IY", () => {
-        //         runProgram("PUSH IY", {
-        //             setup: {
-        //                 state: { IY: 0x2030, SP: 20 }
-        //             },
-        //             expect: {
-        //                 state: { SP: 18 },
-        //                 memory: {
-        //                     18: 0x30,
-        //                     19: 0x20
-        //                 }
-        //             }
-        //         })
-        //     })
-        // })
+            it ("PUSH IY", () => {
+                runProgram("PUSH IY", {
+                    setup: {
+                        state: { IY: 0x2030, SP: 20 }
+                    },
+                    expect: {
+                        state: { SP: 18 },
+                        memory: {
+                            18: 0x30,
+                            19: 0x20
+                        }
+                    }
+                })
+            })
+        })
         
-        // describe("POP", () => {
-        //     it ("POP rr", () => {
-        //         runProgram("POP BC", {
-        //             setup: { state: { SP: 20 }, memory: { 20: 0x01, 21: 0x02 }},
-        //             expect: { state: { BC: 0x0201, SP: 22 }}
-        //         })
-        //         runProgram("POP DE", {
-        //             setup: { state: { SP: 20 }, memory: { 20: 0x01, 21: 0x02 }},
-        //             expect: { state: { DE: 0x0201, SP: 22 }}
-        //         })
-        //         runProgram("POP HL", {
-        //             setup: { state: { SP: 20 }, memory: { 20: 0x01, 21: 0x02 }},
-        //             expect: { state: { HL: 0x0201, SP: 22 }}
-        //         })
-        //         runProgram("POP AF", {
-        //             setup: { state: { SP: 20 }, memory: { 20: 0x01, 21: 0x02 }},
-        //             expect: { state: { AF: 0x0201, SP: 22 }}
-        //         })
-        //     })
+        describe("POP", () => {
+            it ("POP rr", () => {
+                runProgram("POP BC", {
+                    setup: { state: { SP: 20 }, memory: { 20: 0x01, 21: 0x02 }},
+                    expect: { state: { BC: 0x0201, SP: 22 }}
+                })
+                runProgram("POP DE", {
+                    setup: { state: { SP: 20 }, memory: { 20: 0x01, 21: 0x02 }},
+                    expect: { state: { DE: 0x0201, SP: 22 }}
+                })
+                runProgram("POP HL", {
+                    setup: { state: { SP: 20 }, memory: { 20: 0x01, 21: 0x02 }},
+                    expect: { state: { HL: 0x0201, SP: 22 }}
+                })
+                runProgram("POP AF", {
+                    setup: { state: { SP: 20 }, memory: { 20: 0x01, 21: 0x02 }},
+                    expect: { state: { AF: 0x0201, SP: 22 }}
+                })
+            })
 
-        //     it ("POP IX", () => {
-        //         runProgram("POP IX", {
-        //             setup: { state: { SP: 25 }, memory: { 25: 0x15, 26: 0x30 }},
-        //             expect: { state: { IX: 0x3015, SP: 27 }}
-        //         })
-        //     })
+            it ("POP IX", () => {
+                runProgram("POP IX", {
+                    setup: { state: { SP: 25 }, memory: { 25: 0x15, 26: 0x30 }},
+                    expect: { state: { IX: 0x3015, SP: 27 }}
+                })
+            })
 
-        //     it ("POP IY", () => {
-        //         runProgram("POP IY", {
-        //             setup: { state: { SP: 25 }, memory: { 25: 0x15, 26: 0x30 }},
-        //             expect: { state: { IY: 0x3015, SP: 27 }}
-        //         })
-        //     })
-        // })
+            it ("POP IY", () => {
+                runProgram("POP IY", {
+                    setup: { state: { SP: 25 }, memory: { 25: 0x15, 26: 0x30 }},
+                    expect: { state: { IY: 0x3015, SP: 27 }}
+                })
+            })
+        })
 
-        // it('NOP', () => {
-        //     const state = runProgram("NOP")
-        //     // Add one for the final HALT
-        //     expect(state).toMatchObject({ 
-        //         IP: 2 // add 1 for final HALT
-        //     })
-        // })
+        it('NOP', () => {
+            const state = runProgram("NOP")
+            // Add one for the final HALT
+            expect(state).toMatchObject({ 
+                IP: 2 // add 1 for final HALT
+            })
+        })
     })
 
-    // describe('timing', () => {
-    //     // Since a ld takes 2 cycles, we should expect each of these to take two steps to complete.
-    //     it('three instructions', () => {
-    //         const program = `
-    //             LD A, 1
-    //             LD A, 2
-    //             NOP
-    //             LD A, 3`
+    describe('timing', () => {
+        // Since a ld takes 2 cycles, we should expect each of these to take two steps to complete.
+        it('three instructions', () => {
+            const program = `
+                LD A, 1
+                LD A, 2
+                NOP
+                LD A, 3`
 
-    //         const vm = createVm(program)
+            const vm = createVm(program)
 
-    //         vm.step();
-    //         expect(vm.state.A).toBe(0)
+            vm.step();
+            expect(vm.state.A).toBe(0)
 
-    //         vm.step();
-    //         expect(vm.state.A).toBe(1)
+            vm.step();
+            expect(vm.state.A).toBe(1)
 
-    //         vm.step();
-    //         expect(vm.state.A).toBe(1)
+            vm.step();
+            expect(vm.state.A).toBe(1)
 
-    //         vm.step();
-    //         expect(vm.state.A).toBe(2)
+            vm.step();
+            expect(vm.state.A).toBe(2)
 
-    //         vm.step();
-    //         expect(vm.state.A).toBe(2)
+            vm.step();
+            expect(vm.state.A).toBe(2)
 
-    //         vm.step();
-    //         expect(vm.state.A).toBe(2)
+            vm.step();
+            expect(vm.state.A).toBe(2)
 
-    //         vm.step();
-    //         expect(vm.state.A).toBe(3)
-    //     })
-    // })
+            vm.step();
+            expect(vm.state.A).toBe(3)
+        })
+    })
 
-    // describe("ex", () => {
-    //     it("EX DE, HL", () => {
-    //         runProgram("EX DE, HL", {
-    //             setup: {
-    //                 state: { DE: 1234, HL: 2345 }
-    //             },
-    //             expect: {
-    //                 state: { DE: 2345, HL: 1234 }
-    //             }
-    //         })
-    //     })
+    describe("ex", () => {
+        it("EX DE, HL", () => {
+            runProgram("EX DE, HL", {
+                setup: {
+                    state: { DE: 1234, HL: 2345 }
+                },
+                expect: {
+                    state: { DE: 2345, HL: 1234 }
+                }
+            })
+        })
 
-    //     it("EX AF, AF'", () => {
-    //         runProgram("EX AF, AF'", {
-    //             setup: {
-    //                 state: { AF: 9999, "AF'": 2222 }
-    //             },
-    //             expect: {
-    //                 state: { AF: 2222, "AF'": 9999 }
-    //             }
-    //         })
-    //     })
+        it("EX AF, AF'", () => {
+            runProgram("EX AF, AF'", {
+                setup: {
+                    state: { AF: 9999, "AF'": 2222 }
+                },
+                expect: {
+                    state: { AF: 2222, "AF'": 9999 }
+                }
+            })
+        })
 
-    //     it ("EX (SP), HL", () => {
-    //         runProgram("EX (SP), HL", {
-    //             setup: {
-    //                 state: { SP: 25, HL: 0x3322 },
-    //                 memory: { 25: 0x20, 26: 0x40 }
-    //             },
-    //             expect: {
-    //                 state: { SP: 25, HL: 0x4020 },
-    //                 memory: { 25: 0x22, 26: 0x33 }
-    //             }
-    //         })
-    //     })
+        it ("EX (SP), HL", () => {
+            runProgram("EX (SP), HL", {
+                setup: {
+                    state: { SP: 25, HL: 0x3322 },
+                    memory: { 25: 0x20, 26: 0x40 }
+                },
+                expect: {
+                    state: { SP: 25, HL: 0x4020 },
+                    memory: { 25: 0x22, 26: 0x33 }
+                }
+            })
+        })
 
-    //     it ("EX (SP), IX", () => {
-    //         runProgram("EX (SP), IX", {
-    //             setup: {
-    //                 state: { SP: 25, IX: 0x3322 },
-    //                 memory: { 25: 0x20, 26: 0x40 }
-    //             },
-    //             expect: {
-    //                 state: { SP: 25, IX: 0x4020 },
-    //                 memory: { 25: 0x22, 26: 0x33 }
-    //             }
-    //         })
-    //     })
+        it ("EX (SP), IX", () => {
+            runProgram("EX (SP), IX", {
+                setup: {
+                    state: { SP: 25, IX: 0x3322 },
+                    memory: { 25: 0x20, 26: 0x40 }
+                },
+                expect: {
+                    state: { SP: 25, IX: 0x4020 },
+                    memory: { 25: 0x22, 26: 0x33 }
+                }
+            })
+        })
 
-    //     it ("EX (SP), IY", () => {
-    //         runProgram("EX (SP), IY", {
-    //             setup: {
-    //                 state: { SP: 25, IY: 0x3322 },
-    //                 memory: { 25: 0x20, 26: 0x40 }
-    //             },
-    //             expect: {
-    //                 state: { SP: 25, IY: 0x4020 },
-    //                 memory: { 25: 0x22, 26: 0x33 }
-    //             }
-    //         })
-    //     })
-    // })
+        it ("EX (SP), IY", () => {
+            runProgram("EX (SP), IY", {
+                setup: {
+                    state: { SP: 25, IY: 0x3322 },
+                    memory: { 25: 0x20, 26: 0x40 }
+                },
+                expect: {
+                    state: { SP: 25, IY: 0x4020 },
+                    memory: { 25: 0x22, 26: 0x33 }
+                }
+            })
+        })
+    })
 
-    // it("exx", () => {
-    //     runProgram("EXX", {
-    //         setup: {
-    //             state: { BC: 1000, "BC'": 100, DE: 2000, "DE'": 200, HL: 3000, "HL'": 300 }
-    //         },
-    //         expect: {
-    //             state: { BC: 100, "BC'": 1000, DE: 200, "DE'": 2000, HL: 300, "HL'": 3000 }
-    //         }
-    //     })
-    // })
+    it("exx", () => {
+        runProgram("EXX", {
+            setup: {
+                state: { BC: 1000, "BC'": 100, DE: 2000, "DE'": 200, HL: 3000, "HL'": 300 }
+            },
+            expect: {
+                state: { BC: 100, "BC'": 1000, DE: 200, "DE'": 2000, HL: 300, "HL'": 3000 }
+            }
+        })
+    })
 
-    // describe("LDI(R)", () => {
-    //     it("LDI", () => {
-    //         runProgram("LDI", {
-    //             setup: {
-    //                 state: { DE: 10, HL: 20, BC: 5, HFlag: 1, NFlag: 1, PVFlag: 1 },
-    //                 memory: { 10: 0x20, 20: 0x30 }
-    //             },
-    //             expect: {
-    //                 state: { DE: 11, HL: 21, BC: 4, HFlag: 0, NFlag: 0, PVFlag: 1 },
-    //                 memory: { 10: 0x30, 20: 0x30 }
-    //             }
-    //         })
-    //     }) 
-    //     it("LDI when BC becomes zero", () => {
-    //         runProgram("LDI", {
-    //             setup: {
-    //                 state: { DE: 10, HL: 20, BC: 1, HFlag: 1, NFlag: 1, PVFlag: 1 },
-    //                 memory: { 10: 0x20, 20: 0x30 }
-    //             },
-    //             expect: {
-    //                 state: { DE: 11, HL: 21, BC: 0, HFlag: 0, NFlag: 0, PVFlag: 0 },
-    //                 memory: { 10: 0x30, 20: 0x30 }
-    //             }
-    //         })
-    //     }) 
+    describe("LDI(R)", () => {
+        it("LDI", () => {
+            runProgram("LDI", {
+                setup: {
+                    state: { DE: 10, HL: 20, BC: 5, HFlag: 1, NFlag: 1, PVFlag: 1 },
+                    memory: { 10: 0x20, 20: 0x30 }
+                },
+                expect: {
+                    state: { DE: 11, HL: 21, BC: 4, HFlag: 0, NFlag: 0, PVFlag: 1 },
+                    memory: { 10: 0x30, 20: 0x30 }
+                }
+            })
+        }) 
+        it("LDI when BC becomes zero", () => {
+            runProgram("LDI", {
+                setup: {
+                    state: { DE: 10, HL: 20, BC: 1, HFlag: 1, NFlag: 1, PVFlag: 1 },
+                    memory: { 10: 0x20, 20: 0x30 }
+                },
+                expect: {
+                    state: { DE: 11, HL: 21, BC: 0, HFlag: 0, NFlag: 0, PVFlag: 0 },
+                    memory: { 10: 0x30, 20: 0x30 }
+                }
+            })
+        }) 
 
-    //     it("LDIR", () => {
-    //         runProgram("LDIR", {
-    //             setup: {
-    //                 state: { DE: 10, HL: 20, BC: 3, HFlag: 1, NFlag: 1, PVFlag: 1 },
-    //                 memory: { 20: 0x20, 21: 0x21, 22: 0x22, 23: 0x23 },
-    //             },
-    //             expect: {
-    //                 state: { DE: 13, HL: 23, BC: 0, HFlag: 0, NFlag: 0, PVFlag: 0 },
-    //                 memory: { 10: 0x20, 11: 0x21, 12: 0x22, 13: 0x00, 20: 0x20, 21: 0x21, 22: 0x22, 23: 0x23 }
-    //             }
-    //         })
-    //     })
-    // })
+        it("LDIR", () => {
+            runProgram("LDIR", {
+                setup: {
+                    state: { DE: 10, HL: 20, BC: 3, HFlag: 1, NFlag: 1, PVFlag: 1 },
+                    memory: { 20: 0x20, 21: 0x21, 22: 0x22, 23: 0x23 },
+                },
+                expect: {
+                    state: { DE: 13, HL: 23, BC: 0, HFlag: 0, NFlag: 0, PVFlag: 0 },
+                    memory: { 10: 0x20, 11: 0x21, 12: 0x22, 13: 0x00, 20: 0x20, 21: 0x21, 22: 0x22, 23: 0x23 }
+                }
+            })
+        })
+    })
 
-    // describe("LDD(R)", () => {
-    //     it("LDD", () => {
-    //         runProgram("LDD", {
-    //             setup: {
-    //                 state: { DE: 10, HL: 20, BC: 5, HFlag: 1, NFlag: 1, PVFlag: 1 },
-    //                 memory: { 10: 0x20, 20: 0x30 }
-    //             },
-    //             expect: {
-    //                 state: { DE: 9, HL: 19, BC: 4, HFlag: 0, NFlag: 0, PVFlag: 1 },
-    //                 memory: { 10: 0x30, 20: 0x30 }
-    //             }
-    //         })
-    //     }) 
-    //     it("LDD when BC becomes zero", () => {
-    //         runProgram("LDD", {
-    //             setup: {
-    //                 state: { DE: 10, HL: 20, BC: 1, HFlag: 1, NFlag: 1, PVFlag: 1 },
-    //                 memory: { 10: 0x20, 20: 0x30 }
-    //             },
-    //             expect: {
-    //                 state: { DE: 9, HL: 19, BC: 0, HFlag: 0, NFlag: 0, PVFlag: 0 },
-    //                 memory: { 10: 0x30, 20: 0x30 }
-    //             }
-    //         })
-    //     }) 
+    describe("LDD(R)", () => {
+        it("LDD", () => {
+            runProgram("LDD", {
+                setup: {
+                    state: { DE: 10, HL: 20, BC: 5, HFlag: 1, NFlag: 1, PVFlag: 1 },
+                    memory: { 10: 0x20, 20: 0x30 }
+                },
+                expect: {
+                    state: { DE: 9, HL: 19, BC: 4, HFlag: 0, NFlag: 0, PVFlag: 1 },
+                    memory: { 10: 0x30, 20: 0x30 }
+                }
+            })
+        }) 
+        it("LDD when BC becomes zero", () => {
+            runProgram("LDD", {
+                setup: {
+                    state: { DE: 10, HL: 20, BC: 1, HFlag: 1, NFlag: 1, PVFlag: 1 },
+                    memory: { 10: 0x20, 20: 0x30 }
+                },
+                expect: {
+                    state: { DE: 9, HL: 19, BC: 0, HFlag: 0, NFlag: 0, PVFlag: 0 },
+                    memory: { 10: 0x30, 20: 0x30 }
+                }
+            })
+        }) 
 
-    //     it("LDDR", () => {
-    //         runProgram("LDDR", {
-    //             setup: {
-    //                 state: { DE: 13, HL: 23, BC: 3, HFlag: 1, NFlag: 1, PVFlag: 1 },
-    //                 memory: { 20: 0x20, 21: 0x21, 22: 0x22, 23: 0x23 },
-    //             },
-    //             expect: {
-    //                 state: { DE: 10, HL: 20, BC: 0, HFlag: 0, NFlag: 0, PVFlag: 0 },
-    //                 memory: { 10: 0x00, 11: 0x21, 12: 0x22, 13: 0x23, 20: 0x20, 21: 0x21, 22: 0x22, 23: 0x23 }
-    //             }
-    //         })
-    //     })
-    // })
+        it("LDDR", () => {
+            runProgram("LDDR", {
+                setup: {
+                    state: { DE: 13, HL: 23, BC: 3, HFlag: 1, NFlag: 1, PVFlag: 1 },
+                    memory: { 20: 0x20, 21: 0x21, 22: 0x22, 23: 0x23 },
+                },
+                expect: {
+                    state: { DE: 10, HL: 20, BC: 0, HFlag: 0, NFlag: 0, PVFlag: 0 },
+                    memory: { 10: 0x00, 11: 0x21, 12: 0x22, 13: 0x23, 20: 0x20, 21: 0x21, 22: 0x22, 23: 0x23 }
+                }
+            })
+        })
+    })
 
     // describe("CPI(R)", () => {
     //     it("CPI negative", () => {

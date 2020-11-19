@@ -1,4 +1,4 @@
-const { bytesToBit16 } = require("./helpers")
+const { bit16ToBytes, bytesToBit16 } = require("./helpers")
 
 module.exports = {
     instructions: {
@@ -102,7 +102,8 @@ module.exports = {
             bits: ["00rrr110", "NNNNNNNN"],
             exec(state, r, n) {
                 state[r] = n
-            }
+            },
+            cycles: 2
         },
         "LD r, (HL)": {
             bits: ["01rrr110"],
@@ -188,18 +189,10 @@ module.exports = {
                 state.put16BitMemory(n, state[r])
             }
         },
-        "PUSH BC": {
-            bits: ["11qq0101"],
-            exec(state) {
-                const [low, high] = bytesToBit16(state.BC)
-                state.memory[--state.SP] = high
-                state.memory[--state.SP] = low
-            }
-        },
         "PUSH IX": {
             bits: ["11011101", "11100101"],
             exec(state) {
-                const [low, high] = bytesToBit16(state.IX)
+                const [low, high] = bit16ToBytes(state.IX)
                 state.memory[--state.SP] = high
                 state.memory[--state.SP] = low
             }
@@ -207,33 +200,41 @@ module.exports = {
         "PUSH IY": {
             bits: ["11111101", "11100101"],
             exec(state) {
-                const [low, high] = bytesToBit16(state.IY)
+                const [low, high] = bit16ToBytes(state.IY)
+                state.memory[--state.SP] = high
+                state.memory[--state.SP] = low
+            }
+        },
+        "PUSH qq": {
+            bits: ["11qq0101"],
+            exec(state) {
+                const [low, high] = bit16ToBytes(state.BC)
                 state.memory[--state.SP] = high
                 state.memory[--state.SP] = low
             }
         },
         "POP IX": {
             bits: ["11011101", "11100001"],
-            exec(state, r) {
-                const [low, high] = bytesToBit16(state.IX)
-                state.memory[--state.SP] = high
-                state.memory[--state.SP] = low
+            exec(state) {
+                const value = state.get16BitMemory(state.SP)
+                state.SP += 2
+                state.IX = value
             }
         },
         "POP IY": {
             bits: ["11111101", "11100001"],
-            exec(state, r) {
-                const [low, high] = bytesToBit16(state.IY)
-                state.memory[--state.SP] = high
-                state.memory[--state.SP] = low
+            exec(state) {
+                const value = state.get16BitMemory(state.SP)
+                state.SP += 2
+                state.IY = value
             }
         },
         "POP qq": {
             bits: ["11qq0001"],
             exec(state, r) {
-                const [low, high] = bytesToBit16(state[r])
-                state.memory[--state.SP] = high
-                state.memory[--state.SP] = low
+                const value = state.get16BitMemory(state.SP)
+                state.SP += 2
+                state[r] = value
             }
         },
         "EX DE, HL": {
@@ -293,15 +294,15 @@ module.exports = {
         "EXX": {
             bits: ["11011001"],
             exec(state) {
-                [state["BC"], state["BC'"]] = [state["BC'"], state["BC"]]
-                [state["DE"], state["DE'"]] = [state["DE'"], state["DE"]]
-                [state["HL"], state["HL'"]] = [state["HL'"], state["HL"]]
+                [state["BC"], state["BC'"]] = [state["BC'"], state["BC"]];
+                [state["DE"], state["DE'"]] = [state["DE'"], state["DE"]];
+                [state["HL"], state["HL'"]] = [state["HL'"], state["HL"]];
             }
         },
         "LDI": {
             bits: ["11101101", "10100000"],
             exec(state) {
-                state.DE = state.HL
+                state.memory[state.DE] = state.memory[state.HL]
                 state.DE++
                 state.HL++
                 state.BC--
@@ -313,7 +314,7 @@ module.exports = {
         "LDIR": {
             bits: ["11101101", "10110000"],
             exec(state) {
-                state.DE = state.HL
+                state.memory[state.DE] = state.memory[state.HL]
                 state.DE++
                 state.HL++
                 state.BC--
@@ -321,14 +322,14 @@ module.exports = {
                 state.PVFlag = state.BC !== 0 ? 1 : 0
                 state.NFlag = 0
                 if (state.PVFlag) {
-                    state.IP -= 2
+                    state.ipWasModified = true
                 }
             }
         },
         "LDD": {
             bits: ["11101101", "10101000"],
             exec(state) {
-                state.DE = state.HL
+                state.memory[state.DE] = state.memory[state.HL]
                 state.DE--
                 state.HL--
                 state.BC--
@@ -340,7 +341,7 @@ module.exports = {
         "LDDR": {
             bits: ["11101101", "10111000"],
             exec(state) {
-                state.DE = state.HL
+                state.memory[state.DE] = state.memory[state.HL]
                 state.DE--
                 state.HL--
                 state.BC--
@@ -348,7 +349,7 @@ module.exports = {
                 state.PVFlag = state.BC !== 0 ? 1 : 0
                 state.NFlag = 0
                 if (state.PVFlag) {
-                    state.IP -= 2
+                    state.ipWasModified = true
                 }
             }
         },
@@ -362,10 +363,11 @@ module.exports = {
         "NOP": {
             bits: ["00000000"],
             exec() {
-            }
+            },
+            cycles: 1
         },
         "CPI": {
-            bits: ["11101101", "10100001"]
+            bits: ["11101101", "10100001"],
         },
         "CPIR": {
             bits: ["11101101", "10110001"]

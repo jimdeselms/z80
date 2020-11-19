@@ -162,7 +162,7 @@ class Vm {
 
     step() {
         // Are we in the middle of another instruction? Then skip this step
-        if (--this.cyclesToWait > 0) {
+        if (typeof(this.wait) === "number" && --this.wait > 0) {
             return
         }
 
@@ -186,17 +186,26 @@ class Vm {
 
         const handler = currNode.handler
 
-        this.cyclesToWait = typeof(handler.cycles) === "number"
-            ? handler.cycles
-            : handler.cycles(this.state)
+        if (this.wait === undefined) {
+            if (handler.cycles) {
+                const cycles = typeof(handler.cycles) === "number"
+                    ? handler.cycles
+                    : handler.cycles(this.state)
 
-        if (this.cyclesToWait > 1) {
+                if (cycles > 1) {
+                    this.wait = cycles - 1
+                }
+            }
+        }
+
+        if (this.wait > 0) {
             return
         }
 
         args.push(...(handler.getArgs ? handler.getArgs(this.state) : []))
 
         handler.exec(this.state, ...args)
+        this.wait = undefined
 
         // Unless the was a jump or other instruction that modified the IP, we'll
         // move the IP forward for the next instruction
