@@ -28,61 +28,61 @@ module.exports = {
         },
         "LD IX, nn": {
             bits: ["11011101", "00100001", "LLLLLLLL", "HHHHHHHH"],
-            exec(state, r, n) {
+            exec(state, n) {
                 state.IX = n
             }
         },
         "LD IY, nn": {
             bits: ["11111101", "00100001", "LLLLLLLL", "HHHHHHHH"],
-            exec(state, r, n) {
+            exec(state, n) {
                 state.IY = n
             }
         },
         "LD HL, (nn)": {
             bits: ["00101010", "LLLLLLLL", "HHHHHHHH"],
-            exec(state, r, n) {
+            exec(state, n) {
                 state.HL = state.get16BitMemory(n)
             }
         },
         "LD IX, (nn)": {
             bits: ["11011101", "00101010", "LLLLLLLL", "HHHHHHHH"],
-            exec(state, r, n) {
-                state.IX = state.memory[n]
+            exec(state, n) {
+                state.IX = state.get16BitMemory(n)
             }
         },
         "LD IY, (nn)": {
             bits: ["11111101", "00101010", "LLLLLLLL", "HHHHHHHH"],
-            exec(state, r, n) {
-                state.IY = state.memory[n]
+            exec(state, n) {
+                state.IY = state.get16BitMemory(n)
             }
         },
         "LD (nn), IX": {
             bits: ["11011101", "00100010", "llllllll", "hhhhhhhh"],
-            exec(state, n, r) {
-                state.memory[n] = state.IX
+            exec(state, n) {
+                state.put16BitMemory(n, state.IX)
             }
         },
         "LD (nn), IY": {
             bits: ["11111101", "00100010", "llllllll", "hhhhhhhh"],
-            exec(state, n, r) {
-                state.memory[n] = state.IY
+            exec(state, n) {
+                state.put16BitMemory(n, state.IY)
             }
         },
         "LD (nn), HL": {
             bits: ["00100010", "llllllll", "hhhhhhhh"],
-            exec(state, n, r) {
-                state.memory[n] = state.HL
+            exec(state, n) {
+                state.put16BitMemory(n, state.HL)
             }
         },
         "LD SP, HL": {
             bits: ["11111001"],
-            exec(state, n, r) {
+            exec(state) {
                 state.SP = state.HL
             }
         },
         "LD SP, IX": {
             bits: ["11011101", "11111001"],
-            exec(state, n, r) {
+            exec(state) {
                 state.SP = state.IX
             }
         },
@@ -154,7 +154,7 @@ module.exports = {
         },
         "LD (HL), n": {
             bits: ["00110110", "NNNNNNNN"],
-            exec(state, r, n) {
+            exec(state, n) {
                 state.memory[state.HL] = n
             }
         },
@@ -179,13 +179,13 @@ module.exports = {
         "LD dd, (nn)": {
             bits: ["11101101", "01dd1011", "LLLLLLLL", "HHHHHHHH"],
             exec(state, r, n) {
-                state[r] = state.memory[n]
+                state[r] = state.get16BitMemory(n)
             }
         },
         "LD (nn), dd": {
             bits: ["11101101", "01DD0011", "llllllll", "hhhhhhhh"],
-            exec(state, n, r) {
-                state.memory[n] = state[r]
+            exec(state, r, n) {
+                state.put16BitMemory(n, state[r])
             }
         },
         "PUSH BC": {

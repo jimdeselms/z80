@@ -53,261 +53,261 @@ describe('vm', () => {
 
         //     })
 
-            // it('LD A, 50', () => {
-            //     const state = runProgram("LD A, 25")
-            //     expect(state).toMatchObject({ 
-            //         A: 25,
-            //         IP: 3 // add 1 for final HALT
-            //     })
-            // })
+            it('LD A, 50', () => {
+                const state = runProgram("LD A, 25")
+                expect(state).toMatchObject({ 
+                    A: 25,
+                    IP: 3 // add 1 for final HALT
+                })
+            })
 
-            // it('LD r, (HL)', () => {
-            //     runProgram("LD A, (HL)", { 
-            //         setup: { 
-            //             state: { HL: 20 },
-            //             memory: { 20: 123 }
-            //         },
-            //         expect: {
-            //             state: { A: 123 }
-            //         }
-            //     })
-            // })
+            it('LD r, (HL)', () => {
+                runProgram("LD A, (HL)", { 
+                    setup: { 
+                        state: { HL: 20 },
+                        memory: { 20: 123 }
+                    },
+                    expect: {
+                        state: { A: 123 }
+                    }
+                })
+            })
 
-        //     it('LD A, (BC)', () => {
-        //         const vm = createVm("LD A, (BC)")
-        //         vm.state.BC = 25
-        //         vm.loadMemory(25, [90])
+            it('LD A, (BC)', () => {
+                const vm = createVm("LD A, (BC)")
+                vm.state.BC = 25
+                vm.loadMemory(25, [90])
 
-        //         vm.run();
-        //         expect(vm.state).toMatchObject({
-        //             A: 90
-        //         })
-        //     })
+                vm.run();
+                expect(vm.state).toMatchObject({
+                    A: 90
+                })
+            })
 
-        //     it('LD A, (DE)', () => {
-        //         const vm = createVm("LD A, (DE)")
-        //         vm.state.DE = 40
-        //         vm.loadMemory(40, [25])
+            it('LD A, (DE)', () => {
+                const vm = createVm("LD A, (DE)")
+                vm.state.DE = 40
+                vm.loadMemory(40, [25])
 
-        //         vm.run();
-        //         expect(vm.state).toMatchObject({
-        //             A: 25
-        //         })
-        //     })
+                vm.run();
+                expect(vm.state).toMatchObject({
+                    A: 25
+                })
+            })
 
-        //     it('LD r, (IX+2)', () => {
-        //         const vm = createVm("LD C, (IX+2)")
-        //         vm.state.IX = 30
-        //         vm.loadMemory(32, [12])
+            it('LD r, (IX+2)', () => {
+                const vm = createVm("LD C, (IX+2)")
+                vm.state.IX = 30
+                vm.loadMemory(32, [12])
 
-        //         vm.run();
-        //         expect(vm.state).toMatchObject({
-        //             C: 12
-        //         })
-        //     })
+                vm.run();
+                expect(vm.state).toMatchObject({
+                    C: 12
+                })
+            })
 
-        //     it('LD r, (IY+5)', () => {
-        //         const vm = createVm("LD E, (IY+5)")
-        //         vm.state.IY = 15
-        //         vm.loadMemory(20, [22])
+            it('LD r, (IY+5)', () => {
+                const vm = createVm("LD E, (IY+5)")
+                vm.state.IY = 15
+                vm.loadMemory(20, [22])
 
-        //         vm.run();
-        //         expect(vm.state).toMatchObject({
-        //             E: 22
-        //         })
-        //     })
+                vm.run();
+                expect(vm.state).toMatchObject({
+                    E: 22
+                })
+            })
 
-        //     it('LD (IX+2), r', () => {
-        //         runProgram("LD (IX+2), B", {
-        //             setup: { state: { B: 22, IX: 15 }},
-        //             expect: { memory: { 17: 22 }}
-        //         })
-        //     })
+            it('LD (IX+2), r', () => {
+                runProgram("LD (IX+2), B", {
+                    setup: { state: { B: 22, IX: 15 }},
+                    expect: { memory: { 17: 22 }}
+                })
+            })
 
-        //     it('LD (IY+5), r', () => {
-        //         const vm = createVm("LD (IY+5), B")
-        //         vm.state.B = 22
-        //         vm.state.IY = 25
+            it('LD (IY+5), r', () => {
+                const vm = createVm("LD (IY+5), B")
+                vm.state.B = 22
+                vm.state.IY = 25
 
-        //         vm.run();
-        //         expect(vm.state.memory[30]).toBe(22)
-        //     })
+                vm.run();
+                expect(vm.state.memory[30]).toBe(22)
+            })
 
-        //     it('LD (HL), r', () => {
-        //         const vm = createVm("LD (HL), C")
-        //         vm.state.HL = 20
-        //         vm.state.C = 5
+            it('LD (HL), r', () => {
+                const vm = createVm("LD (HL), C")
+                vm.state.HL = 20
+                vm.state.C = 5
 
-        //         vm.run();
-        //         expect(vm.state.memory[20]).toBe(5)
-        //     })
+                vm.run();
+                expect(vm.state.memory[20]).toBe(5)
+            })
 
-        //     it ('LD (HL), n', () => {
-        //         const vm = createVm("LD (HL), 27")
-        //         vm.state.HL = 50
-        //         vm.run()
-        //         expect(vm.state.memory[50]).toBe(27)
-        //     })
+            it ('LD (HL), n', () => {
+                const vm = createVm("LD (HL), 27")
+                vm.state.HL = 50
+                vm.run()
+                expect(vm.state.memory[50]).toBe(27)
+            })
             
-        //     it ('LD (IX+d), n', () => {
-        //         const vm = createVm("LD (IX+3), 14")
-        //         vm.state.IX = 25
-        //         vm.run()
-        //         expect(vm.state.memory[28]).toBe(14)
-        //     })
+            it ('LD (IX+d), n', () => {
+                const vm = createVm("LD (IX+3), 14")
+                vm.state.IX = 25
+                vm.run()
+                expect(vm.state.memory[28]).toBe(14)
+            })
 
-        //     it ('LD (IY+d), n', () => {
-        //         runProgram("LD (IY+7), 22", {
-        //             setup: { state: { IY: 30 }},
-        //             expect: { memory: { 37: 22 }}
-        //         })
-        //     })
+            it ('LD (IY+d), n', () => {
+                runProgram("LD (IY+7), 22", {
+                    setup: { state: { IY: 30 }},
+                    expect: { memory: { 37: 22 }}
+                })
+            })
 
-        //     it ('LD A, I', () => {
-        //         runProgram("LD A, I", {
-        //             setup: { state: { I: 23 }},
-        //             expect: { state: { A: 23 }}
-        //         })
-        //     })
+            it ('LD A, I', () => {
+                runProgram("LD A, I", {
+                    setup: { state: { I: 23 }},
+                    expect: { state: { A: 23 }}
+                })
+            })
 
-        //     it ('LD A, R', () => {
-        //         runProgram("LD A, R", {
-        //             setup: { state: { R: 23 }},
-        //             expect: { state: { A: 23 }}
-        //         })
-        //     })
+            it ('LD A, R', () => {
+                runProgram("LD A, R", {
+                    setup: { state: { R: 23 }},
+                    expect: { state: { A: 23 }}
+                })
+            })
 
-        //     it ('LD I, A', () => {
-        //         const vm = createVm("LD I, A")
-        //         vm.state.A = 23
-        //         vm.run()
-        //         expect(vm.state.I).toBe(23)
-        //     })
+            it ('LD I, A', () => {
+                const vm = createVm("LD I, A")
+                vm.state.A = 23
+                vm.run()
+                expect(vm.state.I).toBe(23)
+            })
 
-        //     it ('LD R, A', () => {
-        //         const vm = createVm("LD R, A")
-        //         vm.state.A = 117
-        //         vm.run()
-        //         expect(vm.state.R).toBe(117)
-        //     })
+            it ('LD R, A', () => {
+                const vm = createVm("LD R, A")
+                vm.state.A = 117
+                vm.run()
+                expect(vm.state.R).toBe(117)
+            })
 
-        //     it ("LD dd, nn", () => {
-        //         expect(runProgram("LD BC, 5000")).toMatchObject({ BC: 5000 })
-        //         expect(runProgram("LD DE, 1234")).toMatchObject({ DE: 1234 })
-        //         expect(runProgram("LD HL, 9999")).toMatchObject({ HL: 9999 })
-        //         expect(runProgram("LD SP, 14233")).toMatchObject({ SP: 14233 })
-        //     })
+            it ("LD dd, nn", () => {
+                expect(runProgram("LD BC, 5000")).toMatchObject({ BC: 5000 })
+                expect(runProgram("LD DE, 1234")).toMatchObject({ DE: 1234 })
+                expect(runProgram("LD HL, 9999")).toMatchObject({ HL: 9999 })
+                expect(runProgram("LD SP, 14233")).toMatchObject({ SP: 14233 })
+            })
 
-        //     it ("LD IX, nn", () => {
-        //         expect(runProgram("LD IX, 5000")).toMatchObject({ IX: 5000 })
-        //     })
+            it ("LD IX, nn", () => {
+                expect(runProgram("LD IX, 5000")).toMatchObject({ IX: 5000 })
+            })
 
-        //     it ("LD IY, nn", () => {
-        //         expect(runProgram("LD IY, 2000")).toMatchObject({ IY: 2000 })
-        //     })
+            it ("LD IY, nn", () => {
+                expect(runProgram("LD IY, 2000")).toMatchObject({ IY: 2000 })
+            })
 
-        //     it ("LD HL, (nn)", () => {
-        //         const vm = createVm("LD HL, (20)")
-        //         vm.state.memory[20] = 15
-        //         vm.run()
-        //         expect(vm.state.memory[20]).toBe(15)
-        //     })
+            it ("LD HL, (nn)", () => {
+                const vm = createVm("LD HL, (20)")
+                vm.state.memory[20] = 15
+                vm.run()
+                expect(vm.state.memory[20]).toBe(15)
+            })
 
-        //     it ("LD dd, (nn)", () => {
-        //         runProgram("LD BC, (30)", {
-        //             setup: { memory: { 30: 0x12, 31: 0x13 }},
-        //             expect: { state: { BC: 0x1312 }}
-        //         })
-        //         runProgram("LD DE, (30)", {
-        //             setup: { memory: { 30: 0x12, 31: 0x13 }},
-        //             expect: { state: { DE: 0x1312 }}
-        //         })
-        //         runProgram("LD HL, (30)", {
-        //             setup: { memory: { 30: 0x12, 31: 0x13 }},
-        //             expect: { state: { HL: 0x1312 }}
-        //         })
-        //         runProgram("LD SP, (30)", {
-        //             setup: { memory: { 30: 0x12, 31: 0x13 }},
-        //             expect: { state: { SP: 0x1312 }}
-        //         })
-        //     })
+            it ("LD dd, (nn)", () => {
+                runProgram("LD BC, (30)", {
+                    setup: { memory: { 30: 0x12, 31: 0x13 }},
+                    expect: { state: { BC: 0x1312 }}
+                })
+                runProgram("LD DE, (30)", {
+                    setup: { memory: { 30: 0x12, 31: 0x13 }},
+                    expect: { state: { DE: 0x1312 }}
+                })
+                runProgram("LD HL, (30)", {
+                    setup: { memory: { 30: 0x12, 31: 0x13 }},
+                    expect: { state: { HL: 0x1312 }}
+                })
+                runProgram("LD SP, (30)", {
+                    setup: { memory: { 30: 0x12, 31: 0x13 }},
+                    expect: { state: { SP: 0x1312 }}
+                })
+            })
 
-        //     it ("LD IX, (nn)", () => {
-        //         runProgram("LD IX, (25)", {
-        //             setup: { memory: { 25: 0x22, 26: 0x33 }},
-        //             expect: { state: { IX: 0x3322 }}
-        //         })
-        //     })
+            it ("LD IX, (nn)", () => {
+                runProgram("LD IX, (25)", {
+                    setup: { memory: { 25: 0x22, 26: 0x33 }},
+                    expect: { state: { IX: 0x3322 }}
+                })
+            })
 
-        //     it ("LD IY, (nn)", () => {
-        //         runProgram("LD IY, (25)", {
-        //             setup: { memory: { 25: 0x20, 26: 0x25 }},
-        //             expect: { state: { IY: 0x2520 }}
-        //         })
-        //     })
+            it ("LD IY, (nn)", () => {
+                runProgram("LD IY, (25)", {
+                    setup: { memory: { 25: 0x20, 26: 0x25 }},
+                    expect: { state: { IY: 0x2520 }}
+                })
+            })
 
-        //     it ("LD (nn), HL", () => {
-        //         runProgram("LD (16h), HL", { 
-        //             setup: { state: { HL: 0x1234 }},
-        //             expect: { memory: { 0x16: 0x34, 0x17: 0x12 }}
-        //         });
-        //     })
+            it ("LD (nn), HL", () => {
+                runProgram("LD (16h), HL", { 
+                    setup: { state: { HL: 0x1234 }},
+                    expect: { memory: { 0x16: 0x34, 0x17: 0x12 }}
+                });
+            })
 
-        //     it ("LD (nn), BC", () => {
-        //         runProgram("LD (16h), BC", { 
-        //             setup: { state: { BC: 0x1234 }},
-        //             expect: { memory: { 0x16: 0x34, 0x17: 0x12 }}
-        //         });
-        //     })
+            it ("LD (nn), BC", () => {
+                runProgram("LD (16h), BC", { 
+                    setup: { state: { BC: 0x1234 }},
+                    expect: { memory: { 0x16: 0x34, 0x17: 0x12 }}
+                });
+            })
 
-        //     it ("LD (nn), DE", () => {
-        //         runProgram("LD (16h), DE", { 
-        //             setup: { state: { DE: 0x1234 }},
-        //             expect: { memory: { 0x16: 0x34, 0x17: 0x12 }}
-        //         });
-        //     })
+            it ("LD (nn), DE", () => {
+                runProgram("LD (16h), DE", { 
+                    setup: { state: { DE: 0x1234 }},
+                    expect: { memory: { 0x16: 0x34, 0x17: 0x12 }}
+                });
+            })
 
-        //     it ("LD (nn), SP", () => {
-        //         runProgram("LD (16h), SP", { 
-        //             setup: { state: { SP: 0x1234 }},
-        //             expect: { memory: { 0x16: 0x34, 0x17: 0x12 }}
-        //         });
-        //     })
+            it ("LD (nn), SP", () => {
+                runProgram("LD (16h), SP", { 
+                    setup: { state: { SP: 0x1234 }},
+                    expect: { memory: { 0x16: 0x34, 0x17: 0x12 }}
+                });
+            })
 
-        //     it ("LD (nn), IX", () => {
-        //         runProgram("LD (16h), IX", { 
-        //             setup: { state: { IX: 0x1234 }},
-        //             expect: { memory: { 0x16: 0x34, 0x17: 0x12 }}
-        //         });
-        //     })
+            it ("LD (nn), IX", () => {
+                runProgram("LD (16h), IX", { 
+                    setup: { state: { IX: 0x1234 }},
+                    expect: { memory: { 0x16: 0x34, 0x17: 0x12 }}
+                });
+            })
 
-        //     it ("LD (nn), IY", () => {
-        //         runProgram("LD (16h), IY", { 
-        //             setup: { state: { IY: 0x1234 }},
-        //             expect: { memory: { 0x16: 0x34, 0x17: 0x12 }}
-        //         });
-        //     })
+            it ("LD (nn), IY", () => {
+                runProgram("LD (16h), IY", { 
+                    setup: { state: { IY: 0x1234 }},
+                    expect: { memory: { 0x16: 0x34, 0x17: 0x12 }}
+                });
+            })
 
-        //     it ("LD SP, HL", () => {
-        //         runProgram("LD SP, HL", { 
-        //             setup: { state: { HL: 5000 }},
-        //             expect: { state: { SP: 5000 }}
-        //         })
-        //     })
+            it ("LD SP, HL", () => {
+                runProgram("LD SP, HL", { 
+                    setup: { state: { HL: 5000 }},
+                    expect: { state: { SP: 5000 }}
+                })
+            })
 
-        //     it ("LD SP, IX", () => {
-        //         runProgram("LD SP, IX", { 
-        //             setup: { state: { IX: 5000 }},
-        //             expect: { state: {SP: 5000}}
-        //         })
-        //     })
+            it ("LD SP, IX", () => {
+                runProgram("LD SP, IX", { 
+                    setup: { state: { IX: 5000 }},
+                    expect: { state: {SP: 5000}}
+                })
+            })
 
-        //     it ("LD SP, IY", () => {
-        //         runProgram("LD SP, IY", { 
-        //             setup: { state: { IY: 2000 }},
-        //             expect: { state: { SP: 2000 }}
-        //         })
-        //     })
+            it ("LD SP, IY", () => {
+                runProgram("LD SP, IY", { 
+                    setup: { state: { IY: 2000 }},
+                    expect: { state: { SP: 2000 }}
+                })
+            })
         })
 
         // describe("PUSH", () => {

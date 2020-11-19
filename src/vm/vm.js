@@ -1,5 +1,4 @@
 const { bit16ToBytes, bytesToBit16 } = require('../helpers')
-const { OPCODES } = require('./instructions')
 
 const MAX_OPCODES = 3
 
@@ -139,6 +138,12 @@ class Vm {
                 return bytesToBit16(low, high)
             },
 
+            put16BitMemory(address, value) {
+                const [low, high] = bit16ToBytes(value)
+                this.memory[address] = low
+                this.memory[address+1] = high 
+            },
+
             // initialize any of the registers
             ...(state || {})
         }
@@ -200,45 +205,6 @@ class Vm {
         } else {
             this.state.ipWasModified = false
         }
-    }
-
-    stepOld() {
-        if (this.cyclesToWait > 0) {
-            this.cyclesToWait--
-            return
-        }
-
-        const opcode1 = this.state.memory[this.state.IP]
-
-        let inst = OPCODES[opcode1]
-        if (!inst) {
-            throw new Error(`Unknown opcode ${opcode1}`)
-        }
-
-        if (inst.next) {
-            const opcode2 = this.state.memory[this.state.IP+1] || 0;
-            inst = inst.next[opcode2]
-            if (!inst) {
-                throw new Error(`Unknown opcode ${opcode2} after ${opcode1}`)
-            }
-        }
-
-        if (this.cyclesToWait === 0) {
-            this.state.IP++
-            inst.code(this.state)
-            this.cyclesToWait = undefined
-        } else {
-            if (inst.cycles > 1) {
-                this.cyclesToWait = inst.cycles-2
-            } else {
-                this.state.IP++
-                inst.code(this.state)
-            }
-        }
-    }
-
-    stepOneInstruction() {
-
     }
 
     loadMemory(address, memory) {

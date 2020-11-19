@@ -45,11 +45,6 @@ function get2BitRegisterCode(register, atBit) {
     return WORD_REGISTER_TO_TWOBIT[register] << (6 - atBit)
 }
 
-function getWordRegstierFromOpcode(opcode, atBit) {
-    const code = (opcode >> (6 - atBit)) & 0b00000011
-    return TWOBIT_TO_WORD_REGISTER[code]
-}
-
 function bit16ToBytes(number) {
     return [ number & 0x00FF, number >> 8 & 0xFF ]
 }
