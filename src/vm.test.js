@@ -589,97 +589,97 @@ describe('vm', () => {
         })
     })
 
-    // describe("CPI(R)", () => {
-    //     it("CPI negative", () => {
-    //         runProgram("CPI", {
-    //             setup: {
-    //                 state: { A: 5, HL: 10, BC: 3 },
-    //                 memory: { 10: 7 }
-    //             },
-    //             expect: {
-    //                 state: { A: 5, HL: 11, BC: 2, SFlag: 1, ZFlag: 0, PVFlag: 1, NFlag: 1 }
-    //             }
-    //         })
-    //     })
-    //     it("CPI same", () => {
-    //         runProgram("CPI", {
-    //             setup: {
-    //                 state: { A: 5, HL: 10, BC: 3 },
-    //                 memory: { 10: 5 }
-    //             },
-    //             expect: {
-    //                 state: { A: 5, HL: 11, BC: 2, SFlag: 0, ZFlag: 1, PVFlag: 1, NFlag: 1 }
-    //             }
-    //         })
-    //     })
-    //     it("CPI positive", () => {
-    //         runProgram("CPI", {
-    //             setup: {
-    //                 state: { A: 5, HL: 10, BC: 3 },
-    //                 memory: { 10: 3 }
-    //             },
-    //             expect: {
-    //                 state: { A: 5, HL: 11, BC: 2, SFlag: 0, ZFlag: 0, PVFlag: 1, NFlag: 1 }
-    //             }
-    //         })
-    //     })
-    //     it("CPIR", () => {
-    //         runProgram("CPIR", {
-    //             setup: {
-    //                 state: { A: 5, HL: 10, BC: 2 },
-    //             },
-    //             expect: {
-    //                 state: { A: 5, HL: 12, BC: 0, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 1 }
-    //             }
-    //         })
-    //     })
-    // })
+    describe("CPI(R)", () => {
+        it("CPI negative", () => {
+            runProgram("CPI", {
+                setup: {
+                    state: { A: 5, HL: 10, BC: 3 },
+                    memory: { 10: 7 }
+                },
+                expect: {
+                    state: { A: 5, HL: 11, BC: 2, SFlag: 1, ZFlag: 0, PVFlag: 1, NFlag: 1 }
+                }
+            })
+        })
+        it("CPI same", () => {
+            runProgram("CPI", {
+                setup: {
+                    state: { A: 5, HL: 10, BC: 3 },
+                    memory: { 10: 5 }
+                },
+                expect: {
+                    state: { A: 5, HL: 11, BC: 2, SFlag: 0, ZFlag: 1, PVFlag: 1, NFlag: 1 }
+                }
+            })
+        })
+        it("CPI positive", () => {
+            runProgram("CPI", {
+                setup: {
+                    state: { A: 5, HL: 10, BC: 3 },
+                    memory: { 10: 3 }
+                },
+                expect: {
+                    state: { A: 5, HL: 11, BC: 2, SFlag: 0, ZFlag: 0, PVFlag: 1, NFlag: 1 }
+                }
+            })
+        })
+        it("CPIR", () => {
+            runProgram("CPIR", {
+                setup: {
+                    state: { A: 5, HL: 10, BC: 2 },
+                },
+                expect: {
+                    state: { A: 5, HL: 12, BC: 0, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 1 }
+                }
+            })
+        })
+    })
 
-    // describe("CPD(R)", () => {
-    //     it("CPD negative", () => {
-    //         runProgram("CPD", {
-    //             setup: {
-    //                 state: { A: 5, HL: 10, BC: 3 },
-    //                 memory: { 10: 7 }
-    //             },
-    //             expect: {
-    //                 state: { A: 5, HL: 9, BC: 2, SFlag: 1, ZFlag: 0, PVFlag: 1, NFlag: 1 }
-    //             }
-    //         })
-    //     })
-    //     it("CPD same", () => {
-    //         runProgram("CPD", {
-    //             setup: {
-    //                 state: { A: 5, HL: 10, BC: 3 },
-    //                 memory: { 10: 5 }
-    //             },
-    //             expect: {
-    //                 state: { A: 5, HL: 9, BC: 2, SFlag: 0, ZFlag: 1, PVFlag: 1, NFlag: 1 }
-    //             }
-    //         })
-    //     })
-    //     it("CPD positive", () => {
-    //         runProgram("CPD", {
-    //             setup: {
-    //                 state: { A: 5, HL: 10, BC: 3 },
-    //                 memory: { 10: 3 }
-    //             },
-    //             expect: {
-    //                 state: { A: 5, HL: 9, BC: 2, SFlag: 0, ZFlag: 0, PVFlag: 1, NFlag: 1 }
-    //             }
-    //         })
-    //     })
-    //     it("CPDR", () => {
-    //         runProgram("CPDR", {
-    //             setup: {
-    //                 state: { A: 5, HL: 10, BC: 2 },
-    //             },
-    //             expect: {
-    //                 state: { A: 5, HL: 8, BC: 0, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 1 }
-    //             }
-    //         })
-    //     })
-    // })
+    describe("CPD(R)", () => {
+        it("CPD negative", () => {
+            runProgram("CPD", {
+                setup: {
+                    state: { A: 5, HL: 10, BC: 3 },
+                    memory: { 10: 7 }
+                },
+                expect: {
+                    state: { A: 5, HL: 9, BC: 2, SFlag: 1, ZFlag: 0, PVFlag: 1, NFlag: 1 }
+                }
+            })
+        })
+        it("CPD same", () => {
+            runProgram("CPD", {
+                setup: {
+                    state: { A: 5, HL: 10, BC: 3 },
+                    memory: { 10: 5 }
+                },
+                expect: {
+                    state: { A: 5, HL: 9, BC: 2, SFlag: 0, ZFlag: 1, PVFlag: 1, NFlag: 1 }
+                }
+            })
+        })
+        it("CPD positive", () => {
+            runProgram("CPD", {
+                setup: {
+                    state: { A: 5, HL: 10, BC: 3 },
+                    memory: { 10: 3 }
+                },
+                expect: {
+                    state: { A: 5, HL: 9, BC: 2, SFlag: 0, ZFlag: 0, PVFlag: 1, NFlag: 1 }
+                }
+            })
+        })
+        it("CPDR", () => {
+            runProgram("CPDR", {
+                setup: {
+                    state: { A: 5, HL: 10, BC: 2 },
+                },
+                expect: {
+                    state: { A: 5, HL: 8, BC: 0, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 1 }
+                }
+            })
+        })
+    })
     
     // describe("add", () => {
     //     it("ADD A, r", () => {

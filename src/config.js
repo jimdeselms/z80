@@ -328,27 +328,14 @@ module.exports = {
         },
         "LDD": {
             bits: ["11101101", "10101000"],
-            exec(state) {
-                state.memory[state.DE] = state.memory[state.HL]
-                state.DE--
-                state.HL--
-                state.BC--
-                state.HFlag = 0
-                state.PVFlag = state.BC !== 0 ? 1 : 0
-                state.NFlag = 0
-            }
+            exec: LDD
         },
         "LDDR": {
             bits: ["11101101", "10111000"],
             exec(state) {
-                state.memory[state.DE] = state.memory[state.HL]
-                state.DE--
-                state.HL--
-                state.BC--
-                state.HFlag = 0
-                state.PVFlag = state.BC !== 0 ? 1 : 0
-                state.NFlag = 0
+                LDD(state)
                 if (state.PVFlag) {
+                    // stay put
                     state.ipWasModified = true
                 }
             }
@@ -368,15 +355,31 @@ module.exports = {
         },
         "CPI": {
             bits: ["11101101", "10100001"],
+            exec: CPI
         },
         "CPIR": {
-            bits: ["11101101", "10110001"]
+            bits: ["11101101", "10110001"],
+            exec(state) {
+                CPI(state)
+                if (state.BC !== 0 && state.A !== state.memory[state.HL]) {
+                    // Stay put
+                    state.ipWasModified = true
+                }
+            }
         },
         "CPD": {
-            bits: ["11101101", "10101001"]
+            bits: ["11101101", "10101001"],
+            exec: CPD
         },
         "CPDR": {
-            bits: ["11101101", "10111001"]
+            bits: ["11101101", "10111001"],
+            exec(state) {
+                CPD(state)
+                if (state.BC !== 0 && state.A !== state.memory[state.HL]) {
+                    // Stay put
+                    state.ipWasModified = true
+                }
+            }
         },
         "ADD A, (HL)": {
             bits: ["10000110"]
@@ -535,4 +538,58 @@ module.exports = {
             bits: ["11111101", "00110101", "dddddddd"]
         },
     }        
+}
+
+function LDD(state) {
+    state.memory[state.DE] = state.memory[state.HL]
+    state.DE--
+    state.HL--
+    state.BC--
+    state.HFlag = 0
+    state.PVFlag = state.BC !== 0 ? 1 : 0
+    state.NFlag = 0
+}
+
+function CPI(state) {
+    const val = state.memory[state.HL]
+    const diff = state.A - val
+    state.HL++
+    state.BC--
+
+    if (diff < 0) {
+        state.SFlag = 1
+        state.ZFlag = 0
+    } else if (diff === 0) {
+        state.SFlag = 0
+        state.ZFlag = 1
+    } else {
+        state.SFlag = 0
+        state.ZFlag = 0
+    }
+    state.PVFlag = state.BC !== 0
+    state.NFlag = 1
+
+    // TODO: What about HFlag?
+}
+
+function CPD(state) {
+    const val = state.memory[state.HL]
+    const diff = state.A - val
+    state.HL--
+    state.BC--
+
+    if (diff < 0) {
+        state.SFlag = 1
+        state.ZFlag = 0
+    } else if (diff === 0) {
+        state.SFlag = 0
+        state.ZFlag = 1
+    } else {
+        state.SFlag = 0
+        state.ZFlag = 0
+    }
+    state.PVFlag = state.BC !== 0
+    state.NFlag = 1
+
+    // TODO: What about HFlag?
 }
