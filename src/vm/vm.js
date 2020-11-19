@@ -1,11 +1,16 @@
 const { bit16ToBytes, bytesToBit16 } = require('../helpers')
 const { OPCODES } = require('./instructions')
 
+const MAX_OPCODES = 3
+
 class Vm {
-    constructor({ size, state, initialImage }) {
+    constructor({ vmConfig, size, state, initialImage }) {
+
+        this.vmConfig = vmConfig
+
         size = size || 100
 
-        this.cyclesToWait = undefined
+        this.cyclesToWait = 0
 
         this.state = {
             A: 0,
@@ -28,6 +33,7 @@ class Vm {
             "AF'": 0,
 
             isHalted: false,
+            ipWasModified: false,
 
             get HL() {
                 return this.H << 8 | this.L
@@ -146,6 +152,50 @@ class Vm {
             }
         } else {
             this.state.memory = new Array(size).fill(0)
+        }
+    }
+
+    step2() {
+        // Are we in the middle of another instruction? Then skip this step
+        if (--this.cyclesToWait > 0) {
+            return
+        }
+
+        const args = []
+        let currNode = this.vmConfig
+
+        // Find the instruction
+        for (let i = 0; i < MAX_OPCODES; i++) {
+            const code = this.state.memory[this.state.IP + i]
+            currNode = currNode[code]
+            if (currNode.args) {
+                args.push(...currNode.args)
+            }
+            if (currNode.handler) {
+                break
+            }
+        }
+
+        const handler = currNode.handler
+
+        this.cyclesToWait = typeof(handler.cycles) === "number"
+            ? handler.cycles
+            : handler.cycles(this.state)
+
+        if (cycles > 1) {
+            return
+        }
+
+        args.push(...handler.getArgs ? handler.getArgs(this.state) : [])
+
+        handler.exec(this.stage, ...args)
+
+        // Unless the was a jump or other instruction that modified the IP, we'll
+        // move the IP forward for the next instruction
+        if (!this.state.ipWasModified) {
+            this.state.IP += handler.bytes
+        } else {
+            this.state.ipWasModified = false
         }
     }
 

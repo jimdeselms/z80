@@ -4,193 +4,193 @@ module.exports = {
     instructions: {
         "LD A, I": {
             bits: ["11101101", "01010111"],
-            handler(state) {
+            execute(state) {
                 state.A = state.I
             }
         },
         "LD A, R": {
             bits: ["11101101", "01011111"],
-            handler(state) {
+            execute(state) {
                 state.A = state.R
             }
         },
         "LD I, A": {
             bits: ["11101101", "01000111"],
-            handler(state) {
+            execute(state) {
                 state.I = state.A
             }
         },
         "LD R, A": {
             bits: ["11101101", "01001111"],
-            handler(state) {
+            execute(state) {
                 state.R = state.A
             }
         },
         "LD IX, nn": {
             bits: ["11011101", "00100001", "LLLLLLLL", "HHHHHHHH"],
-            handler(state, r, n) {
+            execute(state, r, n) {
                 state.IX = n
             }
         },
         "LD IY, nn": {
             bits: ["11111101", "00100001", "LLLLLLLL", "HHHHHHHH"],
-            handler(state, r, n) {
+            execute(state, r, n) {
                 state.IY = n
             }
         },
         "LD HL, (nn)": {
             bits: ["00101010", "LLLLLLLL", "HHHHHHHH"],
-            handler(state, r, n) {
+            execute(state, r, n) {
                 state.HL = state.get16BitMemory(n)
             }
         },
         "LD IX, (nn)": {
             bits: ["11011101", "00101010", "LLLLLLLL", "HHHHHHHH"],
-            handler(state, r, n) {
+            execute(state, r, n) {
                 state.IX = state.memory[n]
             }
         },
         "LD IY, (nn)": {
             bits: ["11111101", "00101010", "LLLLLLLL", "HHHHHHHH"],
-            handler(state, r, n) {
+            execute(state, r, n) {
                 state.IY = state.memory[n]
             }
         },
         "LD (nn), IX": {
             bits: ["11011101", "00100010", "llllllll", "hhhhhhhh"],
-            handler(state, n, r) {
+            execute(state, n, r) {
                 state.memory[n] = state.IX
             }
         },
         "LD (nn), IY": {
             bits: ["11111101", "00100010", "llllllll", "hhhhhhhh"],
-            handler(state, n, r) {
+            execute(state, n, r) {
                 state.memory[n] = state.IY
             }
         },
         "LD (nn), HL": {
             bits: ["00100010", "llllllll", "hhhhhhhh"],
-            handler(state, n, r) {
+            execute(state, n, r) {
                 state.memory[n] = state.HL
             }
         },
         "LD SP, HL": {
             bits: ["11111001"],
-            handler(state, n, r) {
+            execute(state, n, r) {
                 state.SP = state.HL
             }
         },
         "LD SP, IX": {
             bits: ["11011101", "11111001"],
-            handler(state, n, r) {
+            execute(state, n, r) {
                 state.SP = state.IX
             }
         },
         "LD SP, IY": {
             bits: ["11111101", "11111001"],
-            handler(state, n, r) {
+            execute(state, n, r) {
                 state.SP = state.IY
             }
         },
         "LD r, r'": {
             bits: ["01rrrRRR"],
-            handler(state, r1, r2) {
+            execute(state, r1, r2) {
                 state[r1] = state[r2]
             }
         },
         "LD r, n": {
             bits: ["00rrr110", "NNNNNNNN"],
-            handler(state, r, n) {
+            execute(state, r, n) {
                 state[r] = n
             }
         },
         "LD r, (HL)": {
             bits: ["01rrr110"],
-            handler(state, r) {
+            execute(state, r) {
                 state[r] = state.memory[state.HL]
             }
         },
         "LD A, (BC)": {
             bits: ["00001010"],
-            handler(state) {
+            execute(state) {
                 state.A = state.memory[state.BC]
             }
         },
         "LD A, (DE)": {
             bits: ["00011010"],
-            handler(state, r) {
+            execute(state, r) {
                 state.A = state.memory[state.DE]
             }
         },
         "LD r, (IX+d)": {
             bits: ["11011101", "01rrr110", "DDDDDDDD"],
-            handler(state, r, d) {
+            execute(state, r, d) {
                 state[r] = state.memory[state.IX + d]
             }
         },
         "LD r, (IY+d)": {
             bits: ["11111101", "01rrr110", "DDDDDDDD"],
-            handler(state, r, d) {
+            execute(state, r, d) {
                 state[r] = state.memory[state.IY + d]
             }
         },
         "LD (IX+d), r": {
             bits: ["11011101", "01110RRR", "dddddddd"],
-            handler(state, r, d) {
+            execute(state, r, d) {
                 state.memory[state.IX + d] = state[r]
             }
         },
         "LD (IY+d), r": {
             bits: ["11111101", "01110RRR", "dddddddd"],
-            handler(state, r, d) {
+            execute(state, r, d) {
                 state.memory[state.IY + d] = state[r]
             }
         },
         "LD (HL), r": {
             bits: ["01110RRR"],
-            handler(state, r) {
+            execute(state, r) {
                 state.memory[state.HL] = state[r]
             }
         },
         "LD (HL), n": {
             bits: ["00110110", "NNNNNNNN"],
-            handler(state, r, n) {
+            execute(state, r, n) {
                 state.memory[state.HL] = n
             }
         },
         "LD (IX+d), n": {
             bits: ["11011101", "00110110", "dddddddd", "NNNNNNNN"],
-            handler(state, d, n) {
+            execute(state, d, n) {
                 state.memory[state.IX + d] = n
             }
         },
         "LD (IY+d), n": {
             bits: ["11111101", "00110110", "dddddddd", "NNNNNNNN"],
-            handler(state, d, n) {
+            execute(state, d, n) {
                 state.memory[state.IY + d] = n
             }
         },
         "LD dd, nn": {
             bits: ["00dd0001", "LLLLLLLL", "HHHHHHHH"],
-            handler(state, r, n) {
+            execute(state, r, n) {
                 state[r] = n
             }
         },
         "LD dd, (nn)": {
             bits: ["11101101", "01dd1011", "LLLLLLLL", "HHHHHHHH"],
-            handler(state, r, n) {
+            execute(state, r, n) {
                 state[r] = state.memory[n]
             }
         },
         "LD (nn), dd": {
             bits: ["11101101", "01DD0011", "llllllll", "hhhhhhhh"],
-            handler(state, n, r) {
+            execute(state, n, r) {
                 state.memory[n] = state[r]
             }
         },
         "PUSH BC": {
             bits: ["11qq0101"],
-            handler(state) {
+            execute(state) {
                 const [low, high] = bytesToBit16(state.BC)
                 state.memory[--state.SP] = high
                 state.memory[--state.SP] = low
@@ -198,7 +198,7 @@ module.exports = {
         },
         "PUSH IX": {
             bits: ["11011101", "11100101"],
-            handler(state) {
+            execute(state) {
                 const [low, high] = bytesToBit16(state.IX)
                 state.memory[--state.SP] = high
                 state.memory[--state.SP] = low
@@ -206,7 +206,7 @@ module.exports = {
         },
         "PUSH IY": {
             bits: ["11111101", "11100101"],
-            handler(state) {
+            execute(state) {
                 const [low, high] = bytesToBit16(state.IY)
                 state.memory[--state.SP] = high
                 state.memory[--state.SP] = low
@@ -214,7 +214,7 @@ module.exports = {
         },
         "POP IX": {
             bits: ["11011101", "11100001"],
-            handler(state, r) {
+            execute(state, r) {
                 const [low, high] = bytesToBit16(state.IX)
                 state.memory[--state.SP] = high
                 state.memory[--state.SP] = low
@@ -222,7 +222,7 @@ module.exports = {
         },
         "POP IY": {
             bits: ["11111101", "11100001"],
-            handler(state, r) {
+            execute(state, r) {
                 const [low, high] = bytesToBit16(state.IY)
                 state.memory[--state.SP] = high
                 state.memory[--state.SP] = low
@@ -230,7 +230,7 @@ module.exports = {
         },
         "POP qq": {
             bits: ["11qq0001"],
-            handler(state, r) {
+            execute(state, r) {
                 const [low, high] = bytesToBit16(state[r])
                 state.memory[--state.SP] = high
                 state.memory[--state.SP] = low
@@ -238,19 +238,19 @@ module.exports = {
         },
         "EX DE, HL": {
             bits: ["11101011"],
-            handler(state) {
+            execute(state) {
                 [state.DE, state.HL] = [state.HL, state.DE]
             }
         },
         "EX AF, AF'": {
             bits: ["00001000"],
-            handler(state) {
+            execute(state) {
                 [state.AF, state["AF'"]] = [state["AF'"], state.AF]
             }
         },
         "EX (SP), HL": {
             bits: ["11100011"],
-            handler(state) {
+            execute(state) {
                 const [lowReg, highReg] = bit16ToBytes(state.HL)
         
                 const stackAddr = state.SP
@@ -264,7 +264,7 @@ module.exports = {
         },
         "EX (SP), IX": {
             bits: ["11011101", "11100011"],
-            handler(state) {
+            execute(state) {
                 const [lowReg, highReg] = bit16ToBytes(state.IX)
         
                 const stackAddr = state.SP
@@ -278,7 +278,7 @@ module.exports = {
         },
         "EX (SP), IY": {
             bits: ["11111101", "11100011"],
-            handler(state) {
+            execute(state) {
                 const [lowReg, highReg] = bit16ToBytes(state.IY)
         
                 const stackAddr = state.SP
@@ -292,7 +292,7 @@ module.exports = {
         },
         "EXX": {
             bits: ["11011001"],
-            handler(state) {
+            execute(state) {
                 [state["BC"], state["BC'"]] = [state["BC'"], state["BC"]]
                 [state["DE"], state["DE'"]] = [state["DE'"], state["DE"]]
                 [state["HL"], state["HL'"]] = [state["HL'"], state["HL"]]
@@ -300,7 +300,7 @@ module.exports = {
         },
         "LDI": {
             bits: ["11101101", "10100000"],
-            handler(state) {
+            execute(state) {
                 state.DE = state.HL
                 state.DE++
                 state.HL++
@@ -312,7 +312,7 @@ module.exports = {
         },
         "LDIR": {
             bits: ["11101101", "10110000"],
-            handler(state) {
+            execute(state) {
                 state.DE = state.HL
                 state.DE++
                 state.HL++
@@ -327,7 +327,7 @@ module.exports = {
         },
         "LDD": {
             bits: ["11101101", "10101000"],
-            handler(state) {
+            execute(state) {
                 state.DE = state.HL
                 state.DE--
                 state.HL--
@@ -339,7 +339,7 @@ module.exports = {
         },
         "LDDR": {
             bits: ["11101101", "10111000"],
-            handler(state) {
+            execute(state) {
                 state.DE = state.HL
                 state.DE--
                 state.HL--
@@ -357,7 +357,7 @@ module.exports = {
         },
         "NOP": {
             bits: ["00000000"],
-            handler() {
+            execute() {
             }
         },
         "CPI": {
