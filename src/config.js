@@ -603,7 +603,91 @@ module.exports = {
                 state.memory[state.IY + d] = DEC(state, state.memory[state.IY + d])
             }
         },
+        "DAA": {
+            cycles: 1,
+            bits: ["00100111"],
+            exec(state) {
+                let t = 0
+
+                if (state.HFlag || (state.A & 0x0F) > 9) {
+                    t++
+                }
+
+                if (state.CFlag || (state.A > 0x99)) {
+                    t += 2
+                    state.CFlag = 1
+                }
+
+                if (state.NFlag && !state.HFlag) {
+                    state.HFlag = 0
+                } else {
+                    if (state.NFlag && state.HFlag) {
+                        state.HFlag = (((state.A & 0x0F)) < 6)
+                    } else {
+                        state.HFlag = ((state.A & 0x0F) >= 0x0A)
+                    }
+                }
+
+                switch (t) {
+                    case 1:
+                        state.A += state.NFlag ? 0xFA : 0x06
+                        break
+                    case 2:
+                        state.A += state.NFlag ? 0xA0 : 0x60
+                        break
+                    case 3:
+                        state.A += state.NFlag ? 0x9A : 0x66
+                }
+
+                state.A = state.A % 256
+                state.SFlag = state.A & 0b10000000
+                state.ZFlag = state.A === 0
+                state.PVFlag = getParityBit(state.A)
+
+                // if (state.HFlag || (state.A & 0x0F) > 9) {
+                //     state.HFlag = 1
+                //     state.A += 0x06
+                // } else {
+                //     state.HFlag = 0
+                // }
+                
+                // if (state.CFlag || ((state.A & 0xF0) >> 4) > 9) {
+                //     state.CFlag = 1
+                //     state.A += 0x60
+                // } else {
+                //     state.CFlag = 0
+                // }
+                // state.A = state.A % 256
+
+                // state.SFlag = state.A > 127
+                // state.ZFlag = state.A === 0
+                // state.PVFlag = getParityBit(state.A)
+            }
+        }
     }        
+}
+
+const PARITY_NYBBLES = {
+    0b0000: 0,
+    0b0001: 1,
+    0b0010: 1,
+    0b0011: 0,
+    0b0100: 1,
+    0b0101: 0,
+    0b0110: 0,
+    0b0111: 1,
+    0b1000: 1,
+    0b1001: 0,
+    0b1010: 0,
+    0b1011: 1,
+    0b1100: 0,
+    0b1101: 1,
+    0b1110: 1,
+    0b1111: 0,
+}
+
+function getParityBit(byte) {
+    return PARITY_NYBBLES[byte & 0x0F] ^ PARITY_NYBBLES[(byte & 0xF0) >> 4]
 }
 
 function LDD(state) {
@@ -667,6 +751,7 @@ function ADD(state, value) {
     state.ZFlag = result === 0
     state.HFlag = result & 0b00001000
     state.PVFlag = result > 255
+    state.NFlag = 0
     state.CFlag = result > 255
 
     state.A = result % 256
@@ -683,6 +768,7 @@ function SUB(state, value) {
     state.ZFlag = result === 0
     state.HFlag = result & 0b00010000
     state.PVFlag = result > 255
+    state.NFlag = 1
     state.CFlag = result < 0
 
     state.A = (result+256) % 256
@@ -739,6 +825,7 @@ function CP(state, value) {
     state.HFlag = diff & 0b00010000
     state.PVFlag = diff > 255
     state.CFlag = diff < 0
+    state.NFlag = 1
 }
 
 function INC(state, value) {
@@ -760,7 +847,7 @@ function DEC(state, value) {
     state.ZFlag = result === 0
     state.HFlag = result & 0b00010000
     state.PVFlag = value === 0x7F
-    state.NFlag = 0
+    state.NFlag = 1
 
     return (result + 256) % 256
 }
