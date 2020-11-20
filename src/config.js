@@ -1,3 +1,4 @@
+const { TestWatcher } = require("jest")
 const { bit16ToBytes, bytesToBit16 } = require("./helpers")
 
 module.exports = {
@@ -382,115 +383,151 @@ module.exports = {
             }
         },
         "ADD A, (HL)": {
-            bits: ["10000110"]
+            bits: ["10000110"],
+            exec: (state) => ADD(state, state.memory[state.HL])
         },
         "ADD A, (IX+d)": {
-            bits: ["11011101", "10000110", "DDDDDDDD"]
+            bits: ["11011101", "10000110", "DDDDDDDD"],
+            exec: (state, d) => ADD(state, state.memory[state.IX + d])
         },
         "ADD A, (IY+d)": {
-            bits: ["11111101", "10000110", "DDDDDDDD"]
+            bits: ["11111101", "10000110", "DDDDDDDD"],
+            exec: (state, d) => ADD(state, state.memory[state.IY + d])
         },
         "ADD A, r": {
-            bits: ["10000RRR"]
+            bits: ["10000RRR"],
+            exec: (state, r) => ADD(state, state[r])
         },
         "ADD A, n": {
-            bits: ["11000110", "NNNNNNNN"]
+            bits: ["11000110", "NNNNNNNN"],
+            exec: (state, n) => ADD(state, n)
         },
         "ADC A, (IX+d)": {
-            bits: ["11011101", "10001110", "DDDDDDDD"]
+            bits: ["11011101", "10001110", "DDDDDDDD"],
+            exec: (state, d) => ADC(state, state.memory[state.IX + d])
         },
         "ADC A, (IY+d)": {
-            bits: ["11111101", "10001110", "DDDDDDDD"]
+            bits: ["11111101", "10001110", "DDDDDDDD"],
+            exec: (state, d) => ADC(state, state.memory[state.IY + d])
         },
         "ADC A, r": {
-            bits: ["10001RRR"]
+            bits: ["10001RRR"],
+            exec: (state, r) => ADC(state, state[r])
         },
         "ADC A, n": {
-            bits: ["11001110", "NNNNNNNN"]
+            bits: ["11001110", "NNNNNNNN"],
+            exec: (state, n) => ADC(state, n)
         },
         "ADC A, (HL)": {
-            bits: ["10001110"]
+            bits: ["10001110"],
+            exec: (state) => ADC(state, state.memory[state.HL])
+
         },
         "SUB (HL)": {
-            bits: ["10010110"]
+            bits: ["10010110"],
+            exec: (state) => SUB(state, state.memory[state.HL])
         },
         "SUB (IX+d)": {
-            bits: ["11011101", "10010110", "dddddddd"]
+            bits: ["11011101", "10010110", "dddddddd"],
+            exec: (state, d) => SUB(state, state.memory[state.IX + d])
         },
         "SUB (IY+d)": {
-            bits: ["11111101", "10010110", "dddddddd"]
+            bits: ["11111101", "10010110", "dddddddd"],
+            exec: (state, d) => SUB(state, state.memory[state.IY + d])
         },
         "SUB r": {
-            bits: ["10010rrr"]
+            bits: ["10010rrr"],
+            exec: (state, r) => SUB(state, state[r])
         },
         "SUB n": {
-            bits: ["11010110", "nnnnnnnn"]
+            bits: ["11010110", "nnnnnnnn"],
+            exec: (state, n) => SUB(state, n)
         },
         "SBC A, r": {
-            bits: ["10011RRR"]
+            bits: ["10011RRR"],
+            exec: (state, r) => SBC(state, state[r])
         },
         "SBC A, n": {
-            bits: ["11011110", "NNNNNNNN"]
+            bits: ["11011110", "NNNNNNNN"],
+            exec: (state, n) => SBC(state, n)
         },
         "SBC A, (HL)": {
-            bits: ["10011110"]
+            bits: ["10011110"],
+            exec: (state) => SBC(state, state.memory[state.HL])
         },
         "SBC A, (IX+d)": {
-            bits: ["11011101", "10011110", "DDDDDDDD"]
+            bits: ["11011101", "10011110", "DDDDDDDD"],
+            exec: (state, d) => SBC(state, state.memory[state.IX + d])
         },
         "SBC A, (IY+d)": {
-            bits: ["11111101", "10011110", "DDDDDDDD"]
+            bits: ["11111101", "10011110", "DDDDDDDD"],
+            exec: (state, d) => SBC(state, state.memory[state.IY + d])
         },
 
         // AND
         "AND (HL)": {
-            bits: ["10100110"]
+            bits: ["10100110"],
+            exec: (state) => AND(state, state.memory[state.HL])
         },
         "AND (IX+d)": {
-            bits: ["11011101", "10100110", "dddddddd"]
+            bits: ["11011101", "10100110", "dddddddd"],
+            exec: (state, d) => AND(state, state.memory[state.IX + d])
         },
         "AND (IY+d)": {
-            bits: ["11111101", "10100110", "dddddddd"]
+            bits: ["11111101", "10100110", "dddddddd"],
+            exec: (state, d) => AND(state, state.memory[state.IY + d])
         },
         "AND r": {
-            bits: ["10100rrr"]
+            bits: ["10100rrr"],
+            exec: (state, r) => AND(state, state[r])
         },
         "AND n": {
-            bits: ["11100110", "nnnnnnnn"]
+            bits: ["11100110", "nnnnnnnn"],
+            exec: (state, n) => AND(state, n)
         },
 
         // OR
         "OR (HL)": {
-            bits: ["10110110"]
+            bits: ["10110110"],
+            exec: (state) => OR(state, state.memory[state.HL])
         },
         "OR (IX+d)": {
-            bits: ["11011101", "10110110", "dddddddd"]
+            bits: ["11011101", "10110110", "dddddddd"],
+            exec: (state, d) => OR(state, state.memory[state.IX + d])
         },
         "OR (IY+d)": {
-            bits: ["11111101", "10110110", "dddddddd"]
+            bits: ["11111101", "10110110", "dddddddd"],
+            exec: (state, d) => OR(state, state.memory[state.IY + d])
         },
         "OR r": {
-            bits: ["10110rrr"]
+            bits: ["10110rrr"],
+            exec: (state, r) => OR(state, state[r])
         },
         "OR n": {
-            bits: ["11110110", "nnnnnnnn"]
+            bits: ["11110110", "nnnnnnnn"],
+            exec: (state, n) => OR(state, n)
         },
 
         // XOR
         "XOR (HL)": {
-            bits: ["10101110"]
+            bits: ["10101110"],
+            exec: (state) => XOR(state, state.memory[state.HL])
         },
         "XOR (IX+d)": {
-            bits: ["11011101", "10101110", "dddddddd"]
+            bits: ["11011101", "10101110", "dddddddd"],
+            exec: (state, d) => XOR(state, state.memory[state.IX + d])
         },
         "XOR (IY+d)": {
-            bits: ["11111101", "10101110", "dddddddd"]
+            bits: ["11111101", "10101110", "dddddddd"],
+            exec: (state, d) => XOR(state, state.memory[state.IY + d])
         },
         "XOR r": {
-            bits: ["10101rrr"]
+            bits: ["10101rrr"],
+            exec: (state, r) => XOR(state, state[r])
         },
         "XOR n": {
-            bits: ["11101110", "nnnnnnnn"]
+            bits: ["11101110", "nnnnnnnn"],
+            exec: (state, n) => XOR(state, n)
         },
 
         // CP
@@ -592,4 +629,75 @@ function CPD(state) {
     state.NFlag = 1
 
     // TODO: What about HFlag?
+}
+
+function ADD(state, value) {
+    const result = state.A + value
+
+    state.SFlag = result > 127
+    state.ZFlag = result === 0
+    state.HFlag = result & 0b00001000
+    state.PVFlag = result > 255
+    state.CFlag = result > 255
+
+    state.A = result % 256
+}
+
+function ADC(state, value) {
+    ADD(state, value + (state.CFlag ? 1 : 0))
+}
+
+function SUB(state, value) {
+    const result = state.A - value
+
+    state.SFlag = result < 0
+    state.ZFlag = result === 0
+    state.HFlag = result & 0b00010000
+    state.PVFlag = result > 255
+    state.CFlag = result < 0
+
+    state.A = (result+256) % 256
+}
+
+function SBC(state, value) {
+    SUB(state, value + (state.CFlag ? 1 : 0))
+}
+
+function AND(state, value) {
+    const result = state.A & value
+
+    state.SFlag = result > 127
+    state.ZFlag = result === 0
+    state.HFlag = 1
+    state.PVFlag = 0
+    state.NFlag = 0
+    state.CFlag = 0
+
+    state.A = result
+}
+
+function OR(state, value) {
+    const result = state.A | value
+
+    state.SFlag = result > 127
+    state.ZFlag = result === 0
+    state.HFlag = 1
+    state.PVFlag = 0
+    state.NFlag = 0
+    state.CFlag = 0
+
+    state.A = result
+}
+
+function XOR(state, value) {
+    const result = state.A ^ value
+
+    state.SFlag = result > 127
+    state.ZFlag = result === 0
+    state.HFlag = 1
+    state.PVFlag = 0
+    state.NFlag = 0
+    state.CFlag = 0
+
+    state.A = result
 }

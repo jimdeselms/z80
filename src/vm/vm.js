@@ -142,10 +142,13 @@ class Vm {
                 const [low, high] = bit16ToBytes(value)
                 this.memory[address] = low
                 this.memory[address+1] = high 
-            },
+            }
+        }
 
-            // initialize any of the registers
-            ...(state || {})
+        if (state) {
+            for (const [key, value] of Object.entries(state)) {
+                this.state[key] = value
+            }
         }
 
         if (initialImage) {
