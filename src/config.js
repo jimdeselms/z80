@@ -532,47 +532,76 @@ module.exports = {
 
         // CP
         "CP (HL)": {
-            bits: ["10111110"]
+            bits: ["10111110"],
+            exec: (state) => CP(state, state.memory[state.HL])
         },
         "CP (IX+d)": {
-            bits: ["11011101", "10111110", "dddddddd"]
+            bits: ["11011101", "10111110", "dddddddd"],
+            exec: (state, d) => CP(state, state.memory[state.IX + d])
         },
         "CP (IY+d)": {
-            bits: ["11111101", "10111110", "dddddddd"]
+            bits: ["11111101", "10111110", "dddddddd"],
+            exec: (state, d) => CP(state, state.memory[state.IY + d])
         },
         "CP r": {
-            bits: ["10111rrr"]
+            bits: ["10111rrr"],
+            exec: (state, r) => CP(state, state[r])
         },
         "CP n": {
-            bits: ["11111110", "nnnnnnnn"]
+            bits: ["11111110", "nnnnnnnn"],
+            exec: (state, n) => CP(state, n)
         },
 
         // INC
         "INC r": {
-            bits: ["00rrr100"]
+            bits: ["00rrr100"],
+            exec(state, r) {
+                state[r] = INC(state, state[r])
+            }
         },
         "INC (HL)": {
-            bits: ["00110100"]
+            bits: ["00110100"],
+            exec(state) {
+                state.memory[state.HL] = INC(state, state.memory[state.HL])
+            }
         },
         "INC (IX+d)": {
-            bits: ["11011101", "00110100", "dddddddd"]
+            bits: ["11011101", "00110100", "dddddddd"],
+            exec(state, d) {
+                state.memory[state.IX + d] = INC(state, state.memory[state.IX + d])
+            }
         },
         "INC (IY+d)": {
-            bits: ["11111101", "00110100", "dddddddd"]
+            bits: ["11111101", "00110100", "dddddddd"],
+            exec(state, d) {
+                state.memory[state.IY + d] = INC(state, state.memory[state.IY + d])
+            }
         },
 
         // DEC
         "DEC r": {
-            bits: ["00rrr101"]
+            bits: ["00rrr101"],
+            exec(state, r) {
+                state[r] = DEC(state, state[r])
+            }
         },
         "DEC (HL)": {
-            bits: ["00110101"]
+            bits: ["00110101"],
+            exec(state) {
+                state.memory[state.HL] = DEC(state, state.memory[state.HL])
+            }
         },
         "DEC (IX+d)": {
-            bits: ["11011101", "00110101", "dddddddd"]
+            bits: ["11011101", "00110101", "dddddddd"],
+            exec(state, d) {
+                state.memory[state.IX + d] = DEC(state, state.memory[state.IX + d])
+            }
         },
         "DEC (IY+d)": {
-            bits: ["11111101", "00110101", "dddddddd"]
+            bits: ["11111101", "00110101", "dddddddd"],
+            exec(state, d) {
+                state.memory[state.IY + d] = DEC(state, state.memory[state.IY + d])
+            }
         },
     }        
 }
@@ -700,4 +729,38 @@ function XOR(state, value) {
     state.CFlag = 0
 
     state.A = result
+}
+
+function CP(state, value) {
+    const diff = state.A - value
+
+    state.SFlag = diff < 0
+    state.ZFlag = diff === 0
+    state.HFlag = diff & 0b00010000
+    state.PVFlag = diff > 255
+    state.CFlag = diff < 0
+}
+
+function INC(state, value) {
+    const result = value + 1
+
+    state.SFlag = result > 127
+    state.ZFlag = result === 0
+    state.HFlag = result & 0b00010000
+    state.PVFlag = value === 0x7F
+    state.NFlag = 0
+
+    return result % 256
+}
+
+function DEC(state, value) {
+    const result = value - 1
+
+    state.SFlag = result > 127
+    state.ZFlag = result === 0
+    state.HFlag = result & 0b00010000
+    state.PVFlag = value === 0x7F
+    state.NFlag = 0
+
+    return (result + 256) % 256
 }
