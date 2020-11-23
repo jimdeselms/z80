@@ -213,6 +213,22 @@ function getCodeAsNumber(code, args) {
         }
     }
 
+    if (stringMatchesPattern(code, "  ss    ")) {
+        const arg0 = args[0]
+        if (arg0 && arg0.kind === "register") {
+            code = code.replace("ss", "00")
+            result |= (TWO_BIT_REGISTER_CODES[arg0.register] << 4)
+        }
+    }
+
+    if (stringMatchesPattern(code, "  SS    ")) {
+        const arg1 = args[1]
+        if (arg1 && arg1.kind === "register") {
+            code = code.replace("SS", "00")
+            result |= (TWO_BIT_REGISTER_CODES[arg1.register] << 4)
+        }
+    }
+
     if (stringMatchesPattern(code, "  DD    ")) {
         const arg1 = args[1]
         if (arg1 && arg1.kind === "register") {

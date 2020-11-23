@@ -24,7 +24,7 @@ class RegisterArgument extends Argument {
     matchesArg(type) {
         return type === this.register
             || ((type === "r" || type === "r'") && EIGHT_BIT_REGISTERS.has(this.register))
-            || ((type === "dd" || type === "dd'") && SIXTEEN_BIT_DD_REGISTERS.has(this.register))
+            || ((type === "dd" || type === "dd'" || type === "ss") && SIXTEEN_BIT_DD_REGISTERS.has(this.register))
             || ((type === "qq" || type === "qq'") && SIXTEEN_BIT_QQ_REGISTERS.has(this.register))
     }
 

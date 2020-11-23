@@ -402,6 +402,10 @@ module.exports = {
             bits: ["11000110", "NNNNNNNN"],
             exec: (state, n) => ADD(state, n)
         },
+        "ADD HL, ss": {
+            bits: ["00SS1001"],
+            exec: (state, reg) => ADD16(state, state[reg])
+        },
         "ADC A, (IX+d)": {
             bits: ["11011101", "10001110", "DDDDDDDD"],
             exec: (state, d) => ADC(state, state.memory[state.IX + d])
@@ -421,7 +425,10 @@ module.exports = {
         "ADC A, (HL)": {
             bits: ["10001110"],
             exec: (state) => ADC(state, state.memory[state.HL])
-
+        },
+        "ADC HL, ss": {
+            bits: ["11101101", "01SS1010"],
+            exec: (state, reg) => ADC16(state, state[reg])
         },
         "SUB (HL)": {
             bits: ["10010110"],
@@ -835,6 +842,24 @@ function ADD(state, value) {
 function ADC(state, value) {
     ADD(state, value + (state.CFlag ? 1 : 0))
 }
+
+function ADD16(state, value) {
+    const result = state.HL + value
+
+    state.SFlag = result > 32767
+    state.ZFlag = result === 0
+    state.HFlag = result & 0b0000100000000000
+    state.PVFlag = result > 65535
+    state.NFlag = 0
+    state.CFlag = result > 65535
+
+    state.HL = result % 65536
+}
+
+function ADC16(state, value) {
+    ADD16(state, value + (state.CFlag ? 1 : 0))
+}
+
 
 function SUB(state, value) {
     const result = state.A - value

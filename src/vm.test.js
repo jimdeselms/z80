@@ -751,6 +751,13 @@ describe('vm', () => {
                 expect: { state: { A: 60, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
             })
         })
+
+        it("ADD HL, ss", () => {
+            runProgram("ADD HL, DE", {
+                setup: { state: { HL: 10000, DE: 9000 }},
+                expect: { state: { HL: 19000 }}
+            })
+        })
     })
 
     describe("adc", () => {
@@ -825,6 +832,13 @@ describe('vm', () => {
             runProgram("ADC A, (IY)", {
                 setup: { state: { A: 10, IY: 25 }, memory: { 25: 50 } },
                 expect: { state: { A: 60, SFlag: 0, ZFlag: 0, PVFlag: 0, NFlag: 0, CFlag: 0 } }
+            })
+        })
+
+        it("ADC HL, ss", () => {
+            runProgram("ADC HL, DE", {
+                setup: { state: { HL: 10000, DE: 9000, CFlag: 1 }},
+                expect: { state: { HL: 19001 }}
             })
         })
     })

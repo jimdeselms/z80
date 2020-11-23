@@ -80,6 +80,7 @@ function getAllPossibleCodesForPattern(pattern) {
 
     const result = getPossibleCodesForPattern(pattern, "rrr", 2, THREE_BIT_REGISTER_CODES)
         || getPossibleCodesForPattern(pattern, "dd", 2, ["BC", "DE", "HL", "SP"])
+        || getPossibleCodesForPattern(pattern, "ss", 2, ["BC", "DE", "HL", "SP"])
         || getPossibleCodesForPattern(pattern, "qq", 2, ["BC", "DE", "HL", "AF"])
         || getPossibleCodesForPattern(pattern, "rrr", 5, THREE_BIT_REGISTER_CODES)
         || getPossibleCodesForDoubleRegisterPattern(pattern)
