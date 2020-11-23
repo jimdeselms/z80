@@ -29,6 +29,12 @@ class Vm {
             IP: 0,
             SP: 0,
 
+            IFF: 1,
+            IM0: 0,
+            IM1: 0,
+            IM2: 0,
+            IM3: 0,
+
             "AF'": 0,
 
             isHalted: false,

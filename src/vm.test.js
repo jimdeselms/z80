@@ -1396,6 +1396,47 @@ describe('vm', () => {
             expect: { state: { CFlag: 1 }}
         })
     })
+
+    it("DI", () => {
+        runProgram("DI", {
+            setup: { state: { IFF: 1 }},
+            expect: { state: { IFF: 0 }}
+        })
+        runProgram("DI", {
+            setup: { state: { IFF: 0 }},
+            expect: { state: { IFF: 0 }}
+        })
+    })
+
+    it("EI", () => {
+        runProgram("EI", {
+            setup: { state: { IFF: 1 }},
+            expect: { state: { IFF: 1 }}
+        })
+        runProgram("EI", {
+            setup: { state: { IFF: 0 }},
+            expect: { state: { IFF: 1 }}
+        })
+    })
+
+    it ("IM 0", () => {
+        runProgram("IM 0", {
+            setup: { state: { IM0: 0 }},
+            expect: { state: { IM0: 1 }},
+        })
+    })
+    it ("IM 1", () => {
+        runProgram("IM 1", {
+            setup: { state: { IM1: 0 }},
+            expect: { state: { IM1: 1 }},
+        })
+    })
+    it ("IM 2", () => {
+        runProgram("IM 2", {
+            setup: { state: { IM2: 0 }},
+            expect: { state: { IM2: 1 }},
+        })
+    })
 })
 
 function runProgram(program, opts) {
@@ -1441,11 +1482,4 @@ function createVm(program, setup) {
     }
 
     return buildVm(config, { initialImage, state: setup.state})
-}
-
-function testDaa(aBefore, cFlagBefore, hFlagBefore, aAfter, cFlagAfter, hFlagAfter) {
-    runProgram("DAA", {
-        setup: { state: { A: aBefore, CFlag: cFlagBefore, HFlag: hFlagBefore }},
-        expect: { state: { A: aAfter, CFlag: cFlagAfter, HFlag: hFlagAfter }}
-    })
 }

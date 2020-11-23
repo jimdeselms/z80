@@ -703,7 +703,42 @@ module.exports = {
                 state.NFlag = 0
                 state.HFlag = 0
             }
-        }
+        },
+        "DI": {
+            bits: ["11110011"],
+            cycles: 1,
+            exec(state) {
+                state.IFF = 0
+            }
+        },
+        "EI": {
+            bits: ["11111011"],
+            cycles: 1,
+            exec(state) {
+                state.IFF = 1
+            }
+        },
+        "IM 0": {
+            bits: ["11101101", "01000110"],
+            cycles: 2,
+            exec(state) {
+                state.IM0 = 1                
+            }
+        },
+        "IM 1": {
+            bits: ["11101101", "01010110"],
+            cycles: 2,
+            exec(state) {
+                state.IM1 = 1                
+            }
+        },
+        "IM 2": {
+            bits: ["11101101", "01011110"],
+            cycles: 2,
+            exec(state) {
+                state.IM2 = 1                
+            }
+        },
     }        
 }
 
