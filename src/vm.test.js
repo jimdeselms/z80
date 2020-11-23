@@ -1327,28 +1327,52 @@ describe('vm', () => {
         })
     })
 
-    describe("daa", () => {
-        it("works", () => {
-            runProgram("DAA", {
-                setup: { state: { A: 0, CFlag: 0, HFlag: 0 }},
-                expect: { state: { A: 0, CFlag: 0, HFlag: 0 }}
-            })
-            runProgram("DAA", {
-                setup: { state: { A: 0x5A, CFlag: 0, HFlag: 0 }},
-                expect: { state: { A: 0x60, CFlag: 0, HFlag: 1 }}
-            })
-            runProgram("DAA", {
-                setup: { state: { A: 0x22, CFlag: 1, HFlag: 1 }},
-                expect: { state: { A: 0x88, CFlag: 1, HFlag: 0 }}
-            })
-            runProgram("DAA", {
-                setup: { state: { A: 0xA3, CFlag: 0, HFlag: 1 }},
-                expect: { state: { A: 0x09, CFlag: 1, HFlag: 0 }}
-            })
-            runProgram("DAA", {
-                setup: { state: { A: 0x79, CFlag: 1, HFlag: 0, NFlag: 1 }},
-                expect: { state: { A: 0x19, CFlag: 1, HFlag: 0 }}
-            })
+    it("DAA", () => {
+        runProgram("DAA", {
+            setup: { state: { A: 0, CFlag: 0, HFlag: 0 }},
+            expect: { state: { A: 0, CFlag: 0, HFlag: 0 }}
+        })
+        runProgram("DAA", {
+            setup: { state: { A: 0x5A, CFlag: 0, HFlag: 0 }},
+            expect: { state: { A: 0x60, CFlag: 0, HFlag: 1 }}
+        })
+        runProgram("DAA", {
+            setup: { state: { A: 0x22, CFlag: 1, HFlag: 1 }},
+            expect: { state: { A: 0x88, CFlag: 1, HFlag: 0 }}
+        })
+        runProgram("DAA", {
+            setup: { state: { A: 0xA3, CFlag: 0, HFlag: 1 }},
+            expect: { state: { A: 0x09, CFlag: 1, HFlag: 0 }}
+        })
+        runProgram("DAA", {
+            setup: { state: { A: 0x79, CFlag: 1, HFlag: 0, NFlag: 1 }},
+            expect: { state: { A: 0x19, CFlag: 1, HFlag: 0 }}
+        })
+    })
+
+    it("CPL", () => {
+        runProgram("CPL", {
+            setup: { state: { A: 0b00000000 }},
+            expect: { state: { A: 0b11111111, HFlag: 1, NFlag: 1 }}
+        })
+        runProgram("CPL", {
+            setup: { state: { A: 0b10101010 }},
+            expect: { state: { A: 0b01010101, HFlag: 1, NFlag: 1 }}
+        })
+    })
+
+    it("NEG", () => {
+        runProgram("NEG", {
+            setup: { state: { A: 0b00000000 }},
+            expect: { state: { A: 0b00000000, HFlag: 0, NFlag: 1 }}
+        })
+        runProgram("NEG", {
+            setup: { state: { A: 255 }},
+            expect: { state: { A: 1, HFlag: 0, NFlag: 1 }}
+        })
+        runProgram("NEG", {
+            setup: { state: { A: 0x80 }},
+            expect: { state: { A: 0x80, HFlag: 0, NFlag: 1 }}
         })
     })
 })

@@ -663,6 +663,29 @@ module.exports = {
                 // state.ZFlag = state.A === 0
                 // state.PVFlag = getParityBit(state.A)
             }
+        },
+        "CPL": {
+            bits: ["00101111"],
+            exec(state) {
+                state.A = ~state.A + 256
+                state.HFlag = 1
+                state.NFlag = 1
+            },
+            cycles: 1
+        },
+        "NEG": {
+            bits: ["11101101", "01000100"],
+            cycles: 2,
+            exec(state) {
+                state.CFlag = state.A !== 0x00
+                state.PVFlag = state.A !== 0x80
+                state.A = ((0 - state.A) + 256) % 256
+                state.ZFlag = state.A === 0
+                state.HFlag = state.A & 0b00010000
+                state.NFlag = 1
+                state.SFlag = state.A > 127
+
+            }
         }
     }        
 }
