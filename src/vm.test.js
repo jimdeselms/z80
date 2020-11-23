@@ -1,4 +1,4 @@
-const config = require('./config')
+const config = require('./z80')
 const { buildAssembler } = require('./assembler/assemblerBuilder')
 const { buildVm } = require('./vm/vmBuilder')
 
