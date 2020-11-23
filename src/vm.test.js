@@ -1386,6 +1386,16 @@ describe('vm', () => {
             expect: { state: { CFlag: 1 }}
         })
     })
+    it("SCF", () => {
+        runProgram("SCF", {
+            setup: { state: { CFlag: 1 }},
+            expect: { state: { CFlag: 1 }}
+        })
+        runProgram("CCF", {
+            setup: { state: { CFlag: 0 }},
+            expect: { state: { CFlag: 1 }}
+        })
+    })
 })
 
 function runProgram(program, opts) {
