@@ -686,6 +686,14 @@ module.exports = {
                 state.SFlag = state.A > 127
 
             }
+        },
+        "CCF": {
+            bits: ["00111111"],
+            cycles: 2,
+            exec(state) {
+                state.CFlag = !state.CFlag
+                state.NFlag = 0
+            }
         }
     }        
 }

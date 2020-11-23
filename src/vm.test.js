@@ -1375,6 +1375,17 @@ describe('vm', () => {
             expect: { state: { A: 0x80, HFlag: 0, NFlag: 1 }}
         })
     })
+
+    it("CCF", () => {
+        runProgram("CCF", {
+            setup: { state: { CFlag: 1 }},
+            expect: { state: { CFlag: 0 }}
+        })
+        runProgram("CCF", {
+            setup: { state: { CFlag: 0 }},
+            expect: { state: { CFlag: 1 }}
+        })
+    })
 })
 
 function runProgram(program, opts) {
