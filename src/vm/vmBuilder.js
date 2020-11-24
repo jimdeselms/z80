@@ -82,8 +82,8 @@ function getAllPossibleCodesForPattern(pattern) {
         || getPossibleCodesForPattern(pattern, "dd", 2, ["BC", "DE", "HL", "SP"])
         || getPossibleCodesForPattern(pattern, "ss", 2, ["BC", "DE", "HL", "SP"])
         || getPossibleCodesForPattern(pattern, "qq", 2, ["BC", "DE", "HL", "AF"])
-        || getPossibleCodesForPattern(pattern, "pp", 2, ["BC", "DE", "IX", "AF"])
-        || getPossibleCodesForPattern(pattern, "rr", 2, ["BC", "DE", "IY", "AF"])
+        || getPossibleCodesForPattern(pattern, "pp", 2, ["BC", "DE", "IX", "SP"])
+        || getPossibleCodesForPattern(pattern, "rr", 2, ["BC", "DE", "IY", "SP"])
         || getPossibleCodesForPattern(pattern, "rrr", 5, THREE_BIT_REGISTER_CODES)
         || getPossibleCodesForDoubleRegisterPattern(pattern)
 

@@ -770,6 +770,43 @@ describe('vm', () => {
                 expect: { state: { HL: 19002 }}
             })
         })
+
+        it("ADD IX, pp", () => {
+            runProgram("ADD IX, BC", {
+                setup: { state: { IX: 10000, BC: 9000 }},
+                expect: { state: { IX: 19000 }}
+            })
+            runProgram("ADD IX, DE", {
+                setup: { state: { IX: 10001, DE: 9000 }},
+                expect: { state: { IX: 19001 }}
+            })
+            runProgram("ADD IX, IX", {
+                setup: { state: { IX: 5000 }},
+                expect: { state: { IX: 10000 }}
+            })
+            runProgram("ADD IX, SP", {
+                setup: { state: { IX: 10002, SP: 9000 }},
+                expect: { state: { IX: 19002 }}
+            })
+        })
+        it("ADD IY, rr", () => {
+            runProgram("ADD IY, BC", {
+                setup: { state: { IY: 10000, BC: 9000 }},
+                expect: { state: { IY: 19000 }}
+            })
+            runProgram("ADD IY, DE", {
+                setup: { state: { IY: 10001, DE: 9000 }},
+                expect: { state: { IY: 19001 }}
+            })
+            runProgram("ADD IY, IY", {
+                setup: { state: { IY: 5000 }},
+                expect: { state: { IY: 10000 }}
+            })
+            runProgram("ADD IY, SP", {
+                setup: { state: { IY: 10002, SP: 9000 }},
+                expect: { state: { IY: 19002 }}
+            })
+        })
     })
 
     describe("adc", () => {
@@ -1330,6 +1367,38 @@ describe('vm', () => {
                 expect: { memory: { 26: 16 } }
             })
         })
+
+        it("INC ss", () => {
+            runProgram("INC BC", { 
+                setup: { state: { BC: 25 }}, 
+                expect: { state: { BC: 26 } }
+            })
+            runProgram("INC DE", { 
+                setup: { state: { DE: 25 }}, 
+                expect: { state: { DE: 26 } }
+            })
+            runProgram("INC HL", { 
+                setup: { state: { HL: 25 }}, 
+                expect: { state: { HL: 26 } }
+            })
+            runProgram("INC SP", { 
+                setup: { state: { SP: 25 }}, 
+                expect: { state: { SP: 26 } }
+            })
+        })
+
+        it("INC IX", () => {
+            runProgram("INC IX", { 
+                setup: { state: { IX: 25 }}, 
+                expect: { state: { IX: 26 } }
+            })
+        })
+        it("INC IY", () => {
+            runProgram("INC IY", { 
+                setup: { state: { IY: 25 }}, 
+                expect: { state: { IY: 26 } }
+            })
+        })
     })
 
     describe("dec", () => {
@@ -1363,6 +1432,40 @@ describe('vm', () => {
                 expect: { memory: { 26: 14 } }
             })
         })
+
+        it("DEC ss", () => {
+            runProgram("DEC BC", {
+                setup: { state: { BC: 12345 }},
+                expect: { state: { BC: 12344 }}
+            })
+            runProgram("DEC DE", {
+                setup: { state: { DE: 12345 }},
+                expect: { state: { DE: 12344 }}
+            })
+            runProgram("DEC HL", {
+                setup: { state: { HL: 12345 }},
+                expect: { state: { HL: 12344 }}
+            })
+            runProgram("DEC SP", {
+                setup: { state: { SP: 12345 }},
+                expect: { state: { SP: 12344 }}
+            })
+        })
+
+        it("DEC IX", () => {
+            runProgram("DEC IX", {
+                setup: { state: { IX: 12345 }},
+                expect: { state: { IX: 12344 }}
+            })
+        })
+        it("DEC IY", () => {
+            runProgram("DEC IY", {
+                setup: { state: { IY: 12345 }},
+                expect: { state: { IY: 12344 }}
+            })
+        })
+
+
     })
 
     it("DAA", () => {
@@ -1473,6 +1576,54 @@ describe('vm', () => {
         runProgram("IM 2", {
             setup: { state: { IM2: 0 }},
             expect: { state: { IM2: 1 }},
+        })
+    })
+
+    it("RLCA", () => {
+        runProgram("RLCA", {
+            setup: { state: { CFlag: 0, A: 0b10001000 }},
+            expect: { state: { CFlag: 1, A: 0b00010001 }}
+        })
+        runProgram("RLCA", {
+            setup: { state: { A: 0b11111111 }},
+            expect: { state: { CFlag: 1, A: 0b11111111 }}
+        })
+    })
+
+    it("RRCA", () => {
+        runProgram("RRCA", {
+            setup: { state: { CFlag: 0, A: 0b00010000 }},
+            expect: { state: { CFlag: 0, A: 0b00001000 }}
+        })
+        runProgram("RRCA", {
+            setup: { state: { CFlag: 0, A: 0b10010001 }},
+            expect: { state: { CFlag: 1, A: 0b11001000 }}
+        })
+    })
+
+    it("RLA", () => {
+        runProgram("RLA", {
+            setup: { state: { CFlag: 0, A: 0b10001000 }},
+            expect: { state: { CFlag: 1, A: 0b00010000 }}
+        })
+        runProgram("RLA", {
+            setup: { state: { CFlag: 1, A: 0b01110110 }},
+            expect: { state: { CFlag: 0, A: 0b11101101 }}
+        })
+        runProgram("RLA", {
+            setup: { state: { A: 0b11111111 }},
+            expect: { state: { CFlag: 1, A: 0b11111110 }}
+        })
+    })
+
+    it("RRA", () => {
+        runProgram("RRA", {
+            setup: { state: { CFlag: 0, A: 0b00010000 }},
+            expect: { state: { CFlag: 0, A: 0b00001000 }}
+        })
+        runProgram("RRA", {
+            setup: { state: { CFlag: 0, A: 0b10010001 }},
+            expect: { state: { CFlag: 1, A: 0b01001000 }}
         })
     })
 })

@@ -404,11 +404,18 @@ module.exports = {
         },
         "ADD HL, ss": {
             bits: ["00SS1001"],
-            exec: (state, reg) => ADD16(state, "HL", state[reg])
+            exec: (state, reg) => ADD16(state, "HL", state[reg]),
+            cycles: 4
         },
         "ADD IX, pp": {
             bits: ["11011101", "00PP1001"],
-            exec: (state, reg) => ADD16(state, "IX", state[reg]) 
+            exec: (state, reg) => ADD16(state, "IX", state[reg]),
+            cycles: 4
+        },
+        "ADD IY, rr": {
+            bits: ["11111101", "00RR1001"],
+            exec: (state, reg) => ADD16(state, "IY", state[reg]),
+            cycles: 4
         },
         "ADC A, (IX+d)": {
             bits: ["11011101", "10001110", "DDDDDDDD"],
@@ -432,7 +439,8 @@ module.exports = {
         },
         "ADC HL, ss": {
             bits: ["11101101", "01SS1010"],
-            exec: (state, reg) => ADC16(state, "HL", state[reg])
+            exec: (state, reg) => ADC16(state, "HL", state[reg]),
+            cycles: 4
         },
         "SUB (HL)": {
             bits: ["10010110"],
@@ -588,6 +596,21 @@ module.exports = {
                 state.memory[state.IY + d] = INC(state, state.memory[state.IY + d])
             }
         },
+        "INC ss": {
+            bits: ["00ss0011"],
+            exec: (state, reg) => INC16(state, reg),
+            cycles: 1
+        },
+        "INC IX": {
+            bits: ["11011101", "00100011"],
+            exec: (state) => INC16(state, "IX"),
+            cycles: 2
+        },
+        "INC IY": {
+            bits: ["11111101", "00100011"],
+            exec: (state) => INC16(state, "IY"),
+            cycles: 2
+        },
 
         // DEC
         "DEC r": {
@@ -613,6 +636,21 @@ module.exports = {
             exec(state, d) {
                 state.memory[state.IY + d] = DEC(state, state.memory[state.IY + d])
             }
+        },
+        "DEC ss": {
+            bits: ["00ss1011"],
+            exec: (state, reg) => DEC16(state, reg),
+            cycles: 1
+        },
+        "DEC IX": {
+            bits: ["11011101", "00101011"],
+            exec: (state) => DEC16(state, "IX"),
+            cycles: 1
+        },
+        "DEC IY": {
+            bits: ["11111101", "00101011"],
+            exec: (state) => DEC16(state, "IY"),
+            cycles: 1
         },
         "DAA": {
             cycles: 1,
@@ -750,6 +788,42 @@ module.exports = {
                 state.IM2 = 1                
             }
         },
+        "RLCA": {
+            bits: ["00000111"],
+            cycles: 1,
+            exec: (state) => RLC(state, state.A, v => state.A = v)
+        },
+        "RRCA": {
+            bits: ["00001111"],
+            cycles: 1,
+            exec: (state) => RRC(state, state.A, v => state.A = v)
+        },
+        "RLA": {
+            bits: ["00010111"],
+            cycles: 1,
+            exec(state) {
+                state.HFlag = 0
+                state.NFlag = 0
+                const prevC = state.CFlag ? 1 : 0
+                const signBit = (state.A & 0b10000000) >> 7
+
+                state.A = ((state.A << 1) & 0xFF) + prevC
+                state.CFlag = signBit
+            }
+        },
+        "RRA": {
+            bits: ["00011111"],
+            cycles: 1,
+            exec(state) {
+                state.HFlag = 0
+                state.NFlag = 0
+                const prevC = state.CFlag ? 1 : 0
+                const loBit = state.A & 1
+
+                state.A = ((state.A >> 1) & 0xFF) | (prevC << 7)
+                state.CFlag = loBit
+            }
+        }
     }        
 }
 
@@ -943,6 +1017,14 @@ function INC(state, value) {
     return result % 256
 }
 
+function INC16(state, reg) {
+    const result = state[reg] + 1
+
+    // TODO: The manual says the condition bits aren't affected, but that documentation LIES, so look it up
+    // someplace else to make sure.
+    state[reg] = result % 65536
+}
+
 function DEC(state, value) {
     const result = value - 1
 
@@ -953,4 +1035,30 @@ function DEC(state, value) {
     state.NFlag = 1
 
     return (result + 256) % 256
+}
+
+function DEC16(state, reg) {
+    const result = state[reg] - 1
+
+    // TODO: Like INC16, I'm skeptical that this doesn't affect the condition bits. Verify.
+
+    state[reg] = (result + 65536) % 65536
+}
+
+function RLC(state, value, set) {
+    state.HFlag = 0
+    state.NFlag = 0
+    const signBit = (value & 0b10000000) >> 7
+
+    set(((value << 1) & 0xFF) + signBit)
+    state.CFlag = signBit
+}
+
+function RRC(state, value, set) {
+    state.HFlag = 0
+    state.NFlag = 0
+    const loBit = value & 1
+
+    set(((value >> 1) & 0xFF) | (loBit << 7))
+    state.CFlag = loBit
 }
