@@ -788,6 +788,55 @@ module.exports = {
                 state.IM2 = 1                
             }
         },
+        "RLC r": {
+            bits: ["11001011", "00000rrr"],
+            cycles: 2,
+            exec: (state, r) => RLC(state, state[r], v => state[r] = v)
+        },
+        "RLC (HL)": {
+            bits: ["11001011", "00000110"],
+            cycles: 4,
+            exec: (state) => RLC(state, state.memory[state.HL], v => state.memory[state.HL] = v)
+        },
+        "RLC (IX+d)": {
+            bits: ["11011101", "11001011", "dddddddd", "00000110"],
+            cycles: 4,
+            exec: (state, d1) => {
+                RLSpecial(state, state.memory[state.IX + d1], v => state.memory[state.IX + d1] = v)
+            }
+        },
+        "RLC (IY+d)": {
+            bits: ["11111101", "11001011", "dddddddd", "00000110"],
+            cycles: 4,
+            exec: (state, d1) => RLSpecial(state, state.memory[state.IY + d1], v => state.memory[state.IY + d1] = v)
+        },
+
+        "RL r": {
+            bits: ["11001011", "00010rrr"],
+            cycles: 2,
+            exec: (state, r) => RL(state, state[r], v => state[r] = v)
+        },
+        "RL (HL)": {
+            bits: ["11001011", "00010110"],
+            cycles: 4,
+            exec: (state) => RL(state, state.HL, v => state.HL = v)
+        },
+        "RL (HL)": {
+            bits: ["11001011", "00010110"],
+            cycles: 4,
+            exec: (state) => RL(state, state.memory[state.HL], v => state.memory[state.HL] = v)
+        },
+        "RL (IX+d)": {
+            bits: ["11011101", "11001011", "dddddddd", "00010110"],
+            cycles: 4,
+            exec: (state, d1) => RLSpecial(state, state.memory[state.IX + d1], v => state.memory[state.IX + d1] = v)
+        },
+        "RL (IY+d)": {
+            bits: ["11111101", "11001011", "dddddddd", "00010110"],
+            cycles: 4,
+            exec: (state, d1) => RLSpecial(state, state.memory[state.IY + d1], v => state.memory[state.IY + d1] = v)
+        },
+
         "RLCA": {
             bits: ["00000111"],
             cycles: 1,
@@ -801,28 +850,12 @@ module.exports = {
         "RLA": {
             bits: ["00010111"],
             cycles: 1,
-            exec(state) {
-                state.HFlag = 0
-                state.NFlag = 0
-                const prevC = state.CFlag ? 1 : 0
-                const signBit = (state.A & 0b10000000) >> 7
-
-                state.A = ((state.A << 1) & 0xFF) + prevC
-                state.CFlag = signBit
-            }
+            exec: (state) => RL(state, state.A, v => state.A = v)
         },
         "RRA": {
             bits: ["00011111"],
             cycles: 1,
-            exec(state) {
-                state.HFlag = 0
-                state.NFlag = 0
-                const prevC = state.CFlag ? 1 : 0
-                const loBit = state.A & 1
-
-                state.A = ((state.A >> 1) & 0xFF) | (prevC << 7)
-                state.CFlag = loBit
-            }
+            exec: (state) => RR(state, state.A, v => state.A = v)
         }
     }        
 }
@@ -1060,5 +1093,32 @@ function RRC(state, value, set) {
     const loBit = value & 1
 
     set(((value >> 1) & 0xFF) | (loBit << 7))
+    state.CFlag = loBit
+}
+
+function RL(state, value, set) {
+    state.HFlag = 0
+    state.NFlag = 0
+    const prevC = state.CFlag ? 1 : 0
+    const signBit = (value & 0b10000000) >> 7
+
+    set(((value << 1) & 0xFF) + prevC)
+    state.CFlag = signBit
+}
+
+function RLSpecial(state, value, set) {
+    switch (state.memory[state.IP + 3]) {
+        case 0b00000110: RLC(state, value, set); break;
+        case 0b00010110: RL(state, value, set); break;
+    }
+}
+
+function RR(state, value, set) {
+    state.HFlag = 0
+    state.NFlag = 0
+    const prevC = state.CFlag ? 1 : 0
+    const loBit = value & 1
+
+    set(((value >> 1) & 0xFF) | (prevC << 7))
     state.CFlag = loBit
 }
