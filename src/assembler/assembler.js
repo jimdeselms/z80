@@ -54,6 +54,20 @@ const TWO_BIT_SS_CODES = {
     'SP': 0b11,
 }
 
+const TWO_BIT_PP_CODES = {
+    'BC': 0b00,
+    'DE': 0b01,
+    'IX': 0b10,
+    'SP': 0b11
+}
+
+const TWO_BIT_RR_CODES = {
+    'BC': 0b00,
+    'DE': 0b01,
+    'IY': 0b10,
+    'SP': 0b11
+}
+
 const TWO_BIT_ALTERNATE_REGISTER_CODES = {
     'BC': 0b00,
     'DE': 0b01,
@@ -233,6 +247,22 @@ function getCodeAsNumber(code, args) {
         if (arg1 && arg1.kind === "register") {
             code = code.replace("SS", "00")
             result |= (TWO_BIT_SS_CODES[arg1.register] << 4)
+        }
+    }
+
+    if (stringMatchesPattern(code, "  PP    ")) {
+        const arg1 = args[1]
+        if (arg1 && arg1.kind === "register") {
+            code = code.replace("PP", "00")
+            result |= (TWO_BIT_PP_CODES[arg1.register] << 4)
+        }
+    }
+
+    if (stringMatchesPattern(code, "  RR    ")) {
+        const arg1 = args[1]
+        if (arg1 && arg1.kind === "register") {
+            code = code.replace("RR", "00")
+            result |= (TWO_BIT_RR_CODES[arg1.register] << 4)
         }
     }
 

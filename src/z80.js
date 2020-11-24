@@ -406,6 +406,10 @@ module.exports = {
             bits: ["00SS1001"],
             exec: (state, reg) => ADD16(state, "HL", state[reg])
         },
+        "ADD IX, pp": {
+            bits: ["11011101", "00PP1001"],
+            exec: (state, reg) => ADD16(state, "IX", state[reg]) 
+        },
         "ADC A, (IX+d)": {
             bits: ["11011101", "10001110", "DDDDDDDD"],
             exec: (state, d) => ADC(state, state.memory[state.IX + d])
