@@ -1658,6 +1658,37 @@ describe('vm', () => {
         })
     })
 
+    describe("RRC", () => {
+        it("RRC r", () => {
+            runProgram("RRC B", {
+                setup: { state: { CFlag: 0, B: 0b10001001 }},
+                expect: { state: { CFlag: 1, B: 0b11000100 }}
+            })
+            runProgram("RRC L", {
+                setup: { state: { CFlag: 0, L: 0b10001001 }},
+                expect: { state: { CFlag: 1, L: 0b11000100 }}
+            })
+        })
+        it("RRC (HL)", () => {
+            runProgram("RRC (HL)", {
+                setup: { state: { CFlag: 0, HL: 40 }, memory: { 40: 0b10001001 }},
+                expect: { state: { CFlag: 1, HL: 40 }, memory: { 40: 0b11000100 }},
+            })
+        })
+        it("RRC (IX+d)", () => {
+            runProgram("RRC (IX+4)", {
+                setup: { state: { CFlag: 0, IX: 40 }, memory: { 44: 0b10001001 }},
+                expect: { state: { CFlag: 1, IX: 40 }, memory: { 44: 0b11000100 }},
+            })
+        })
+        it("RRC (IY+d)", () => {
+            runProgram("RRC (IY+4)", {
+                setup: { state: { CFlag: 0, IY: 40 }, memory: { 44: 0b10001001 }},
+                expect: { state: { CFlag: 1, IY: 40 }, memory: { 44: 0b11000100 }},
+            })
+        })
+    })
+
     describe("RL", () => {
         it ("RL r", () => {
             runProgram("RL A", {
@@ -1688,6 +1719,38 @@ describe('vm', () => {
             })
         })
     })
+
+    describe("RR", () => {
+        it("RR r", () => {
+            runProgram("RR B", {
+                setup: { state: { CFlag: 1, B: 0b10001000 }},
+                expect: { state: { CFlag: 0, B: 0b11000100 }}
+            })
+            runProgram("RR L", {
+                setup: { state: { CFlag: 1, L: 0b10001000 }},
+                expect: { state: { CFlag: 0, L: 0b11000100 }}
+            })
+        })
+        it("RR (HL)", () => {
+            runProgram("RR (HL)", {
+                setup: { state: { CFlag: 1, HL: 40 }, memory: { 40: 0b10001000 }},
+                expect: { state: { CFlag: 0, HL: 40 }, memory: { 40: 0b11000100 }},
+            })
+        })
+        it("RR (IX+d)", () => {
+            runProgram("RR (IX+4)", {
+                setup: { state: { CFlag: 1, IX: 40 }, memory: { 44: 0b10001000 }},
+                expect: { state: { CFlag: 0, IX: 40 }, memory: { 44: 0b11000100 }},
+            })
+        })
+        it("RR (IY+d)", () => {
+            runProgram("RR (IY+4)", {
+                setup: { state: { CFlag: 1, IY: 40 }, memory: { 44: 0b10001000 }},
+                expect: { state: { CFlag: 0, IY: 40 }, memory: { 44: 0b11000100 }},
+            })
+        })
+    })
+
 })
 
 function runProgram(program, opts) {

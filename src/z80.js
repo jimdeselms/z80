@@ -802,13 +802,13 @@ module.exports = {
             bits: ["11011101", "11001011", "dddddddd", "00000110"],
             cycles: 4,
             exec: (state, d1) => {
-                RLSpecial(state, state.memory[state.IX + d1], v => state.memory[state.IX + d1] = v)
+                RotateSpecial(state, state.memory[state.IX + d1], v => state.memory[state.IX + d1] = v)
             }
         },
         "RLC (IY+d)": {
             bits: ["11111101", "11001011", "dddddddd", "00000110"],
             cycles: 4,
-            exec: (state, d1) => RLSpecial(state, state.memory[state.IY + d1], v => state.memory[state.IY + d1] = v)
+            exec: (state, d1) => RotateSpecial(state, state.memory[state.IY + d1], v => state.memory[state.IY + d1] = v)
         },
 
         "RL r": {
@@ -828,13 +828,59 @@ module.exports = {
         },
         "RL (IX+d)": {
             bits: ["11011101", "11001011", "dddddddd", "00010110"],
-            cycles: 4,
-            exec: (state, d1) => RLSpecial(state, state.memory[state.IX + d1], v => state.memory[state.IX + d1] = v)
+            cycles: 6,
+            exec: (state, d1) => RotateSpecial(state, state.memory[state.IX + d1], v => state.memory[state.IX + d1] = v)
         },
         "RL (IY+d)": {
             bits: ["11111101", "11001011", "dddddddd", "00010110"],
+            cycles: 6,
+            exec: (state, d1) => RotateSpecial(state, state.memory[state.IY + d1], v => state.memory[state.IY + d1] = v)
+        },
+
+        "RRC r": {
+            bits: ["11001011", "00001rrr"],
+            cycles: 2,
+            exec: (state, r) => RRC(state, state[r], v => state[r] = v)
+        },
+        "RRC (HL)": {
+            bits: ["11001011", "00001110"],
             cycles: 4,
-            exec: (state, d1) => RLSpecial(state, state.memory[state.IY + d1], v => state.memory[state.IY + d1] = v)
+            exec: (state) => RRC(state, state.memory[state.HL], v => state.memory[state.HL] = v)
+        },
+        "RRC (IX+d)": {
+            bits: ["11011101", "11001011", "dddddddd", "00001110"],
+            cycles: 6,
+            exec: (state, d1) => {
+                RotateSpecial(state, state.memory[state.IX + d1], v => state.memory[state.IX + d1] = v)
+            }
+        },
+        "RRC (IY+d)": {
+            bits: ["11111101", "11001011", "dddddddd", "00001110"],
+            cycles: 6,
+            exec: (state, d1) => RotateSpecial(state, state.memory[state.IY + d1], v => state.memory[state.IY + d1] = v)
+        },
+
+        "RR r": {
+            bits: ["11001011", "00011rrr"],
+            cycles: 2,
+            exec: (state, r) => RR(state, state[r], v => state[r] = v)
+        },
+        "RR (HL)": {
+            bits: ["11001011", "00011110"],
+            cycles: 4,
+            exec: (state) => RR(state, state.memory[state.HL], v => state.memory[state.HL] = v)
+        },
+        "RR (IX+d)": {
+            bits: ["11011101", "11001011", "dddddddd", "00011110"],
+            cycles: 6,
+            exec: (state, d1) => {
+                RotateSpecial(state, state.memory[state.IX + d1], v => state.memory[state.IX + d1] = v)
+            }
+        },
+        "RR (IY+d)": {
+            bits: ["11111101", "11001011", "dddddddd", "00011110"],
+            cycles: 6,
+            exec: (state, d1) => RotateSpecial(state, state.memory[state.IY + d1], v => state.memory[state.IY + d1] = v)
         },
 
         "RLCA": {
@@ -1106,13 +1152,6 @@ function RL(state, value, set) {
     state.CFlag = signBit
 }
 
-function RLSpecial(state, value, set) {
-    switch (state.memory[state.IP + 3]) {
-        case 0b00000110: RLC(state, value, set); break;
-        case 0b00010110: RL(state, value, set); break;
-    }
-}
-
 function RR(state, value, set) {
     state.HFlag = 0
     state.NFlag = 0
@@ -1122,3 +1161,13 @@ function RR(state, value, set) {
     set(((value >> 1) & 0xFF) | (prevC << 7))
     state.CFlag = loBit
 }
+
+function RotateSpecial(state, value, set) {
+    switch (state.memory[state.IP + 3]) {
+        case 0b00000110: RLC(state, value, set); break;
+        case 0b00010110: RL(state, value, set); break;
+        case 0b00001110: RRC(state, value, set); break;
+        case 0b00011110: RR(state, value, set); break;
+    }
+}
+
