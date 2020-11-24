@@ -753,9 +753,21 @@ describe('vm', () => {
         })
 
         it("ADD HL, ss", () => {
-            runProgram("ADD HL, DE", {
-                setup: { state: { HL: 10000, DE: 9000 }},
+            runProgram("ADD HL, BC", {
+                setup: { state: { HL: 10000, BC: 9000 }},
                 expect: { state: { HL: 19000 }}
+            })
+            runProgram("ADD HL, DE", {
+                setup: { state: { HL: 10001, DE: 9000 }},
+                expect: { state: { HL: 19001 }}
+            })
+            runProgram("ADD HL, HL", {
+                setup: { state: { HL: 5000 }},
+                expect: { state: { HL: 10000 }}
+            })
+            runProgram("ADD HL, SP", {
+                setup: { state: { HL: 10002, SP: 9000 }},
+                expect: { state: { HL: 19002 }}
             })
         })
     })
@@ -836,9 +848,21 @@ describe('vm', () => {
         })
 
         it("ADC HL, ss", () => {
+            runProgram("ADC HL, BC", {
+                setup: { state: { HL: 10000, BC: 9000, CFlag: 1 }},
+                expect: { state: { HL: 19001 }}
+            })
             runProgram("ADC HL, DE", {
                 setup: { state: { HL: 10000, DE: 9000, CFlag: 1 }},
                 expect: { state: { HL: 19001 }}
+            })
+            runProgram("ADC HL, HL", {
+                setup: { state: { HL: 2000, CFlag: 1 }},
+                expect: { state: { HL: 4001 }}
+            })
+            runProgram("ADC HL, SP", {
+                setup: { state: { HL: 10000, SP: 9000, CFlag: 0 }},
+                expect: { state: { HL: 19000 }}
             })
         })
     })

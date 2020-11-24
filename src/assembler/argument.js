@@ -1,6 +1,10 @@
 const EIGHT_BIT_REGISTERS=new Set(["A", "B", "C", "D", "E", "H", "L", "F", "I", "R"])
 const SIXTEEN_BIT_DD_REGISTERS = new Set(["HL", "BC", "DE", "SP"])
+
 const SIXTEEN_BIT_QQ_REGISTERS = new Set(["HL", "BC", "DE", "AF"])
+const SIXTEEN_BIT_SS_REGISTERS = new Set(["BC", "DE", "HL", "SP"])
+const SIXTEEN_BIT_PP_REGISTERS = new Set(["BC", "DE", "IX", "SP"])
+const SIXTEEN_BIT_RR_REGISTERS = new Set(["BC", "DE", "IY", "SP"])
 
 class Argument {
     constructor(kind) {
@@ -24,7 +28,10 @@ class RegisterArgument extends Argument {
     matchesArg(type) {
         return type === this.register
             || ((type === "r" || type === "r'") && EIGHT_BIT_REGISTERS.has(this.register))
-            || ((type === "dd" || type === "dd'" || type === "ss") && SIXTEEN_BIT_DD_REGISTERS.has(this.register))
+            || ((type === "dd" || type === "dd'") && SIXTEEN_BIT_DD_REGISTERS.has(this.register))
+            || ((type === "ss") && SIXTEEN_BIT_SS_REGISTERS.has(this.register))
+            || ((type === "pp") && SIXTEEN_BIT_PP_REGISTERS.has(this.register))
+            || ((type === "rr") && SIXTEEN_BIT_RR_REGISTERS.has(this.register))
             || ((type === "qq" || type === "qq'") && SIXTEEN_BIT_QQ_REGISTERS.has(this.register))
     }
 
