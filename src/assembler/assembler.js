@@ -194,6 +194,14 @@ function getCodeAsNumber(code, args) {
         }
     }
         
+    if (stringMatchesPattern(code, "  bbb   ")) {
+        const arg0 = args[0]
+        if (arg0 && arg0.kind === "immediate") {
+            code = code.replace("bbb", "000")
+            result |= (arg0.integer << 3)
+        }
+    }
+
     if (stringMatchesPattern(code, "  rrr   ")) {
         const arg0 = args[0]
         if (arg0 && arg0.kind === "register") {

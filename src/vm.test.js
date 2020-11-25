@@ -1751,6 +1751,149 @@ describe('vm', () => {
         })
     })
 
+    describe("SLA", () => {
+        it("SLA r", () => {
+            runProgram("SLA B", {
+                setup: { state: { B: 0b11111111 }},
+                expect: { state: { CFlag: 1, B: 0b11111110 }}
+            })
+            runProgram("SLA L", {
+                setup: { state: { L: 0b11111111 }},
+                expect: { state: { CFlag: 1, L: 0b11111110 }}
+            })
+        })
+        it("SLA (HL)", () => {
+            runProgram("SLA (HL)", {
+                setup: { state: { HL: 40 }, memory: { 40: 0b11111111 }},
+                expect: { state: { CFlag: 1, HL: 40 }, memory: { 40: 0b11111110 }},
+            })
+        })
+        it("SLA (IX+d)", () => {
+            runProgram("SLA (IX+4)", {
+                setup: { state: { IX: 40 }, memory: { 44: 0b11111111 }},
+                expect: { state: { CFlag: 1, IX: 40 }, memory: { 44: 0b11111110 }},
+            })
+        })
+        it("SLA (IY+d)", () => {
+            runProgram("SLA (IY+4)", {
+                setup: { state: { IY: 40 }, memory: { 44: 0b11111111 }},
+                expect: { state: { CFlag: 1, IY: 40 }, memory: { 44: 0b11111110 }},
+            })
+        })
+    })
+
+    describe("SRA", () => {
+        it("SRA r", () => {
+            runProgram("SRA B", {
+                setup: { state: { B: 0b11111111 }},
+                expect: { state: { CFlag: 1, B: 0b10111111 }}
+            })
+            runProgram("SRA L", {
+                setup: { state: { L: 0b11111111 }},
+                expect: { state: { CFlag: 1, L: 0b10111111 }}
+            })
+        })
+        it("SRA (HL)", () => {
+            runProgram("SRA (HL)", {
+                setup: { state: { HL: 40 }, memory: { 40: 0b11111111 }},
+                expect: { state: { CFlag: 1, HL: 40 }, memory: { 40: 0b10111111 }},
+            })
+        })
+        it("SRA (IX+d)", () => {
+            runProgram("SRA (IX+4)", {
+                setup: { state: { IX: 40 }, memory: { 44: 0b11111111 }},
+                expect: { state: { CFlag: 1, IX: 40 }, memory: { 44: 0b10111111 }},
+            })
+        })
+        it("SRA (IY+d)", () => {
+            runProgram("SRA (IY+4)", {
+                setup: { state: { IY: 40 }, memory: { 44: 0b11111111 }},
+                expect: { state: { CFlag: 1, IY: 40 }, memory: { 44: 0b10111111 }},
+            })
+        })
+    })
+
+    describe("SRL", () => {
+        it("SRL r", () => {
+            runProgram("SRL B", {
+                setup: { state: { B: 0b11111111 }},
+                expect: { state: { CFlag: 1, B: 0b01111111 }}
+            })
+            runProgram("SRL L", {
+                setup: { state: { L: 0b11111111 }},
+                expect: { state: { CFlag: 1, L: 0b01111111 }}
+            })
+        })
+        it("SRL (HL)", () => {
+            runProgram("SRL (HL)", {
+                setup: { state: { HL: 40 }, memory: { 40: 0b11111111 }},
+                expect: { state: { CFlag: 1, HL: 40 }, memory: { 40: 0b01111111 }},
+            })
+        })
+        it("SRL (IX+d)", () => {
+            runProgram("SRL (IX+4)", {
+                setup: { state: { IX: 40 }, memory: { 44: 0b11111111 }},
+                expect: { state: { CFlag: 1, IX: 40 }, memory: { 44: 0b01111111 }},
+            })
+        })
+        it("SRL (IY+d)", () => {
+            runProgram("SRL (IY+4)", {
+                setup: { state: { IY: 40 }, memory: { 44: 0b11111111 }},
+                expect: { state: { CFlag: 1, IY: 40 }, memory: { 44: 0b01111111 }},
+            })
+        })
+    })
+
+    it("RLD", () => {
+        runProgram("RLD", {
+            setup: { state: { HL: 20 }, memory: { 20: 0b00011011 }},
+            expect: { state: { HL: 20 }, memory: { 20: 0b00101101 }},
+        })
+    })
+    it("RRD", () => {
+        runProgram("RRD", {
+            setup: { state: { HL: 20 }, memory: { 20: 0b00011011 }},
+            expect: { state: { HL: 20 }, memory: { 20: 0b00110110 }},
+        })
+    })
+
+    describe("BIT", () => {
+        it("BIT b, r", () => {
+            runProgram("BIT 5, C", {
+                setup: {state: { C: 0b00100000 }},
+                expect: { state: { ZFlag: 1 }}
+            })
+            runProgram("BIT 2, L", {
+                setup: {state: { L: 0b00100000 }},
+                expect: { state: { ZFlag: 0 }}
+            })
+            runProgram("BIT 3, H", {
+                setup: {state: { H: 0b00001000 }},
+                expect: { state: { ZFlag: 1 }}
+            })
+        })
+
+        it("BIT b, (HL)", () => {
+            runProgram("BIT 5, (HL)", {
+                setup: {state: { HL: 15 }, memory: { 15: 0b00100000 }},
+                expect: { state: { ZFlag: 1 }}
+            })
+            runProgram("BIT 5, (HL)", {
+                setup: {state: { HL: 15 }, memory: { 15: 0b00010000 }},
+                expect: { state: { ZFlag: 0 }}
+            })
+        })
+        it("BIT b, (IX+d)", () => {
+            runProgram("BIT 5, (IX+2)", {
+                setup: {state: { IX: 15 }, memory: { 17: 0b00100000 }},
+                expect: { state: { ZFlag: 1 }}
+            })
+            runProgram("BIT 5, (IX+2)", {
+                setup: {state: { IX: 15 }, memory: { 17: 0b00010000 }},
+                expect: { state: { ZFlag: 0 }}
+            })
+        })
+    })
 })
 
 function runProgram(program, opts) {

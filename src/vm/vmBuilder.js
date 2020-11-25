@@ -38,9 +38,15 @@ function addPathsAndHandlers(rule, i, currNode) {
     }
 }
 
+function getBits2To4(value) {
+    return (value >> 3) & 0b111
+}
+
 function buildGetArgsFunc(remainingPatterns, ipOffset) {
     function buildFunclet(p, i) {
-        switch (p) {
+        const pWithoutNumbers = p.replace(/[01]/g, " ")
+
+        switch (pWithoutNumbers) {
             case "LLLLLLLL": 
             case "llllllll": 
                 return (state, list) => list.push(state.memory[state.IP + ipOffset + i] | (state.memory[state.IP + ipOffset + i + 1] << 8))
@@ -48,7 +54,7 @@ function buildGetArgsFunc(remainingPatterns, ipOffset) {
             case "dddddddd": 
             case "NNNNNNNN": 
             case "nnnnnnnn": 
-                        return (state, list) => list.push(state.memory[state.IP + ipOffset + i])
+                return (state, list) => list.push(state.memory[state.IP + ipOffset + i])
             default:
                 return () => {}
         }
@@ -84,8 +90,10 @@ function getAllPossibleCodesForPattern(pattern) {
         || getPossibleCodesForPattern(pattern, "qq", 2, ["BC", "DE", "HL", "AF"])
         || getPossibleCodesForPattern(pattern, "pp", 2, ["BC", "DE", "IX", "SP"])
         || getPossibleCodesForPattern(pattern, "rr", 2, ["BC", "DE", "IY", "SP"])
+        || getPossibleCodesForPattern(pattern, "bbb", 2, [0, 1, 2, 3, 4, 5, 6, 7])
         || getPossibleCodesForPattern(pattern, "rrr", 5, THREE_BIT_REGISTER_CODES)
         || getPossibleCodesForDoubleRegisterPattern(pattern)
+        || getPossibleCodesForNumberThenRegisterPattern(pattern)
 
     if (!result) throw new Error(`Unrecognized pattern ${pattern}`)
 
@@ -111,6 +119,29 @@ function getPossibleCodesForDoubleRegisterPattern(pattern) {
 
                     result.push([asByte, [register1, register2]])
                 }
+            }
+        }
+    }
+
+    return result
+}
+
+function getPossibleCodesForNumberThenRegisterPattern(pattern) {
+    if (!stringMatchesPattern(pattern, "bbbRRR", 2)) return undefined
+
+    const result = []
+
+    for (let num1Code = 0; num1Code < 8; num1Code++) {
+        for (let reg2Code = 0; reg2Code < 8; reg2Code++) {
+            const register2 = THREE_BIT_REGISTER_CODES[reg2Code]
+
+            if (register2) {
+                const numStr = pattern.substr(0, 2)
+                    + num1Code.toString(2).padStart(3, '0')
+                    + reg2Code.toString(2).padStart(3, '0')
+                const asByte = parseInt(numStr, 2)
+
+                result.push([asByte, [num1Code, register2]])
             }
         }
     }

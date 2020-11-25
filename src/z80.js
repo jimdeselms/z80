@@ -802,13 +802,13 @@ module.exports = {
             bits: ["11011101", "11001011", "dddddddd", "00000110"],
             cycles: 4,
             exec: (state, d1) => {
-                RotateSpecial(state, state.memory[state.IX + d1], v => state.memory[state.IX + d1] = v)
+                IXIYSpecial(state, state.memory[state.IX + d1], v => state.memory[state.IX + d1] = v)
             }
         },
         "RLC (IY+d)": {
             bits: ["11111101", "11001011", "dddddddd", "00000110"],
             cycles: 4,
-            exec: (state, d1) => RotateSpecial(state, state.memory[state.IY + d1], v => state.memory[state.IY + d1] = v)
+            exec: (state, d1) => IXIYSpecial(state, state.memory[state.IY + d1], v => state.memory[state.IY + d1] = v)
         },
 
         "RL r": {
@@ -829,12 +829,12 @@ module.exports = {
         "RL (IX+d)": {
             bits: ["11011101", "11001011", "dddddddd", "00010110"],
             cycles: 6,
-            exec: (state, d1) => RotateSpecial(state, state.memory[state.IX + d1], v => state.memory[state.IX + d1] = v)
+            exec: (state, d1) => IXIYSpecial(state, state.memory[state.IX + d1], v => state.memory[state.IX + d1] = v)
         },
         "RL (IY+d)": {
             bits: ["11111101", "11001011", "dddddddd", "00010110"],
             cycles: 6,
-            exec: (state, d1) => RotateSpecial(state, state.memory[state.IY + d1], v => state.memory[state.IY + d1] = v)
+            exec: (state, d1) => IXIYSpecial(state, state.memory[state.IY + d1], v => state.memory[state.IY + d1] = v)
         },
 
         "RRC r": {
@@ -851,13 +851,13 @@ module.exports = {
             bits: ["11011101", "11001011", "dddddddd", "00001110"],
             cycles: 6,
             exec: (state, d1) => {
-                RotateSpecial(state, state.memory[state.IX + d1], v => state.memory[state.IX + d1] = v)
+                IXIYSpecial(state, state.memory[state.IX + d1], v => state.memory[state.IX + d1] = v)
             }
         },
         "RRC (IY+d)": {
             bits: ["11111101", "11001011", "dddddddd", "00001110"],
             cycles: 6,
-            exec: (state, d1) => RotateSpecial(state, state.memory[state.IY + d1], v => state.memory[state.IY + d1] = v)
+            exec: (state, d1) => IXIYSpecial(state, state.memory[state.IY + d1], v => state.memory[state.IY + d1] = v)
         },
 
         "RR r": {
@@ -874,13 +874,13 @@ module.exports = {
             bits: ["11011101", "11001011", "dddddddd", "00011110"],
             cycles: 6,
             exec: (state, d1) => {
-                RotateSpecial(state, state.memory[state.IX + d1], v => state.memory[state.IX + d1] = v)
+                IXIYSpecial(state, state.memory[state.IX + d1], v => state.memory[state.IX + d1] = v)
             }
         },
         "RR (IY+d)": {
             bits: ["11111101", "11001011", "dddddddd", "00011110"],
             cycles: 6,
-            exec: (state, d1) => RotateSpecial(state, state.memory[state.IY + d1], v => state.memory[state.IY + d1] = v)
+            exec: (state, d1) => IXIYSpecial(state, state.memory[state.IY + d1], v => state.memory[state.IY + d1] = v)
         },
 
         "RLCA": {
@@ -902,6 +902,101 @@ module.exports = {
             bits: ["00011111"],
             cycles: 1,
             exec: (state) => RR(state, state.A, v => state.A = v)
+        },
+
+        "SLA r": {
+            bits: ["11001011", "00100rrr"],
+            cycles: 2,
+            exec: (state, r) => SLA(state, state[r], v => state[r] = v)
+        },
+        "SLA (HL)": {
+            bits: ["11001011", "00100110"],
+            cycles: 4,
+            exec: (state) => SLA(state, state.memory[state.HL], v => state.memory[state.HL] = v)
+        },
+        "SLA (IX+d)": {
+            bits: ["11011101", "11001011", "dddddddd", "00100110"],
+            cycles: 6,
+            exec: (state, d) => IXIYSpecial(state, state.memory[state.IX + d], v => state.memory[state.IX + d] = v)
+        },
+        "SLA (IY+d)": {
+            bits: ["11111101", "11001011", "dddddddd", "00100110"],
+            cycles: 6,
+            exec: (state, d) => IXIYSpecial(state, state.memory[state.IY + d], v => state.memory[state.IY + d] = v)
+        },
+
+        "SRA r": {
+            bits: ["11001011", "00101rrr"],
+            cycles: 2,
+            exec: (state, r) => SRA(state, state[r], v => state[r] = v)
+        },
+        "SRA (HL)": {
+            bits: ["11001011", "00101110"],
+            cycles: 4,
+            exec: (state) => SRA(state, state.memory[state.HL], v => state.memory[state.HL] = v)
+        },
+        "SRA (IX+d)": {
+            bits: ["11011101", "11001011", "dddddddd", "00101110"],
+            cycles: 6,
+            exec: (state, d) => IXIYSpecial(state, state.memory[state.IX + d], v => state.memory[state.IX + d] = v)
+        },
+        "SRA (IY+d)": {
+            bits: ["11111101", "11001011", "dddddddd", "00101110"],
+            cycles: 6,
+            exec: (state, d) => IXIYSpecial(state, state.memory[state.IY + d], v => state.memory[state.IY + d] = v)
+        },
+
+        "SRL r": {
+            bits: ["11001011", "00111rrr"],
+            cycles: 2,
+            exec: (state, r) => SRL(state, state[r], v => state[r] = v)
+        },
+        "SRL (HL)": {
+            bits: ["11001011", "00111110"],
+            cycles: 4,
+            exec: (state) => SRL(state, state.memory[state.HL], v => state.memory[state.HL] = v)
+        },
+        "SRL (IX+d)": {
+            bits: ["11011101", "11001011", "dddddddd", "00111110"],
+            cycles: 6,
+            exec: (state, d) => IXIYSpecial(state, state.memory[state.IX + d], v => state.memory[state.IX + d] = v)
+        },
+        "SRL (IY+d)": {
+            bits: ["11111101", "11001011", "dddddddd", "00111110"],
+            cycles: 6,
+            exec: (state, d) => IXIYSpecial(state, state.memory[state.IY + d], v => state.memory[state.IY + d] = v)
+        },
+
+        "RLD": {
+            bits: ["11101101", "01101111"],
+            cycles: 5,
+            exec: RLD
+        },
+        "RRD": {
+            bits: ["11101101", "01100111"],
+            cycles: 5,
+            exec: RRD
+        },
+
+        "BIT b, (HL)": {
+            bits: ["11001011", "01bbb110"],
+            cycles: 2,
+            exec: (state, b) => BIT(state, b, state.memory[state.HL])
+        },
+        "BIT b, r": {
+            bits: ["11001011", "01bbbRRR"],
+            cycles: 2,
+            exec: (state, b, r) => BIT(state, b, state[r])
+        },
+        "BIT b, (IX+d)": {
+            bits: ["11011101", "11001011", "DDDDDDDD", "01bbb110"],
+            cycles: 5,
+            exec: (state, d) => IXIYSpecial(state, state.memory[state.IX + d], v => state.memory[state.IX + d] = v)
+        },
+        "BIT b, (IY+d)": {
+            bits: ["11111101", "11001011", "DDDDDDDD", "01bbb110"],
+            cycles: 5,
+            exec: (state, d) => IXIYSpecial(state, state.memory[state.IY + d], v => state.memory[state.IY + d] = v)
         }
     }        
 }
@@ -1162,12 +1257,112 @@ function RR(state, value, set) {
     state.CFlag = loBit
 }
 
-function RotateSpecial(state, value, set) {
+function SLA(state, value, set) {
+    const hiBit = value & 0b10000000
+
+    const result = (value << 1) & 0xFF
+
+    state.SFlag = result > 127
+    state.ZFlag = result === 0
+    state.HFlag = 0
+    state.PVFlag = getParityBit(result)
+    state.NFlag = 0
+    state.CFlag = hiBit
+
+    set(result)
+}
+
+function SRA(state, value, set) {
+    const loBit = value & 1
+    const hiBit = value & 0b10000000
+
+    const result = ((value & 0b01111111) >> 1) | hiBit
+
+    state.SFlag = result > 127
+    state.ZFlag = result === 0
+    state.HFlag = 0
+    state.PVFlag = getParityBit(result)
+    state.NFlag = 0
+    state.CFlag = loBit
+
+    set(result)
+}
+
+function SRL(state, value, set) {
+    const loBit = value & 1
+
+    const result = value >> 1
+
+    state.SFlag = 0
+    state.ZFlag = result === 0
+    state.HFlag = 0
+    state.PVFlag = getParityBit(result)
+    state.NFlag = 0
+    state.CFlag = loBit
+
+    set(result)
+}
+
+function RLD(state) {
+    const value = state.memory[state.HL]
+    
+    const result = (value & 0b11000000)
+        | ((value & 0b00110000) >> 4)
+        | ((value & 0b00001100) << 2)
+        | ((value & 0b00000011) << 2)
+    
+    state.memory[state.HL] = result
+
+    state.SFlag = state.A > 127
+    state.ZFlag = state.A === 0
+    state.HFlag = 0
+    state.PVFlag = getParityBit(state.A)
+    state.NFlag = 0
+    state.CFlag = 0
+}
+
+function RRD(state) {
+    const value = state.memory[state.HL]
+    
+    const result = (value & 0b11000000)
+        | ((value & 0b00110000) >> 2)
+        | ((value & 0b00001100) >> 2)
+        | ((value & 0b00000011) << 4)
+    
+    state.memory[state.HL] = result
+
+    state.SFlag = state.A > 127
+    state.ZFlag = state.A === 0
+    state.HFlag = 0
+    state.PVFlag = getParityBit(state.A)
+    state.NFlag = 0
+    state.CFlag = 0
+}
+
+function IXIYSpecial(state, value, set) {
     switch (state.memory[state.IP + 3]) {
         case 0b00000110: RLC(state, value, set); break;
         case 0b00010110: RL(state, value, set); break;
         case 0b00001110: RRC(state, value, set); break;
         case 0b00011110: RR(state, value, set); break;
+        case 0b00100110: SLA(state, value, set); break;
+        case 0b00101110: SRA(state, value, set); break;
+        case 0b00111110: SRL(state, value, set); break;
+
+        // BIT b, (I*+d)
+        case 0b01000110: BIT(state, 0, value); break;
+        case 0b01001110: BIT(state, 1, value); break;
+        case 0b01010110: BIT(state, 2, value); break;
+        case 0b01011110: BIT(state, 3, value); break;
+        case 0b01100110: BIT(state, 4, value); break;
+        case 0b01101110: BIT(state, 5, value); break;
+        case 0b01110110: BIT(state, 6, value); break;
+        case 0b01111110: BIT(state, 7, value); break;
     }
 }
 
+function BIT(state, b, value) {
+    state.ZFlag = value & (1 << b)
+    state.HFlag = 1
+    state.NFlag = 0
+}

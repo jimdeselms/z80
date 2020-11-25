@@ -75,6 +75,7 @@ class ImmediateArgument extends Argument {
 
     matchesArg(type) {
         if (type === "n" || type === "nn") return true
+        if (type === "b") return true
 
         if (parseInt(type) === this.integer) return true
 
