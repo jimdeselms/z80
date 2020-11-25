@@ -999,11 +999,47 @@ module.exports = {
             exec: (state, d) => IXIYSpecial(state, state.memory[state.IY + d], v => state.memory[state.IY + d] = v)
         },
 
+        "SET b, (HL)": {
+            bits: ["11001011", "11bbb110"],
+            cycles: 4,
+            exec: (state, b) => SET(state, b, state.memory[state.HL], v => state.memory[state.HL] = v)
+        },
         "SET b, r": {
             bits: ["11001011", "11bbbRRR"],
             cycles: 2,
             exec: (state, b, r) => SET(state, b, state[r], v => state[r] = v)
-        }
+        },
+        "SET b, (IX+d)": {
+            bits: ["11011101", "11001011", "DDDDDDDD", "11bbb110"],
+            cycles: 5,
+            exec: (state, d) => IXIYSpecial(state, state.memory[state.IX + d], v => state.memory[state.IX + d] = v)
+        },
+        "SET b, (IY+d)": {
+            bits: ["11111101", "11001011", "DDDDDDDD", "11bbb110"],
+            cycles: 5,
+            exec: (state, d) => IXIYSpecial(state, state.memory[state.IY + d], v => state.memory[state.IY + d] = v)
+        },
+
+        "RES b, (HL)": {
+            bits: ["11001011", "10bbb110"],
+            cycles: 4,
+            exec: (state, b) => RES(state, b, state.memory[state.HL], v => state.memory[state.HL] = v)
+        },
+        "RES b, r": {
+            bits: ["11001011", "10bbbRRR"],
+            cycles: 2,
+            exec: (state, b, r) => RES(state, b, state[r], v => state[r] = v)
+        },
+        "RES b, (IX+d)": {
+            bits: ["11011101", "11001011", "DDDDDDDD", "10bbb110"],
+            cycles: 5,
+            exec: (state, d) => IXIYSpecial(state, state.memory[state.IX + d], v => state.memory[state.IX + d] = v)
+        },
+        "RES b, (IY+d)": {
+            bits: ["11111101", "11001011", "DDDDDDDD", "10bbb110"],
+            cycles: 5,
+            exec: (state, d) => IXIYSpecial(state, state.memory[state.IY + d], v => state.memory[state.IY + d] = v)
+        },
     }        
 }
 
@@ -1364,6 +1400,26 @@ function IXIYSpecial(state, value, set) {
         case 0b01101110: BIT(state, 5, value); break;
         case 0b01110110: BIT(state, 6, value); break;
         case 0b01111110: BIT(state, 7, value); break;
+
+        // SET b, (I*+d)
+        case 0b11000110: SET(state, 0, value, set); break;
+        case 0b11001110: SET(state, 1, value, set); break;
+        case 0b11010110: SET(state, 2, value, set); break;
+        case 0b11011110: SET(state, 3, value, set); break;
+        case 0b11100110: SET(state, 4, value, set); break;
+        case 0b11101110: SET(state, 5, value, set); break;
+        case 0b11110110: SET(state, 6, value, set); break;
+        case 0b11111110: SET(state, 7, value, set); break;
+
+        // RES b, (I*+d)
+        case 0b10000110: RES(state, 0, value, set); break;
+        case 0b10001110: RES(state, 1, value, set); break;
+        case 0b10010110: RES(state, 2, value, set); break;
+        case 0b10011110: RES(state, 3, value, set); break;
+        case 0b10100110: RES(state, 4, value, set); break;
+        case 0b10101110: RES(state, 5, value, set); break;
+        case 0b10110110: RES(state, 6, value, set); break;
+        case 0b10111110: RES(state, 7, value, set); break;
     }
 }
 
@@ -1375,4 +1431,8 @@ function BIT(state, b, value) {
 
 function SET(state, b, value, set) {
     set(value | (1 << b))
+}
+
+function RES(state, b, value, set) {
+    set(value & ~(1 << b))
 }

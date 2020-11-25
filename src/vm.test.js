@@ -1893,6 +1893,16 @@ describe('vm', () => {
                 expect: { state: { ZFlag: 0 }}
             })
         })
+        it("BIT b, (IY+d)", () => {
+            runProgram("BIT 5, (IY+2)", {
+                setup: {state: { IY: 15 }, memory: { 17: 0b00100000 }},
+                expect: { state: { ZFlag: 1 }}
+            })
+            runProgram("BIT 5, (IY+2)", {
+                setup: {state: { IY: 15 }, memory: { 17: 0b00010000 }},
+                expect: { state: { ZFlag: 0 }}
+            })
+        })
     })
 
     describe("SET", () => {
@@ -1904,6 +1914,78 @@ describe('vm', () => {
             runProgram("SET 1, C", {
                 setup: {state: { C: 0b00100000 }},
                 expect: { state: { C: 0b00100010 }}
+            })
+        })
+        it("SET b, (HL)", () => {
+            runProgram("SET 0, (HL)", {
+                setup: {state: { HL: 40 }, memory: {40: 0b00001110 }},
+                expect: { memory: { 40: 0b00001111 }}
+            })
+            runProgram("SET 5, (HL)", {
+                setup: {state: { HL: 40 }, memory: {40: 0b00001110 }},
+                expect: { memory: { 40: 0b00101110 }}
+            })
+        })
+        it("SET b, (IX+d)", () => {
+            runProgram("SET 0, (IX+1)", {
+                setup: {state: { IX: 40 }, memory: {41: 0b00001110 }},
+                expect: { memory: { 41: 0b00001111 }}
+            })
+            runProgram("SET 5, (IX+1)", {
+                setup: {state: { IX: 40 }, memory: {41: 0b00101110 }},
+                expect: { memory: { 41: 0b00101110 }}
+            })
+        })
+        it("SET b, (IY+d)", () => {
+            runProgram("SET 0, (IY+1)", {
+                setup: {state: { IY: 40 }, memory: {41: 0b00001110 }},
+                expect: { memory: { 41: 0b00001111 }}
+            })
+            runProgram("SET 5, (IY+1)", {
+                setup: {state: { IY: 40 }, memory: {41: 0b00101110 }},
+                expect: { memory: { 41: 0b00101110 }}
+            })
+        })
+    })
+    describe("RES", () => {
+        it("RES b, r", () => {
+            runProgram("RES 0, L", {
+                setup: {state: { L: 0b00000000 }},
+                expect: { state: { L: 0b00000000 }}
+            })
+            runProgram("RES 1, C", {
+                setup: {state: { C: 0b00100010 }},
+                expect: { state: { C: 0b00100000 }}
+            })
+        })
+        it("RES b, (HL)", () => {
+            runProgram("RES 0, (HL)", {
+                setup: {state: { HL: 40 }, memory: {40: 0b00001110 }},
+                expect: { memory: { 40: 0b00001110 }}
+            })
+            runProgram("RES 5, (HL)", {
+                setup: {state: { HL: 40 }, memory: {40: 0b00001110 }},
+                expect: { memory: { 40: 0b00001110 }}
+            })
+        })
+        it("RES b, (IX+d)", () => {
+            runProgram("RES 0, (IX+1)", {
+                setup: {state: { IX: 40 }, memory: {41: 0b00001111 }},
+                expect: { memory: { 41: 0b00001110 }}
+            })
+            runProgram("RES 5, (IX+1)", {
+                setup: {state: { IX: 40 }, memory: {41: 0b00101110 }},
+                expect: { memory: { 41: 0b00001110 }}
+            })
+        })
+        it("RES b, (IY+d)", () => {
+            runProgram("RES 0, (IY+1)", {
+                setup: {state: { IY: 40 }, memory: {41: 0b00001111 }},
+                expect: { memory: { 41: 0b00001110 }}
+            })
+            runProgram("RES 5, (IY+1)", {
+                setup: {state: { IY: 40 }, memory: {41: 0b00101110 }},
+                expect: { memory: { 41: 0b00001110 }}
             })
         })
     })
