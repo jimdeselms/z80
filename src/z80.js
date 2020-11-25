@@ -997,6 +997,12 @@ module.exports = {
             bits: ["11111101", "11001011", "DDDDDDDD", "01bbb110"],
             cycles: 5,
             exec: (state, d) => IXIYSpecial(state, state.memory[state.IY + d], v => state.memory[state.IY + d] = v)
+        },
+
+        "SET b, r": {
+            bits: ["11001011", "11bbbRRR"],
+            cycles: 2,
+            exec: (state, b, r) => SET(state, b, state[r], v => state[r] = v)
         }
     }        
 }
@@ -1365,4 +1371,8 @@ function BIT(state, b, value) {
     state.ZFlag = value & (1 << b)
     state.HFlag = 1
     state.NFlag = 0
+}
+
+function SET(state, b, value, set) {
+    set(value | (1 << b))
 }

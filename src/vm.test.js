@@ -1894,6 +1894,19 @@ describe('vm', () => {
             })
         })
     })
+
+    describe("SET", () => {
+        it("SET b, r", () => {
+            runProgram("SET 0, L", {
+                setup: {state: { L: 0b00000000 }},
+                expect: { state: { L: 0b00000001 }}
+            })
+            runProgram("SET 1, C", {
+                setup: {state: { C: 0b00100000 }},
+                expect: { state: { C: 0b00100010 }}
+            })
+        })
+    })
 })
 
 function runProgram(program, opts) {
