@@ -5,6 +5,7 @@ const SIXTEEN_BIT_QQ_REGISTERS = new Set(["HL", "BC", "DE", "AF"])
 const SIXTEEN_BIT_SS_REGISTERS = new Set(["BC", "DE", "HL", "SP"])
 const SIXTEEN_BIT_PP_REGISTERS = new Set(["BC", "DE", "IX", "SP"])
 const SIXTEEN_BIT_RR_REGISTERS = new Set(["BC", "DE", "IY", "SP"])
+const JP_CONDITIONS = new Set(["NZ", "Z", "NC", "C", "PO", "PE", "P", "M"])
 
 class Argument {
     constructor(kind) {
@@ -33,6 +34,7 @@ class RegisterArgument extends Argument {
             || ((type === "pp") && SIXTEEN_BIT_PP_REGISTERS.has(this.register))
             || ((type === "rr") && SIXTEEN_BIT_RR_REGISTERS.has(this.register))
             || ((type === "qq" || type === "qq'") && SIXTEEN_BIT_QQ_REGISTERS.has(this.register))
+            || ((type === "cc") && JP_CONDITIONS.has(this.register))
     }
 
     toString() { return this.register }

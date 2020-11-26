@@ -5,7 +5,11 @@ const REGISTERS = ["A", "B", "C", "D", "E", "H", "L", "I", "R"]
 const WORD_REGISTERS = ["BC", "DE", "HL", "SP", "AF", "AF'", "BC'", "DE'", "HL'"]
 const INDEX_REGISTERS = ["IX", "IY"]
 
-const ALL_REGISTERS = [...REGISTERS, ...WORD_REGISTERS, ...INDEX_REGISTERS]
+// These aren't actually registers, but we can bucket these in with the registers to keep things easy, though
+// this'll probably have to be revisted at some point.
+const JP_CONDITIONS = ["NZ", "Z", "NC", "C", "PO", "PE", "P", "M"]
+
+const ALL_REGISTERS = new Set([...REGISTERS, ...WORD_REGISTERS, ...INDEX_REGISTERS, ...JP_CONDITIONS])
 
 class Assembler {
     constructor(assemblerConfig) {
@@ -73,6 +77,17 @@ const TWO_BIT_ALTERNATE_REGISTER_CODES = {
     'DE': 0b01,
     'HL': 0b10,
     'AF': 0b11,
+}
+
+const JP_CONDITION_CODES = {
+    "NZ": 0b000,
+    "Z":  0b001, 
+    "NC": 0b010, 
+    "C":  0b011, 
+    "PO": 0b100, 
+    "PE": 0b101, 
+    "P":  0b110, 
+    "H":  0b111,
 }
 
 function assembleLine(line, assemblerConfig) {
@@ -298,6 +313,14 @@ function getCodeAsNumber(code, args) {
         }
     }
 
+    if (stringMatchesPattern(code, "  ccc   ")) {
+        const arg0 = args[0]
+        if (arg0 && arg0.kind === "register") {
+            code = code.replace("ccc", "000")
+            result |= (JP_CONDITION_CODES[arg0.register] << 3)
+        }
+    }
+
     return result
 }
 
@@ -321,7 +344,7 @@ function parseArg(arg) {
     const asInt = parseIntArg(arg)
     if (!isNaN(asInt)) {
         return new ImmediateArgument(asInt)
-    } else if (ALL_REGISTERS.includes(arg.toUpperCase())) {
+    } else if (ALL_REGISTERS.has(arg.toUpperCase())) {
         return new RegisterArgument(arg.toUpperCase())
     } else if (arg.startsWith("(") && arg.endsWith(")")) {
         const inside = arg.slice(1, -1).toUpperCase()

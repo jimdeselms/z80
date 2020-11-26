@@ -78,6 +78,7 @@ function buildGetArgsFunc(remainingPatterns, ipOffset) {
 }
 
 const THREE_BIT_REGISTER_CODES = ["B", "C", "D", "E", "H", "L", undefined, "A"]
+const JP_CONDITIONS = ["NZ", "Z", "NC", "C", "PO", "PE", "P", "M"]
 
 function getAllPossibleCodesForPattern(pattern) {
     if (pattern.match(/^[10]*$/)) {
@@ -92,6 +93,7 @@ function getAllPossibleCodesForPattern(pattern) {
         || getPossibleCodesForPattern(pattern, "rr", 2, ["BC", "DE", "IY", "SP"])
         || getPossibleCodesForPattern(pattern, "bbb", 2, [0, 1, 2, 3, 4, 5, 6, 7])
         || getPossibleCodesForPattern(pattern, "rrr", 5, THREE_BIT_REGISTER_CODES)
+        || getPossibleCodesForPattern(pattern, "ccc", 2, JP_CONDITIONS)
         || getPossibleCodesForDoubleRegisterPattern(pattern)
         || getPossibleCodesForNumberThenRegisterPattern(pattern)
 

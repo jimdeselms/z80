@@ -1988,6 +1988,58 @@ describe('vm', () => {
                 expect: { memory: { 41: 0b00001110 }}
             })
         })
+
+        describe("JP", () => {
+            it ("JP nn", () => {
+                runProgram("JP 20", {
+                    step: 3,
+                    expect: { IP: 20 }
+                })
+            })
+
+            it ("JP cc, nn", () => {
+                runProgram("JP NZ, 20", {
+                    step: 3,
+                    setup: { state: { ZFlag: 0 } },
+                    expect: { state: { IP: 20 } }
+                })
+                runProgram("JP Z, 20", {
+                    step: 3,
+                    setup: { state: { ZFlag: 0 } },
+                    expect: { state: { IP: 3 } }
+                })
+                runProgram("JP NC, 20", {
+                    step: 3,
+                    setup: { state: { CFlag: 1 } },
+                    expect: { state: { IP: 3 } }
+                })
+                runProgram("JP C, 20", {
+                    step: 3,
+                    setup: { state: { CFlag: 1 } },
+                    expect: { state: { IP: 20 } }
+                })
+                runProgram("JP PO, 20", {
+                    step: 3,
+                    setup: { state: { PVFlag: 0 } },
+                    expect: { state: { IP: 20 } }
+                })
+                runProgram("JP PE, 20", {
+                    step: 3,
+                    setup: { state: { PVFlag: 0 } },
+                    expect: { state: { IP: 3 } }
+                })
+                runProgram("JP P, 20", {
+                    step: 3,
+                    setup: { state: { SFlag: 1 } },
+                    expect: { state: { IP: 3 } }
+                })
+                runProgram("JP M, 20", {
+                    step: 3,
+                    setup: { state: { SFlag: 1 } },
+                    expect: { state: { IP: 20 } }
+                })
+            })
+        })
     })
 })
 
@@ -1996,7 +2048,10 @@ function runProgram(program, opts) {
 
     const vm = createVm(program, opts.setup || {})
     if (opts.step) {
-        vm.step()
+        const count = typeof(opts.step) === "number" ? opts.step : 1
+        for (let i = 0; i < count; i++) {
+            vm.step()
+        }
     } else {
         vm.run()
     }

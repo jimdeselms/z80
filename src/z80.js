@@ -1040,6 +1040,17 @@ module.exports = {
             cycles: 5,
             exec: (state, d) => IXIYSpecial(state, state.memory[state.IY + d], v => state.memory[state.IY + d] = v)
         },
+
+        "JP nn": {
+            bits: ["11000011", "llllllll", "hhhhhhhh"],
+            cycles: 3,
+            exec: (state, nn) => JP(state, nn)
+        },
+        "JP cc, nn": {
+            bits: ["11ccc010", "LLLLLLLL", "HHHHHHHH"],
+            cycles: 3,
+            exec: (state, condition, nn) => JPCondition(state, condition, nn)
+        }
     }        
 }
 
@@ -1435,4 +1446,26 @@ function SET(state, b, value, set) {
 
 function RES(state, b, value, set) {
     set(value & ~(1 << b))
+}
+
+function JP(state, newIp) {
+    state.IP = newIp
+    state.ipWasModified = true
+}
+
+const CONDITION_HANDLERS = {
+    NZ: (state) => !state.ZFlag,
+    Z:  (state) => state.ZFlag,
+    NC: (state) => !state.CFlag,
+    C:  (state) => state.CFlag,
+    PO: (state) => !state.PVFlag,
+    PE: (state) => state.PVFlag,
+    P:  (state) => !state.SFlag,
+    M:  (state) => state.SFlag,
+}
+function JPCondition(state, condition, newIp) {
+    if (CONDITION_HANDLERS[condition](state)) {
+        state.IP = newIp
+        state.ipWasModified = true
+    }
 }
