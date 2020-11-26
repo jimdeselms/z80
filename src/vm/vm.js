@@ -195,11 +195,13 @@ class Vm {
 
         const handler = currNode.handler
 
+        args.push(...(handler.getArgs ? handler.getArgs(this.state) : []))
+
         if (this.wait === undefined) {
             if (handler.cycles) {
                 const cycles = typeof(handler.cycles) === "number"
                     ? handler.cycles
-                    : handler.cycles(this.state)
+                    : handler.cycles(this.state, ...args)
 
                 if (cycles > 1) {
                     this.wait = cycles - 1
@@ -210,8 +212,6 @@ class Vm {
         if (this.wait > 0) {
             return
         }
-
-        args.push(...(handler.getArgs ? handler.getArgs(this.state) : []))
 
         handler.exec(this.state, ...args)
         this.wait = undefined

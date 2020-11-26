@@ -2040,6 +2040,48 @@ describe('vm', () => {
                 })
             })
         })
+
+        describe("JR", () => {
+            it ("JP e", () => {
+                runProgram("NOP\nJR 5", {
+                    step: 4,
+                    expect: { state: { IP: 6 } }
+                })
+            })
+
+            it("JR cc, e", () => {
+                runProgram("NOP\nJR C, 10", {
+                    step: 4,
+                    setup: { state: { CFlag: 1 }},
+                    expect: { state: { IP: 11 }}
+                })
+                runProgram("NOP\nJR C, 10", {
+                    step: 3,
+                    setup: { state: { CFlag: 0 }},
+                    expect: { state: { IP: 3 }}
+                })
+                runProgram("NOP\nJR NC, 10", {
+                    step: 8,
+                    setup: { state: { CFlag: 1 }},
+                    expect: { state: { IP: 3 }}
+                })
+                runProgram("NOP\nJR NC, 10", {
+                    step: 4,
+                    setup: { state: { CFlag: 0 }},
+                    expect: { state: { IP: 11 }}
+                })
+                runProgram("NOP\nJR Z, 10", {
+                    step: 3,
+                    setup: { state: { ZFlag: 1 }},
+                    expect: { state: { IP: 11 }}
+                })
+                runProgram("NOP\nJR Z, 10", {
+                    step: 3,
+                    setup: { state: { ZFlag: 0 }},
+                    expect: { state: { IP: 3 }}
+                })
+            })
+        })
     })
 })
 

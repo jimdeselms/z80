@@ -1050,7 +1050,29 @@ module.exports = {
             bits: ["11ccc010", "LLLLLLLL", "HHHHHHHH"],
             cycles: 3,
             exec: (state, condition, nn) => JPCondition(state, condition, nn)
-        }
+        },
+
+        "JR C, n": {
+            bits: ["00111000", "NNNNNNNN"],
+            cycles: (state) => state.CFlag ? 3 : 2,
+            exec: (state, n) => JRCondition(state, "C", n)
+        },
+        "JR NC, n": {
+            bits: ["00110000", "NNNNNNNN"],
+            cycles: (state) => !state.CFlag ? 3 : 7,
+            exec: (state, n) => JRCondition(state, "NC", n)
+        },
+        "JR Z, n": {
+            bits: ["00101000", "NNNNNNNN"],
+            cycles: (state) => state.CFlag ? 3 : 2,
+            exec: (state, n) => JRCondition(state, "Z", n)
+        },
+
+        "JR n": {
+            bits: ["00011000", "nnnnnnnn"],
+            cycles: 3,
+            exec: (state, n) => JR(state, n)
+        },
     }        
 }
 
@@ -1448,11 +1470,6 @@ function RES(state, b, value, set) {
     set(value & ~(1 << b))
 }
 
-function JP(state, newIp) {
-    state.IP = newIp
-    state.ipWasModified = true
-}
-
 const CONDITION_HANDLERS = {
     NZ: (state) => !state.ZFlag,
     Z:  (state) => state.ZFlag,
@@ -1463,9 +1480,24 @@ const CONDITION_HANDLERS = {
     P:  (state) => !state.SFlag,
     M:  (state) => state.SFlag,
 }
+
+function JP(state, newIp) {
+    state.IP = newIp
+    state.ipWasModified = true
+}
 function JPCondition(state, condition, newIp) {
     if (CONDITION_HANDLERS[condition](state)) {
-        state.IP = newIp
-        state.ipWasModified = true
+        JP(state, newIp)
+    }
+}
+
+function JR(state, offset) {
+    state.IP += offset
+    state.ipWasModified = true
+}
+
+function JRCondition(state, condition, offset) {
+    if (CONDITION_HANDLERS[condition](state)) {
+        JR(state, offset)
     }
 }
