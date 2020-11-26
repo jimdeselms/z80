@@ -2071,7 +2071,7 @@ describe('vm', () => {
                     expect: { state: { IP: 11 }}
                 })
                 runProgram("NOP\nJR Z, 10", {
-                    step: 3,
+                    step: 4,
                     setup: { state: { ZFlag: 1 }},
                     expect: { state: { IP: 11 }}
                 })
@@ -2079,6 +2079,16 @@ describe('vm', () => {
                     step: 3,
                     setup: { state: { ZFlag: 0 }},
                     expect: { state: { IP: 3 }}
+                })
+                runProgram("NOP\nJR NZ, 10", {
+                    step: 3,
+                    setup: { state: { ZFlag: 1 }},
+                    expect: { state: { IP: 3 }}
+                })
+                runProgram("NOP\nJR NZ, 10", {
+                    step: 4,
+                    setup: { state: { ZFlag: 0 }},
+                    expect: { state: { IP: 11 }}
                 })
             })
         })

@@ -1064,8 +1064,13 @@ module.exports = {
         },
         "JR Z, n": {
             bits: ["00101000", "NNNNNNNN"],
-            cycles: (state) => state.CFlag ? 3 : 2,
+            cycles: (state) => state.ZFlag ? 3 : 2,
             exec: (state, n) => JRCondition(state, "Z", n)
+        },
+        "JR NZ, n": {
+            bits: ["00100000", "NNNNNNNN"],
+            cycles: (state) => !state.ZFlag ? 3 : 2,
+            exec: (state, n) => JRCondition(state, "NZ", n)
         },
 
         "JR n": {
