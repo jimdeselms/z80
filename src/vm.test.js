@@ -1997,6 +1997,28 @@ describe('vm', () => {
                 })
             })
 
+            it("JP (HL)", () => {
+                runProgram("JP (HL)", {
+                    step: 1,
+                    setup: { state: { HL: 18 }},
+                    expect: { state: { IP: 18 }}
+                })
+            })
+            it("JP (IX)", () => {
+                runProgram("JP (IX)", {
+                    step: 2,
+                    setup: { state: { IX: 18 }},
+                    expect: { state: { IP: 18 }}
+                })
+            })
+            it("JP (IY)", () => {
+                runProgram("JP (IY)", {
+                    step: 2,
+                    setup: { state: { IY: 18 }},
+                    expect: { state: { IP: 18 }}
+                })
+            })
+
             it ("JP cc, nn", () => {
                 runProgram("JP NZ, 20", {
                     step: 3,
@@ -2090,6 +2112,19 @@ describe('vm', () => {
                     setup: { state: { ZFlag: 0 }},
                     expect: { state: { IP: 11 }}
                 })
+            })
+        })
+        
+        it("DJNZ", () => {
+            runProgram("NOP\nDJNZ 10", {
+                step: 4,
+                setup: { state: { B: 2 }},
+                expect: { state: { IP: 11, B: 1 }}
+            })
+            runProgram("NOP\nDJNZ 10", {
+                step: 3,
+                setup: { state: { B: 1 }},
+                expect: { state: { IP: 3, B: 0 }}
             })
         })
     })

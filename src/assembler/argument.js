@@ -53,8 +53,8 @@ class RegisterIndirectArgument extends Argument {
             || (type === "(SP)" && this.register === "SP")
             || (type === "(BC)" && this.register === "BC")
             || (type === "(DE)" && this.register === "DE")
-            || (type === "(IX+d)" && this.register === "IX")
-            || (type === "(IY+d)" && this.register === "IY")
+            || ((type === "(IX)" || type === "(IX+d)") && this.register === "IX")
+            || ((type === "(IY)" || type === "(IY+d)") && this.register === "IY")
     }
 
     toString() { 

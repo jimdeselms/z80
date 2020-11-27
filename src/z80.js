@@ -1041,6 +1041,22 @@ module.exports = {
             exec: (state, d) => IXIYSpecial(state, state.memory[state.IY + d], v => state.memory[state.IY + d] = v)
         },
 
+        // Why is this these notated like "(HL)" when we're not dereferencing HL? Weeerd.
+        "JP (HL)": {
+            bits: ["11101001"],
+            cycles: 1,
+            exec: (state) => JP(state, state.HL)
+        },
+        "JP (IX)": {
+            bits: ["11011101", "11101001"],
+            cycles: 2,
+            exec: (state) => JP(state, state.IX)
+        },
+        "JP (IY)": {
+            bits: ["11111101", "11101001"],
+            cycles: 2,
+            exec: (state) => JP(state, state.IY)
+        },
         "JP nn": {
             bits: ["11000011", "llllllll", "hhhhhhhh"],
             cycles: 3,
@@ -1078,6 +1094,12 @@ module.exports = {
             cycles: 3,
             exec: (state, n) => JR(state, n)
         },
+
+        "DJNZ, n": {
+            bits: ["00010000", "nnnnnnnn"],
+            cycles: (state) => state.B === 1 ? 2 : 3,
+            exec: (state, n) => DJNZ(state, n)
+        }
     }        
 }
 
@@ -1504,5 +1526,12 @@ function JR(state, offset) {
 function JRCondition(state, condition, offset) {
     if (CONDITION_HANDLERS[condition](state)) {
         JR(state, offset)
+    }
+}
+
+function DJNZ(state, offset) {
+    if (--state.B !== 0) {
+        state.IP += offset
+        state.ipWasModified = true
     }
 }
