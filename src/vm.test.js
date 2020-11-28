@@ -2127,6 +2127,29 @@ describe('vm', () => {
                 expect: { state: { IP: 3, B: 0 }}
             })
         })
+
+        describe("CALL", () => {
+            it ("CALL nn", () => {
+                runProgram("NOP\nCALL 50", {
+                    step: 6,
+                    setup: { state: { SP: 20 }},
+                    expect: { state: { SP: 18, IP: 50 }, memory: { 19: 0, 18: 1 }}
+                })
+            })
+
+            it ("CALL cc, nn", () => {
+                runProgram("NOP\nCALL Z, 50", {
+                    step: 6,
+                    setup: { state: { SP: 20, ZFlag: 1 }},
+                    expect: { state: { SP: 18, IP: 50 }, memory: { 19: 0, 18: 1 }}
+                })
+                runProgram("NOP\nCALL Z, 50", {
+                    step: 4,
+                    setup: { state: { SP: 20, ZFlag: 0 }},
+                    expect: { state: { SP: 20, IP: 4 }}
+                })
+            })
+        })
     })
 })
 

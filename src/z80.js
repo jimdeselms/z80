@@ -1099,6 +1099,17 @@ module.exports = {
             bits: ["00010000", "nnnnnnnn"],
             cycles: (state) => state.B === 1 ? 2 : 3,
             exec: (state, n) => DJNZ(state, n)
+        },
+
+        "CALL nn": {
+            bits: ["11001101", "llllllll", "hhhhhhhh"],
+            cycles: 5,
+            exec: (state, n) => CALL(state, n)
+        },
+        "CALL cc, nn": {
+            bits: ["11ccc100", "LLLLLLLL", "HHHHHHHH"],
+            cycles: (state, cc) => CONDITION_HANDLERS[cc](state) ? 5 : 3,
+            exec: (state, cc, nn) => CALLCondition(state, cc, nn)
         }
     }        
 }
@@ -1533,5 +1544,18 @@ function DJNZ(state, offset) {
     if (--state.B !== 0) {
         state.IP += offset
         state.ipWasModified = true
+    }
+}
+
+function CALL(state, newIp) {
+    state.memory[--state.SP] = state.IP >> 8
+    state.memory[--state.SP] = state.IP & 0x00FF
+    state.IP = newIp
+    state.ipWasModified = true
+}
+
+function CALLCondition(state, condition, newIp) {
+    if (CONDITION_HANDLERS[condition](state)) {
+        CALL(state, newIp)
     }
 }
