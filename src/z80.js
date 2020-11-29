@@ -323,7 +323,7 @@ module.exports = {
                 state.PVFlag = state.BC !== 0 ? 1 : 0
                 state.NFlag = 0
                 if (state.PVFlag) {
-                    state.ipWasModified = true
+                    state.pcWasModified = true
                 }
             }
         },
@@ -337,7 +337,7 @@ module.exports = {
                 LDD(state)
                 if (state.PVFlag) {
                     // stay put
-                    state.ipWasModified = true
+                    state.pcWasModified = true
                 }
             }
         },
@@ -364,7 +364,7 @@ module.exports = {
                 CPI(state)
                 if (state.BC !== 0 && state.A !== state.memory[state.HL]) {
                     // Stay put
-                    state.ipWasModified = true
+                    state.pcWasModified = true
                 }
             }
         },
@@ -378,7 +378,7 @@ module.exports = {
                 CPD(state)
                 if (state.BC !== 0 && state.A !== state.memory[state.HL]) {
                     // Stay put
-                    state.ipWasModified = true
+                    state.pcWasModified = true
                 }
             }
         },
@@ -1464,7 +1464,7 @@ function RRD(state) {
 }
 
 function IXIYSpecial(state, value, set) {
-    switch (state.memory[state.IP + 3]) {
+    switch (state.memory[state.PC + 3]) {
         case 0b00000110: RLC(state, value, set); break;
         case 0b00010110: RL(state, value, set); break;
         case 0b00001110: RRC(state, value, set); break;
@@ -1530,19 +1530,19 @@ const CONDITION_HANDLERS = {
     M:  (state) => state.SFlag,
 }
 
-function JP(state, newIp) {
-    state.IP = newIp
-    state.ipWasModified = true
+function JP(state, newPc) {
+    state.PC = newPc
+    state.pcWasModified = true
 }
-function JPCondition(state, condition, newIp) {
+function JPCondition(state, condition, newPc) {
     if (CONDITION_HANDLERS[condition](state)) {
-        JP(state, newIp)
+        JP(state, newPc)
     }
 }
 
 function JR(state, offset) {
-    state.IP += offset
-    state.ipWasModified = true
+    state.PC += offset
+    state.pcWasModified = true
 }
 
 function JRCondition(state, condition, offset) {
@@ -1553,21 +1553,21 @@ function JRCondition(state, condition, offset) {
 
 function DJNZ(state, offset) {
     if (--state.B !== 0) {
-        state.IP += offset
-        state.ipWasModified = true
+        state.PC += offset
+        state.pcWasModified = true
     }
 }
 
-function CALL(state, newIp) {
-    state.memory[--state.SP] = state.IP >> 8
-    state.memory[--state.SP] = state.IP & 0x00FF
-    state.IP = newIp
-    state.ipWasModified = true
+function CALL(state, newPc) {
+    state.memory[--state.SP] = state.PC >> 8
+    state.memory[--state.SP] = state.PC & 0x00FF
+    state.PC = newPc
+    state.pcWasModified = true
 }
 
-function CALLCondition(state, condition, newIp) {
+function CALLCondition(state, condition, newPc) {
     if (CONDITION_HANDLERS[condition](state)) {
-        CALL(state, newIp)
+        CALL(state, newPc)
     }
 }
 
@@ -1577,8 +1577,8 @@ function RET(state) {
 
     const word = bytesToBit16(low, high)
 
-    state.IP = word
-    state.ipWasModified = true
+    state.PC = word
+    state.pcWasModified = true
 }
 
 function RETCondition(state, condition) {

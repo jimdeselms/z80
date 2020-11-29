@@ -42,19 +42,19 @@ function getBits2To4(value) {
     return (value >> 3) & 0b111
 }
 
-function buildGetArgsFunc(remainingPatterns, ipOffset) {
+function buildGetArgsFunc(remainingPatterns, pcOffset) {
     function buildFunclet(p, i) {
         const pWithoutNumbers = p.replace(/[01]/g, " ")
 
         switch (pWithoutNumbers) {
             case "LLLLLLLL": 
             case "llllllll": 
-                return (state, list) => list.push(state.memory[state.IP + ipOffset + i] | (state.memory[state.IP + ipOffset + i + 1] << 8))
+                return (state, list) => list.push(state.memory[state.PC + pcOffset + i] | (state.memory[state.PC + pcOffset + i + 1] << 8))
             case "DDDDDDDD": 
             case "dddddddd": 
             case "NNNNNNNN": 
             case "nnnnnnnn": 
-                return (state, list) => list.push(state.memory[state.IP + ipOffset + i])
+                return (state, list) => list.push(state.memory[state.PC + pcOffset + i])
             default:
                 return () => {}
         }

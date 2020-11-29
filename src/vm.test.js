@@ -9,7 +9,7 @@ describe('vm', () => {
                 const state  = runProgram("halt")
                 expect(state).toMatchObject({
                     isHalted: true,
-                    IP: 1
+                    PC: 1
                 })
             })
         })
@@ -57,7 +57,7 @@ describe('vm', () => {
                 const state = runProgram("LD A, 25")
                 expect(state).toMatchObject({ 
                     A: 25,
-                    IP: 3 // add 1 for final HALT
+                    PC: 3 // add 1 for final HALT
                 })
             })
 
@@ -396,7 +396,7 @@ describe('vm', () => {
             const state = runProgram("NOP")
             // Add one for the final HALT
             expect(state).toMatchObject({ 
-                IP: 2 // add 1 for final HALT
+                PC: 2 // add 1 for final HALT
             })
         })
     })
@@ -1993,7 +1993,7 @@ describe('vm', () => {
             it ("JP nn", () => {
                 runProgram("JP 20", {
                     step: 3,
-                    expect: { IP: 20 }
+                    expect: { PC: 20 }
                 })
             })
 
@@ -2001,21 +2001,21 @@ describe('vm', () => {
                 runProgram("JP (HL)", {
                     step: 1,
                     setup: { state: { HL: 18 }},
-                    expect: { state: { IP: 18 }}
+                    expect: { state: { PC: 18 }}
                 })
             })
             it("JP (IX)", () => {
                 runProgram("JP (IX)", {
                     step: 2,
                     setup: { state: { IX: 18 }},
-                    expect: { state: { IP: 18 }}
+                    expect: { state: { PC: 18 }}
                 })
             })
             it("JP (IY)", () => {
                 runProgram("JP (IY)", {
                     step: 2,
                     setup: { state: { IY: 18 }},
-                    expect: { state: { IP: 18 }}
+                    expect: { state: { PC: 18 }}
                 })
             })
 
@@ -2023,42 +2023,42 @@ describe('vm', () => {
                 runProgram("JP NZ, 20", {
                     step: 3,
                     setup: { state: { ZFlag: 0 } },
-                    expect: { state: { IP: 20 } }
+                    expect: { state: { PC: 20 } }
                 })
                 runProgram("JP Z, 20", {
                     step: 3,
                     setup: { state: { ZFlag: 0 } },
-                    expect: { state: { IP: 3 } }
+                    expect: { state: { PC: 3 } }
                 })
                 runProgram("JP NC, 20", {
                     step: 3,
                     setup: { state: { CFlag: 1 } },
-                    expect: { state: { IP: 3 } }
+                    expect: { state: { PC: 3 } }
                 })
                 runProgram("JP C, 20", {
                     step: 3,
                     setup: { state: { CFlag: 1 } },
-                    expect: { state: { IP: 20 } }
+                    expect: { state: { PC: 20 } }
                 })
                 runProgram("JP PO, 20", {
                     step: 3,
                     setup: { state: { PVFlag: 0 } },
-                    expect: { state: { IP: 20 } }
+                    expect: { state: { PC: 20 } }
                 })
                 runProgram("JP PE, 20", {
                     step: 3,
                     setup: { state: { PVFlag: 0 } },
-                    expect: { state: { IP: 3 } }
+                    expect: { state: { PC: 3 } }
                 })
                 runProgram("JP P, 20", {
                     step: 3,
                     setup: { state: { SFlag: 1 } },
-                    expect: { state: { IP: 3 } }
+                    expect: { state: { PC: 3 } }
                 })
                 runProgram("JP M, 20", {
                     step: 3,
                     setup: { state: { SFlag: 1 } },
-                    expect: { state: { IP: 20 } }
+                    expect: { state: { PC: 20 } }
                 })
             })
         })
@@ -2067,7 +2067,7 @@ describe('vm', () => {
             it ("JP e", () => {
                 runProgram("NOP\nJR 5", {
                     step: 4,
-                    expect: { state: { IP: 6 } }
+                    expect: { state: { PC: 6 } }
                 })
             })
 
@@ -2075,42 +2075,42 @@ describe('vm', () => {
                 runProgram("NOP\nJR C, 10", {
                     step: 4,
                     setup: { state: { CFlag: 1 }},
-                    expect: { state: { IP: 11 }}
+                    expect: { state: { PC: 11 }}
                 })
                 runProgram("NOP\nJR C, 10", {
                     step: 3,
                     setup: { state: { CFlag: 0 }},
-                    expect: { state: { IP: 3 }}
+                    expect: { state: { PC: 3 }}
                 })
                 runProgram("NOP\nJR NC, 10", {
                     step: 8,
                     setup: { state: { CFlag: 1 }},
-                    expect: { state: { IP: 3 }}
+                    expect: { state: { PC: 3 }}
                 })
                 runProgram("NOP\nJR NC, 10", {
                     step: 4,
                     setup: { state: { CFlag: 0 }},
-                    expect: { state: { IP: 11 }}
+                    expect: { state: { PC: 11 }}
                 })
                 runProgram("NOP\nJR Z, 10", {
                     step: 4,
                     setup: { state: { ZFlag: 1 }},
-                    expect: { state: { IP: 11 }}
+                    expect: { state: { PC: 11 }}
                 })
                 runProgram("NOP\nJR Z, 10", {
                     step: 3,
                     setup: { state: { ZFlag: 0 }},
-                    expect: { state: { IP: 3 }}
+                    expect: { state: { PC: 3 }}
                 })
                 runProgram("NOP\nJR NZ, 10", {
                     step: 3,
                     setup: { state: { ZFlag: 1 }},
-                    expect: { state: { IP: 3 }}
+                    expect: { state: { PC: 3 }}
                 })
                 runProgram("NOP\nJR NZ, 10", {
                     step: 4,
                     setup: { state: { ZFlag: 0 }},
-                    expect: { state: { IP: 11 }}
+                    expect: { state: { PC: 11 }}
                 })
             })
         })
@@ -2119,12 +2119,12 @@ describe('vm', () => {
             runProgram("NOP\nDJNZ 10", {
                 step: 4,
                 setup: { state: { B: 2 }},
-                expect: { state: { IP: 11, B: 1 }}
+                expect: { state: { PC: 11, B: 1 }}
             })
             runProgram("NOP\nDJNZ 10", {
                 step: 3,
                 setup: { state: { B: 1 }},
-                expect: { state: { IP: 3, B: 0 }}
+                expect: { state: { PC: 3, B: 0 }}
             })
         })
 
@@ -2133,7 +2133,7 @@ describe('vm', () => {
                 runProgram("NOP\nCALL 50", {
                     step: 6,
                     setup: { state: { SP: 20 }},
-                    expect: { state: { SP: 18, IP: 50 }, memory: { 19: 0, 18: 1 }}
+                    expect: { state: { SP: 18, PC: 50 }, memory: { 19: 0, 18: 1 }}
                 })
             })
 
@@ -2141,12 +2141,12 @@ describe('vm', () => {
                 runProgram("NOP\nCALL Z, 50", {
                     step: 6,
                     setup: { state: { SP: 20, ZFlag: 1 }},
-                    expect: { state: { SP: 18, IP: 50 }, memory: { 19: 0, 18: 1 }}
+                    expect: { state: { SP: 18, PC: 50 }, memory: { 19: 0, 18: 1 }}
                 })
                 runProgram("NOP\nCALL Z, 50", {
                     step: 4,
                     setup: { state: { SP: 20, ZFlag: 0 }},
-                    expect: { state: { SP: 20, IP: 4 }}
+                    expect: { state: { SP: 20, PC: 4 }}
                 })
             })
         })
@@ -2156,7 +2156,7 @@ describe('vm', () => {
                 runProgram("NOP\nRET", {
                     step: 4,
                     setup: { state: { SP: 18 }, memory: { 19: 1, 18: 5 }},
-                    expect: { state: { SP: 20, IP: 0x0105 }}
+                    expect: { state: { SP: 20, PC: 0x0105 }}
                 })
             })
 
@@ -2164,12 +2164,12 @@ describe('vm', () => {
                 runProgram("NOP\nRET C", {
                     step: 4,
                     setup: { state: { SP: 18, CFlag: 1 }, memory: { 19: 1, 18: 5 }},
-                    expect: { state: { SP: 20, IP: 0x0105 }}
+                    expect: { state: { SP: 20, PC: 0x0105 }}
                 })
                 runProgram("NOP\nRET C", {
                     step: 2,
                     setup: { state: { SP: 18, CFlag: 0 }, memory: { 19: 1, 18: 5 }},
-                    expect: { state: { SP: 18, IP: 2 }}
+                    expect: { state: { SP: 18, PC: 2 }}
                 })
             })
         })

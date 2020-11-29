@@ -26,7 +26,7 @@ class Vm {
             IX: 0,
             IY: 0,
 
-            IP: 0,
+            PC: 0,
             SP: 0,
 
             IFF: 1,
@@ -38,7 +38,7 @@ class Vm {
             "AF'": 0,
 
             isHalted: false,
-            ipWasModified: false,
+            pcWasModified: false,
 
             get HL() {
                 return this.H << 8 | this.L
@@ -180,7 +180,7 @@ class Vm {
 
         // Find the instruction
         for (let i = 0; i < MAX_OPCODES; i++) {
-            const code = this.state.memory[this.state.IP + i]
+            const code = this.state.memory[this.state.PC + i]
             currNode = currNode[code]
             if (!currNode) {
                 throw new Error("INVALID CODE " + code)
@@ -216,12 +216,12 @@ class Vm {
         handler.exec(this.state, ...args)
         this.wait = undefined
 
-        // Unless the was a jump or other instruction that modified the IP, we'll
-        // move the IP forward for the next instruction
-        if (!this.state.ipWasModified) {
-            this.state.IP += handler.bytes
+        // Unless the was a jump or other instruction that modified the PC, we'll
+        // move the PC forward for the next instruction
+        if (!this.state.pcWasModified) {
+            this.state.PC += handler.bytes
         } else {
-            this.state.ipWasModified = false
+            this.state.pcWasModified = false
         }
     }
 
