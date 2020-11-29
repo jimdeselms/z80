@@ -1110,6 +1110,17 @@ module.exports = {
             bits: ["11ccc100", "LLLLLLLL", "HHHHHHHH"],
             cycles: (state, cc) => CONDITION_HANDLERS[cc](state) ? 5 : 3,
             exec: (state, cc, nn) => CALLCondition(state, cc, nn)
+        },
+
+        "RET": {
+            bits: ["11001001"],
+            cycles: 3,
+            exec: RET
+        },
+        "RET cc": {
+            bits: ["11ccc000"],
+            cycles: (state, cc) => CONDITION_HANDLERS[cc](state) ? 3 : 1,
+            exec: (state, cc) => RETCondition(state, cc)
         }
     }        
 }
@@ -1557,5 +1568,21 @@ function CALL(state, newIp) {
 function CALLCondition(state, condition, newIp) {
     if (CONDITION_HANDLERS[condition](state)) {
         CALL(state, newIp)
+    }
+}
+
+function RET(state) {
+    let low = state.memory[state.SP++]
+    let high = state.memory[state.SP++]
+
+    const word = bytesToBit16(low, high)
+
+    state.IP = word
+    state.ipWasModified = true
+}
+
+function RETCondition(state, condition) {
+    if (CONDITION_HANDLERS[condition](state)) {
+        RET(state)
     }
 }

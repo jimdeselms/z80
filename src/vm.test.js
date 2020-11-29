@@ -2150,6 +2150,29 @@ describe('vm', () => {
                 })
             })
         })
+
+        describe("RET", () => {
+            it("RET", () => {
+                runProgram("NOP\nRET", {
+                    step: 4,
+                    setup: { state: { SP: 18 }, memory: { 19: 1, 18: 5 }},
+                    expect: { state: { SP: 20, IP: 0x0105 }}
+                })
+            })
+
+            it ("RET cc", () => {
+                runProgram("NOP\nRET C", {
+                    step: 4,
+                    setup: { state: { SP: 18, CFlag: 1 }, memory: { 19: 1, 18: 5 }},
+                    expect: { state: { SP: 20, IP: 0x0105 }}
+                })
+                runProgram("NOP\nRET C", {
+                    step: 2,
+                    setup: { state: { SP: 18, CFlag: 0 }, memory: { 19: 1, 18: 5 }},
+                    expect: { state: { SP: 18, IP: 2 }}
+                })
+            })
+        })
     })
 })
 
