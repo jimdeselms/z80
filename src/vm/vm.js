@@ -1,5 +1,6 @@
 const { bit16ToBytes, bytesToBit16 } = require('../helpers')
 
+const z80 = require('../z80')
 const MAX_OPCODES = 3
 
 class Vm {
@@ -148,7 +149,49 @@ class Vm {
                 const [low, high] = bit16ToBytes(value)
                 this.memory[address] = low
                 this.memory[address+1] = high 
-            }
+            },
+
+            // These represent the various pins
+            busackPin: 0,
+            get BUSACK(){ return this.busackPin },
+            set BUSACK(value) {
+                this.busackPin = value
+            },
+
+            intPin: 0,
+            get INT() { return this.intPin },
+            set INT(value) {
+                this.intPin = value
+            },
+
+            iorqPin: 0,
+            get IORQ() { return this.iorqPin },
+            set IORQ(value) {
+                this.iorqPin = value
+            },
+
+            // Non-maskable interrupt
+            nmiPin: 0,
+            nmiTriggered: 0,
+            get NMI() { return this.nmiPin },
+            set NMI(value) {
+                this.nmiPin = value
+                if (value) {
+                    this.nmiTriggered = 1
+                }
+            },
+
+            databusPin: 0,
+            get Databus() { return this.databusPin },
+            set Databus(value) {
+                this.databusPin = value
+            },
+
+            rdPin: 0,
+            get RD() { return this.rdPin },
+            set RD(value) {
+                this.rdPin = value
+            },
         }
 
         if (state) {
@@ -223,6 +266,10 @@ class Vm {
         } else {
             this.state.pcWasModified = false
         }
+
+        if (this.nmiTriggered = false) {
+            this.handleNonMaskableInterrupt()
+        }
     }
 
     loadMemory(address, memory) {
@@ -233,6 +280,12 @@ class Vm {
         while (!this.state.isHalted) {
             this.step()
         }
+    }
+
+    handleNonMaskableInterrupt() {
+        // NMIs always go to address 0x0066
+        this.nmiTriggered = this.nmiPin
+        z80.CALL(this.state, 0x0066)
     }
 }
 

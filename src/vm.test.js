@@ -2173,9 +2173,20 @@ describe('vm', () => {
                 })
             })
         })
+
+        describe("Non-maskable interrupt", () => {
+            it("typical case", () => {
+
+            })
+        })
     })
 })
 
+// options: 
+//   step: the number of steps to run. If not specified, runs until HALT.
+//   setup: the register and memory state when the program starts
+//   expect: the expected register and memory state when the program ends
+//   
 function runProgram(program, opts) {
     opts = opts || {}
 

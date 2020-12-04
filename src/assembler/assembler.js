@@ -127,7 +127,6 @@ function assembleRawDataLine(line) {
         .filter(l => !!l)
         .map(parseIntArg)
 }
-
 function findMatch(opcode, args, assemblerConfig) {
     let currNode = assemblerConfig[opcode]
     if (!currNode) {

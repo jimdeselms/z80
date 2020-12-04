@@ -1122,8 +1122,11 @@ module.exports = {
             cycles: (state, cc) => CONDITION_HANDLERS[cc](state) ? 3 : 1,
             exec: (state, cc) => RETCondition(state, cc)
         }
-    }        
+    },
+
+    CALL: CALL
 }
+
 
 const PARITY_NYBBLES = {
     0b0000: 0,
