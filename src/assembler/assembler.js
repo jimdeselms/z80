@@ -334,10 +334,19 @@ function stringMatchesPattern(string, pattern) {
 }
 
 function parseIntArg(arg) {
-    if (arg.endsWith("H")) {
-        arg = "0x" + arg.replace("H", "")
+    arg = arg.toLowerCase()
+
+    if (arg.endsWith("h") || arg.endsWith()) {
+        return parseInt("0x" + arg.slice(0, -1))
+    } else if (arg.startsWith("#")) {
+        return parseInt("0x" + arg.slice(1))
+    } else if (arg.startsWith("0x")) {
+        return parseInt(arg)
+    } else if (arg.startsWith("0b")) {
+        return parseInt(arg.slice(2), 2)
     }
-    return parseInt(arg)
+
+    else return parseInt(arg)
 }
 
 function parseArg(arg) {

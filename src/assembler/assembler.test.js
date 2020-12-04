@@ -7,17 +7,24 @@ function createAssembler() {
 }
 
 describe('assembler', () => {
-    describe('ld', () => {
-        it('ld A, 200', () => {
-            const code = createAssembler().assemble('ld A, 200')
-            expect(code).toEqual([0b00111110, 200])
-        })
+    it('decimal literal', () => {
+        const code = createAssembler().assemble('ld A, 200')
+        expect(code).toEqual([0b00111110, 200])
     })
-
-    describe('halt', () => {
-        it('halt', () => {
-            const code = createAssembler().assemble('halt')
-            expect(code).toEqual([0b01110110])
-        })
+    it('hex literal with H at end', () => {
+        const code = createAssembler().assemble('ld A, 4FH')
+        expect(code).toEqual([0b00111110, 79])
+    })
+    it('hex literal with # at beginning', () => {
+        const code = createAssembler().assemble('ld A, #4F')
+        expect(code).toEqual([0b00111110, 79])
+    })
+    it('hex literal with # at beginning', () => {
+        const code = createAssembler().assemble('ld A, 0b0011')
+        expect(code).toEqual([0b00111110, 3])
+    })
+    it('halt', () => {
+        const code = createAssembler().assemble('halt')
+        expect(code).toEqual([0b01110110])
     })
 })
