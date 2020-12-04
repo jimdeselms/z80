@@ -24,7 +24,7 @@ class Assembler {
             .replace(';', '\n')
             .split('\n')
             .map(l => l.trim())
-            .filter(line => line.length > 0 && line[0] !== '#')
+            .filter(line => line.length > 0 && line[0] !== ';')
 
         for (const line of lines) {
             result.push(...assembleLine(line, this.assemblerConfig))
@@ -91,6 +91,11 @@ const JP_CONDITION_CODES = {
 }
 
 function assembleLine(line, assemblerConfig) {
+
+    const firstChar = line[0]
+    if (firstChar == '#' || (firstChar >= '0' && firstChar <= '9')) {
+        return assembleRawDataLine(line)
+    }
     const parts = line
         .replace('\t', ' ')
         .replace(',', '')
@@ -113,6 +118,14 @@ function assembleLine(line, assemblerConfig) {
         result.push(num)
     }
     return result
+}
+
+function assembleRawDataLine(line) {
+    return line
+        .replace(/[ \t]+/g, ' ')
+        .split(' ')
+        .filter(l => !!l)
+        .map(parseIntArg)
 }
 
 function findMatch(opcode, args, assemblerConfig) {
@@ -334,16 +347,16 @@ function stringMatchesPattern(string, pattern) {
 }
 
 function parseIntArg(arg) {
-    arg = arg.toLowerCase()
+    const sanitized = arg.toLowerCase()
 
-    if (arg.endsWith("h") || arg.endsWith()) {
-        return parseInt("0x" + arg.slice(0, -1))
-    } else if (arg.startsWith("#")) {
-        return parseInt("0x" + arg.slice(1))
-    } else if (arg.startsWith("0x")) {
-        return parseInt(arg)
-    } else if (arg.startsWith("0b")) {
-        return parseInt(arg.slice(2), 2)
+    if (sanitized.endsWith("h") || sanitized.endsWith()) {
+        return parseInt("0x" + sanitized.slice(0, -1))
+    } else if (sanitized.startsWith("#")) {
+        return parseInt("0x" + sanitized.slice(1))
+    } else if (sanitized.startsWith("0x")) {
+        return parseInt(sanitized)
+    } else if (sanitized.startsWith("0b")) {
+        return parseInt(sanitized.slice(2), 2)
     }
 
     else return parseInt(arg)

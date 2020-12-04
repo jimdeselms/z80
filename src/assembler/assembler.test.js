@@ -8,23 +8,27 @@ function createAssembler() {
 
 describe('assembler', () => {
     it('decimal literal', () => {
-        const code = createAssembler().assemble('ld A, 200')
-        expect(code).toEqual([0b00111110, 200])
+        assembleAndVerify('ld A, 200', [0b00111110, 200])
     })
     it('hex literal with H at end', () => {
-        const code = createAssembler().assemble('ld A, 4FH')
-        expect(code).toEqual([0b00111110, 79])
+        assembleAndVerify('ld A, 4FH', [0b00111110, 79])
     })
     it('hex literal with # at beginning', () => {
-        const code = createAssembler().assemble('ld A, #4F')
-        expect(code).toEqual([0b00111110, 79])
+        assembleAndVerify('ld A, #4F', [0b00111110, 79])
     })
     it('hex literal with # at beginning', () => {
-        const code = createAssembler().assemble('ld A, 0b0011')
-        expect(code).toEqual([0b00111110, 3])
+        assembleAndVerify('ld A, 0b0011', [0b00111110, 3])
     })
     it('halt', () => {
-        const code = createAssembler().assemble('halt')
-        expect(code).toEqual([0b01110110])
+        assembleAndVerify('halt', [0b01110110])
+    })
+    it('raw data', () => {
+        assembleAndVerify('#12 #34', [0x12, 0x34])
     })
 })
+
+function assembleAndVerify(code, expected) {
+    const assembler = createAssembler()
+    const bytes = assembler.assemble(code)
+    expect(bytes).toEqual(expected)
+}
