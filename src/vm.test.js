@@ -2176,7 +2176,19 @@ describe('vm', () => {
 
         describe("Non-maskable interrupt", () => {
             it("typical case", () => {
+                const assembly = `
+                  NOP
+                  NOP
+                  NOP
+                  HALT
+                    0x0066:
+                  LD A, 1
+                  RETI
+                `
 
+                runProgram(assembly, {
+                    setup: { state: { SP: 20, RMIPin: 1, }}
+                })
             })
         })
     })
@@ -2201,17 +2213,21 @@ function runProgram(program, opts) {
     }
 
     if (opts.expect) {
-        if (opts.expect.state) {
-            expect(vm.state).toMatchObject(opts.expect.state)
-        }
-        if (opts.expect.memory) {
-            for (const [address, value] of Object.entries(opts.expect.memory)) {
-                expect(vm.state.memory[address]).toBe(value)
-            }
-        }
+        checkExpectations(vm, expect)
     }
 
     return vm.state
+}
+
+function checkExpectations(vm, expect) {
+    if (expect.state) {
+        expect(vm.state).toMatchObject(expect.state)
+    }
+    if (expect.memory) {
+        for (const [address, value] of Object.entries(expect.memory)) {
+            expect(vm.state.memory[address]).toBe(value)
+        }
+    }
 }
 
 function createVm(program, setup) {

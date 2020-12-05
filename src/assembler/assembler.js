@@ -27,7 +27,9 @@ class Assembler {
             .filter(line => line.length > 0 && line[0] !== ';')
 
         for (const line of lines) {
-            result.push(...assembleLine(line, this.assemblerConfig))
+            const currIndex = result.length
+
+            result.push(...assembleLine(line, currIndex, this.assemblerConfig))
         }
 
         return result;
@@ -90,8 +92,20 @@ const JP_CONDITION_CODES = {
     "H":  0b111,
 }
 
-function assembleLine(line, assemblerConfig) {
+function assembleLine(line, currIndex, assemblerConfig) {
 
+    // Are we starting with '12345:'? Then fill in bytes until we get
+    // to that number.
+    if (line.endsWith(':')) {
+        const targetIndex = parseIntArg(line.slice(0, -1))
+        if (!isNaN(targetIndex)) {
+            const result = []
+            for (let i = currIndex; i < targetIndex; i++) {
+                result.push(0)
+            }
+            return result
+        }
+    }
     const firstChar = line[0]
     if (firstChar == '#' || (firstChar >= '0' && firstChar <= '9')) {
         return assembleRawDataLine(line)

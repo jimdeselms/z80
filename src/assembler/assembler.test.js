@@ -25,6 +25,15 @@ describe('assembler', () => {
     it('raw data', () => {
         assembleAndVerify('#12 #34', [0x12, 0x34])
     })
+    it('placing the assembled code at a specific address', () => {
+        const assembly = `
+            1:
+              #01
+            0b101:
+              #02
+              #03`
+        assembleAndVerify(assembly, [0, 1, 0, 0, 0, 2, 3])
+    })
 })
 
 function assembleAndVerify(code, expected) {
