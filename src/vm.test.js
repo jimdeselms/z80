@@ -2061,50 +2061,50 @@ describe('vm', () => {
         })
 
         describe("JR", () => {
-            it ("JP e", () => {
+            it ("JR e", () => {
                 runProgram("NOP\nJR 5", {
                     cycles: 4,
-                    expect: { state: { PC: 6 } }
+                    expect: { state: { PC: 8 } }
                 })
             })
 
             it("JR cc, e", () => {
-                runProgram("NOP\nJR C, 10", {
+                runProgram("NOP\nJR C, 8", {
                     cycles: 4,
                     setup: { state: { CFlag: 1 }},
                     expect: { state: { PC: 11 }}
                 })
-                runProgram("NOP\nJR C, 10", {
+                runProgram("NOP\nJR C, 8", {
                     cycles: 3,
                     setup: { state: { CFlag: 0 }},
                     expect: { state: { PC: 3 }}
                 })
-                runProgram("NOP\nJR NC, 10", {
+                runProgram("NOP\nJR NC, 8", {
                     cycles: 8,
                     setup: { state: { CFlag: 1 }},
                     expect: { state: { PC: 3 }}
                 })
-                runProgram("NOP\nJR NC, 10", {
+                runProgram("NOP\nJR NC, 8", {
                     cycles: 4,
                     setup: { state: { CFlag: 0 }},
                     expect: { state: { PC: 11 }}
                 })
-                runProgram("NOP\nJR Z, 10", {
+                runProgram("NOP\nJR Z, 8", {
                     cycles: 4,
                     setup: { state: { ZFlag: 1 }},
                     expect: { state: { PC: 11 }}
                 })
-                runProgram("NOP\nJR Z, 10", {
+                runProgram("NOP\nJR Z, 8", {
                     cycles: 3,
                     setup: { state: { ZFlag: 0 }},
                     expect: { state: { PC: 3 }}
                 })
-                runProgram("NOP\nJR NZ, 10", {
+                runProgram("NOP\nJR NZ, 8", {
                     cycles: 3,
                     setup: { state: { ZFlag: 1 }},
                     expect: { state: { PC: 3 }}
                 })
-                runProgram("NOP\nJR NZ, 10", {
+                runProgram("NOP\nJR NZ, 8", {
                     cycles: 4,
                     setup: { state: { ZFlag: 0 }},
                     expect: { state: { PC: 11 }}
@@ -2113,12 +2113,12 @@ describe('vm', () => {
         })
         
         it("DJNZ", () => {
-            runProgram("NOP\nDJNZ 10", {
+            runProgram("NOP\nDJNZ 8", {
                 cycles: 4,
                 setup: { state: { B: 2 }},
                 expect: { state: { PC: 11, B: 1 }}
             })
-            runProgram("NOP\nDJNZ 10", {
+            runProgram("NOP\nDJNZ 8", {
                 cycles: 3,
                 setup: { state: { B: 1 }},
                 expect: { state: { PC: 3, B: 0 }}
@@ -2130,7 +2130,7 @@ describe('vm', () => {
                 runProgram("NOP\nCALL 50", {
                     cycles: 6,
                     setup: { state: { SP: 20 }},
-                    expect: { state: { SP: 18, PC: 50 }, memory: { 19: 0, 18: 1 }}
+                    expect: { state: { SP: 18, PC: 50 }, memory: { 19: 0, 18: 4 }}
                 })
             })
 
@@ -2138,7 +2138,7 @@ describe('vm', () => {
                 runProgram("NOP\nCALL Z, 50", {
                     cycles: 6,
                     setup: { state: { SP: 20, ZFlag: 1 }},
-                    expect: { state: { SP: 18, PC: 50 }, memory: { 19: 0, 18: 1 }}
+                    expect: { state: { SP: 18, PC: 50 }, memory: { 19: 0, 18: 4 }}
                 })
                 runProgram("NOP\nCALL Z, 50", {
                     cycles: 4,

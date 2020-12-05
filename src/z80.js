@@ -323,7 +323,8 @@ module.exports = {
                 state.PVFlag = state.BC !== 0 ? 1 : 0
                 state.NFlag = 0
                 if (state.PVFlag) {
-                    state.pcWasModified = true
+                    // stay put
+                    state.PC = state.currInstructionAddress
                 }
             }
         },
@@ -337,7 +338,7 @@ module.exports = {
                 LDD(state)
                 if (state.PVFlag) {
                     // stay put
-                    state.pcWasModified = true
+                    state.PC = state.currInstructionAddress
                 }
             }
         },
@@ -364,7 +365,7 @@ module.exports = {
                 CPI(state)
                 if (state.BC !== 0 && state.A !== state.memory[state.HL]) {
                     // Stay put
-                    state.pcWasModified = true
+                    state.PC = state.currInstructionAddress
                 }
             }
         },
@@ -378,7 +379,7 @@ module.exports = {
                 CPD(state)
                 if (state.BC !== 0 && state.A !== state.memory[state.HL]) {
                     // Stay put
-                    state.pcWasModified = true
+                    state.PC = state.currInstructionAddress
                 }
             }
         },
@@ -1473,7 +1474,7 @@ function RRD(state) {
 }
 
 function IXIYSpecial(state, value, set) {
-    switch (state.memory[state.PC + 3]) {
+    switch (state.memory[state.currInstructionAddress + 3]) {
         case 0b00000110: RLC(state, value, set); break;
         case 0b00010110: RL(state, value, set); break;
         case 0b00001110: RRC(state, value, set); break;
@@ -1541,7 +1542,6 @@ const CONDITION_HANDLERS = {
 
 function JP(state, newPc) {
     state.PC = newPc
-    state.pcWasModified = true
 }
 function JPCondition(state, condition, newPc) {
     if (CONDITION_HANDLERS[condition](state)) {
@@ -1550,8 +1550,7 @@ function JPCondition(state, condition, newPc) {
 }
 
 function JR(state, offset) {
-    state.PC += offset
-    state.pcWasModified = true
+    state.PC += signed8(offset)
 }
 
 function JRCondition(state, condition, offset) {
@@ -1563,7 +1562,6 @@ function JRCondition(state, condition, offset) {
 function DJNZ(state, offset) {
     if (--state.B !== 0) {
         state.PC += signed8(offset)
-        state.pcWasModified = true
     }
 }
 
@@ -1571,7 +1569,6 @@ function CALL(state, newPc) {
     state.memory[--state.SP] = state.PC >> 8
     state.memory[--state.SP] = state.PC & 0x00FF
     state.PC = newPc
-    state.pcWasModified = true
 }
 
 function CALLCondition(state, condition, newPc) {
@@ -1587,7 +1584,6 @@ function RET(state) {
     const word = bytesToBit16(low, high)
 
     state.PC = word
-    state.pcWasModified = true
 }
 
 function RETI(state) {

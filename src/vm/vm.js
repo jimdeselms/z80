@@ -40,7 +40,6 @@ class Vm {
             "AF'": 0,
 
             isHalted: false,
-            pcWasModified: false,
 
             get HL() {
                 return this.H << 8 | this.L
@@ -272,16 +271,10 @@ class Vm {
         if (this.trace) {
             console.log(this.state.PC.toString(16).padStart(4, '0'))
         }
+        this.state.currInstructionAddress = this.state.PC
+        this.state.PC += handler.bytes
         handler.exec(this.state, ...args)
         this.wait = undefined
-
-        // Unless the was a jump or other instruction that modified the PC, we'll
-        // move the PC forward for the next instruction
-        if (!this.state.pcWasModified) {
-            this.state.PC += handler.bytes
-        } else {
-            this.state.pcWasModified = false
-        }
 
         if (this.state.nmiTriggered) {
             this.handleNonMaskableInterrupt()
