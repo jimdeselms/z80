@@ -246,6 +246,13 @@ describe('vm', () => {
                 })
             })
 
+            it ("LD (nn), A", () => {
+                runProgram("LD (16h), A", { 
+                    setup: { state: { A: 0x12 }},
+                    expect: { memory: { 0x16: 0x12 }}
+                });
+            })
+
             it ("LD (nn), HL", () => {
                 runProgram("LD (16h), HL", { 
                     setup: { state: { HL: 0x1234 }},

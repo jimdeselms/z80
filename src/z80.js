@@ -184,6 +184,13 @@ module.exports = {
                 state[r] = state.get16BitMemory(n)
             }
         },
+        "LD (nn), A":  {
+            bits: ["00110010", "llllllll", "hhhhhhhh"],
+            cycles: 4,
+            exec(state, n) {
+                state.memory[n] = state.A
+            }
+        },
         "LD (nn), dd": {
             bits: ["11101101", "01DD0011", "llllllll", "hhhhhhhh"],
             exec(state, r, n) {
