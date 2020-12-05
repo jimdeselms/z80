@@ -4,9 +4,10 @@ const z80 = require('../z80')
 const MAX_OPCODES = 3
 
 class Vm {
-    constructor({ vmConfig, size, state, initialImage }) {
+    constructor({ vmConfig, size, state, initialImage, trace }) {
 
         this.vmConfig = vmConfig
+        this.trace = trace
 
         size = size || 100
 
@@ -213,6 +214,17 @@ class Vm {
     }
 
     step() {
+        // Are we in the wait period before we execute an instruction? Then
+        // keep running cycles until we aren't waiting any longer.
+        while (typeof(this.wait) === "number" && --this.wait > 0) {
+            this.cycle()
+        }
+
+        // The next cycle will execute the actual instruction.
+        this.cycle()
+    }
+
+    cycle() {
         // Are we in the middle of another instruction? Then skip this step
         if (typeof(this.wait) === "number" && --this.wait > 0) {
             return
@@ -256,6 +268,10 @@ class Vm {
             return
         }
 
+        let stateCopy
+        if (this.trace) {
+            console.log(this.state.PC.toString(16).padStart(4, '0'))
+        }
         handler.exec(this.state, ...args)
         this.wait = undefined
 
@@ -267,7 +283,7 @@ class Vm {
             this.state.pcWasModified = false
         }
 
-        if (this.nmiTriggered = false) {
+        if (this.state.nmiTriggered) {
             this.handleNonMaskableInterrupt()
         }
     }
@@ -278,13 +294,13 @@ class Vm {
 
     run() {
         while (!this.state.isHalted) {
-            this.step()
+            this.cycle()
         }
     }
 
     handleNonMaskableInterrupt() {
         // NMIs always go to address 0x0066
-        this.nmiTriggered = this.nmiPin
+        this.state.nmiTriggered = this.state.nmiPin
         z80.CALL(this.state, 0x0066)
     }
 }

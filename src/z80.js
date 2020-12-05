@@ -1,5 +1,5 @@
 const { TestWatcher } = require("jest")
-const { bit16ToBytes, bytesToBit16 } = require("./helpers")
+const { bit16ToBytes, bytesToBit16, signed8, signed16 } = require("./helpers")
 
 module.exports = {
     instructions: {
@@ -771,21 +771,21 @@ module.exports = {
             bits: ["11101101", "01000110"],
             cycles: 2,
             exec(state) {
-                state.IM0 = 1                
+                state.InterruptMode = 0
             }
         },
         "IM 1": {
             bits: ["11101101", "01010110"],
             cycles: 2,
             exec(state) {
-                state.IM1 = 1                
+                state.InterruptMode = 1                
             }
         },
         "IM 2": {
             bits: ["11101101", "01011110"],
             cycles: 2,
             exec(state) {
-                state.IM2 = 1                
+                state.InterruptMode = 2
             }
         },
         "RLC r": {
@@ -1121,6 +1121,12 @@ module.exports = {
             bits: ["11ccc000"],
             cycles: (state, cc) => CONDITION_HANDLERS[cc](state) ? 3 : 1,
             exec: (state, cc) => RETCondition(state, cc)
+        },
+
+        "RETI": {
+            bits: ["11101101", "01001101"],
+            cycles: 4,
+            exec: RETI
         }
     },
 
@@ -1556,7 +1562,7 @@ function JRCondition(state, condition, offset) {
 
 function DJNZ(state, offset) {
     if (--state.B !== 0) {
-        state.PC += offset
+        state.PC += signed8(offset)
         state.pcWasModified = true
     }
 }
@@ -1582,6 +1588,11 @@ function RET(state) {
 
     state.PC = word
     state.pcWasModified = true
+}
+
+function RETI(state) {
+    // Shouldn't there be more to this?
+    RET(state)
 }
 
 function RETCondition(state, condition) {

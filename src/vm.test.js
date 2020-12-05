@@ -412,25 +412,25 @@ describe('vm', () => {
 
             const vm = createVm(program)
 
-            vm.step();
+            vm.cycle();
             expect(vm.state.A).toBe(0)
 
-            vm.step();
+            vm.cycle();
             expect(vm.state.A).toBe(1)
 
-            vm.step();
+            vm.cycle();
             expect(vm.state.A).toBe(1)
 
-            vm.step();
+            vm.cycle();
             expect(vm.state.A).toBe(2)
 
-            vm.step();
+            vm.cycle();
             expect(vm.state.A).toBe(2)
 
-            vm.step();
+            vm.cycle();
             expect(vm.state.A).toBe(2)
 
-            vm.step();
+            vm.cycle();
             expect(vm.state.A).toBe(3)
         })
     })
@@ -1562,20 +1562,17 @@ describe('vm', () => {
 
     it ("IM 0", () => {
         runProgram("IM 0", {
-            setup: { state: { IM0: 0 }},
-            expect: { state: { IM0: 1 }},
+            expect: { state: { InterruptMode: 0 }},
         })
     })
     it ("IM 1", () => {
         runProgram("IM 1", {
-            setup: { state: { IM1: 0 }},
-            expect: { state: { IM1: 1 }},
+            expect: { state: { InterruptMode: 1 }},
         })
     })
     it ("IM 2", () => {
         runProgram("IM 2", {
-            setup: { state: { IM2: 0 }},
-            expect: { state: { IM2: 1 }},
+            expect: { state: { InterruptMode: 2 }},
         })
     })
 
@@ -1992,28 +1989,28 @@ describe('vm', () => {
         describe("JP", () => {
             it ("JP nn", () => {
                 runProgram("JP 20", {
-                    step: 3,
+                    cycles: 3,
                     expect: { PC: 20 }
                 })
             })
 
             it("JP (HL)", () => {
                 runProgram("JP (HL)", {
-                    step: 1,
+                    cycles: 1,
                     setup: { state: { HL: 18 }},
                     expect: { state: { PC: 18 }}
                 })
             })
             it("JP (IX)", () => {
                 runProgram("JP (IX)", {
-                    step: 2,
+                    cycles: 2,
                     setup: { state: { IX: 18 }},
                     expect: { state: { PC: 18 }}
                 })
             })
             it("JP (IY)", () => {
                 runProgram("JP (IY)", {
-                    step: 2,
+                    cycles: 2,
                     setup: { state: { IY: 18 }},
                     expect: { state: { PC: 18 }}
                 })
@@ -2021,42 +2018,42 @@ describe('vm', () => {
 
             it ("JP cc, nn", () => {
                 runProgram("JP NZ, 20", {
-                    step: 3,
+                    cycles: 3,
                     setup: { state: { ZFlag: 0 } },
                     expect: { state: { PC: 20 } }
                 })
                 runProgram("JP Z, 20", {
-                    step: 3,
+                    cycles: 3,
                     setup: { state: { ZFlag: 0 } },
                     expect: { state: { PC: 3 } }
                 })
                 runProgram("JP NC, 20", {
-                    step: 3,
+                    cycles: 3,
                     setup: { state: { CFlag: 1 } },
                     expect: { state: { PC: 3 } }
                 })
                 runProgram("JP C, 20", {
-                    step: 3,
+                    cycles: 3,
                     setup: { state: { CFlag: 1 } },
                     expect: { state: { PC: 20 } }
                 })
                 runProgram("JP PO, 20", {
-                    step: 3,
+                    cycles: 3,
                     setup: { state: { PVFlag: 0 } },
                     expect: { state: { PC: 20 } }
                 })
                 runProgram("JP PE, 20", {
-                    step: 3,
+                    cycles: 3,
                     setup: { state: { PVFlag: 0 } },
                     expect: { state: { PC: 3 } }
                 })
                 runProgram("JP P, 20", {
-                    step: 3,
+                    cycles: 3,
                     setup: { state: { SFlag: 1 } },
                     expect: { state: { PC: 3 } }
                 })
                 runProgram("JP M, 20", {
-                    step: 3,
+                    cycles: 3,
                     setup: { state: { SFlag: 1 } },
                     expect: { state: { PC: 20 } }
                 })
@@ -2066,49 +2063,49 @@ describe('vm', () => {
         describe("JR", () => {
             it ("JP e", () => {
                 runProgram("NOP\nJR 5", {
-                    step: 4,
+                    cycles: 4,
                     expect: { state: { PC: 6 } }
                 })
             })
 
             it("JR cc, e", () => {
                 runProgram("NOP\nJR C, 10", {
-                    step: 4,
+                    cycles: 4,
                     setup: { state: { CFlag: 1 }},
                     expect: { state: { PC: 11 }}
                 })
                 runProgram("NOP\nJR C, 10", {
-                    step: 3,
+                    cycles: 3,
                     setup: { state: { CFlag: 0 }},
                     expect: { state: { PC: 3 }}
                 })
                 runProgram("NOP\nJR NC, 10", {
-                    step: 8,
+                    cycles: 8,
                     setup: { state: { CFlag: 1 }},
                     expect: { state: { PC: 3 }}
                 })
                 runProgram("NOP\nJR NC, 10", {
-                    step: 4,
+                    cycles: 4,
                     setup: { state: { CFlag: 0 }},
                     expect: { state: { PC: 11 }}
                 })
                 runProgram("NOP\nJR Z, 10", {
-                    step: 4,
+                    cycles: 4,
                     setup: { state: { ZFlag: 1 }},
                     expect: { state: { PC: 11 }}
                 })
                 runProgram("NOP\nJR Z, 10", {
-                    step: 3,
+                    cycles: 3,
                     setup: { state: { ZFlag: 0 }},
                     expect: { state: { PC: 3 }}
                 })
                 runProgram("NOP\nJR NZ, 10", {
-                    step: 3,
+                    cycles: 3,
                     setup: { state: { ZFlag: 1 }},
                     expect: { state: { PC: 3 }}
                 })
                 runProgram("NOP\nJR NZ, 10", {
-                    step: 4,
+                    cycles: 4,
                     setup: { state: { ZFlag: 0 }},
                     expect: { state: { PC: 11 }}
                 })
@@ -2117,12 +2114,12 @@ describe('vm', () => {
         
         it("DJNZ", () => {
             runProgram("NOP\nDJNZ 10", {
-                step: 4,
+                cycles: 4,
                 setup: { state: { B: 2 }},
                 expect: { state: { PC: 11, B: 1 }}
             })
             runProgram("NOP\nDJNZ 10", {
-                step: 3,
+                cycles: 3,
                 setup: { state: { B: 1 }},
                 expect: { state: { PC: 3, B: 0 }}
             })
@@ -2131,7 +2128,7 @@ describe('vm', () => {
         describe("CALL", () => {
             it ("CALL nn", () => {
                 runProgram("NOP\nCALL 50", {
-                    step: 6,
+                    cycles: 6,
                     setup: { state: { SP: 20 }},
                     expect: { state: { SP: 18, PC: 50 }, memory: { 19: 0, 18: 1 }}
                 })
@@ -2139,12 +2136,12 @@ describe('vm', () => {
 
             it ("CALL cc, nn", () => {
                 runProgram("NOP\nCALL Z, 50", {
-                    step: 6,
+                    cycles: 6,
                     setup: { state: { SP: 20, ZFlag: 1 }},
                     expect: { state: { SP: 18, PC: 50 }, memory: { 19: 0, 18: 1 }}
                 })
                 runProgram("NOP\nCALL Z, 50", {
-                    step: 4,
+                    cycles: 4,
                     setup: { state: { SP: 20, ZFlag: 0 }},
                     expect: { state: { SP: 20, PC: 4 }}
                 })
@@ -2154,7 +2151,7 @@ describe('vm', () => {
         describe("RET", () => {
             it("RET", () => {
                 runProgram("NOP\nRET", {
-                    step: 4,
+                    cycles: 4,
                     setup: { state: { SP: 18 }, memory: { 19: 1, 18: 5 }},
                     expect: { state: { SP: 20, PC: 0x0105 }}
                 })
@@ -2162,12 +2159,12 @@ describe('vm', () => {
 
             it ("RET cc", () => {
                 runProgram("NOP\nRET C", {
-                    step: 4,
+                    cycles: 4,
                     setup: { state: { SP: 18, CFlag: 1 }, memory: { 19: 1, 18: 5 }},
                     expect: { state: { SP: 20, PC: 0x0105 }}
                 })
                 runProgram("NOP\nRET C", {
-                    step: 2,
+                    cycles: 2,
                     setup: { state: { SP: 18, CFlag: 0 }, memory: { 19: 1, 18: 5 }},
                     expect: { state: { SP: 18, PC: 2 }}
                 })
@@ -2179,15 +2176,29 @@ describe('vm', () => {
                 const assembly = `
                   NOP
                   NOP
-                  NOP
+                  LD B, 2
                   HALT
                     0x0066:
                   LD A, 1
                   RETI
                 `
 
-                runProgram(assembly, {
-                    setup: { state: { SP: 20, RMIPin: 1, }}
+                const vm = createVm(assembly, {
+                    state: { SP: 20, NMI: 1 }
+                })
+
+                // TODO: As it is right now, the very first call to step won't actually do anything, so we have
+                // to run one cycle first.
+                vm.cycle()
+                vm.step()
+
+                // Set NMI low. (What happens if you leave it high in a real z80?)
+                vm.state.NMI = 0
+
+                vm.run()
+
+                checkExpectations(vm, {
+                    state: { A: 1, B: 2 }
                 })
             })
         })
@@ -2195,7 +2206,7 @@ describe('vm', () => {
 })
 
 // options: 
-//   step: the number of steps to run. If not specified, runs until HALT.
+//   cycles: the number of cycles to run. If not specified, runs until HALT.
 //   setup: the register and memory state when the program starts
 //   expect: the expected register and memory state when the program ends
 //   
@@ -2203,28 +2214,28 @@ function runProgram(program, opts) {
     opts = opts || {}
 
     const vm = createVm(program, opts.setup || {})
-    if (opts.step) {
-        const count = typeof(opts.step) === "number" ? opts.step : 1
+    if (opts.cycles) {
+        const count = typeof(opts.cycles) === "number" ? opts.cycles : 1
         for (let i = 0; i < count; i++) {
-            vm.step()
+            vm.cycle()
         }
     } else {
         vm.run()
     }
 
     if (opts.expect) {
-        checkExpectations(vm, expect)
+        checkExpectations(vm, opts.expect)
     }
 
     return vm.state
 }
 
-function checkExpectations(vm, expect) {
-    if (expect.state) {
-        expect(vm.state).toMatchObject(expect.state)
+function checkExpectations(vm, expectations) {
+    if (expectations.state) {
+        expect(vm.state).toMatchObject(expectations.state)
     }
-    if (expect.memory) {
-        for (const [address, value] of Object.entries(expect.memory)) {
+    if (expectations.memory) {
+        for (const [address, value] of Object.entries(expectations.memory)) {
             expect(vm.state.memory[address]).toBe(value)
         }
     }

@@ -53,11 +53,29 @@ function bytesToBit16(low, high) {
     return (high << 8 | low & 0x00FF) & 0x0000FFFF
 }
 
+function signed8(val) {
+    if (val & 0xF0) {
+        return val - 256
+    } else {
+        return val
+    }
+}
+
+function signed16(val) {
+    if (val & 0xF000) {
+        return val - 32768
+    } else {
+        return val
+    }
+}
+
 module.exports = {
     bit16ToBytes,
     bytesToBit16,
     get3BitRegisterCode,
     get2BitRegisterCode,
     getRegisterFromOpcode,
+    signed8,
+    signed16,
     REGISTER_TO_THREEBIT
 }
